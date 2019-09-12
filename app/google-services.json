@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "861844783919",
+    "firebase_url": "https://cakeapp-d1c24.firebaseio.com",
+    "project_id": "cakeapp-d1c24",
+    "storage_bucket": "cakeapp-d1c24.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:861844783919:android:1a4eaca48307b4061097da",
+        "android_client_info": {
+          "package_name": "com.example.caterinamaugeri.sweetsocial"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "861844783919-jasqne4771rcfkau3hrbh0r9jrelbpra.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsYjmrQU3KYgjCTw--aONnesIT6_gkfG0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "861844783919-jasqne4771rcfkau3hrbh0r9jrelbpra.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
