@@ -8,12 +8,28 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:861844783919:android:1a4eaca48307b4061097da",
+        "mobilesdk_app_id": "1:861844783919:android:b940d8d90acf7d401097da",
         "android_client_info": {
-          "package_name": "com.example.caterinamaugeri.sweetsocial"
+          "package_name": "com.example.myapplication"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "861844783919-8cncus22j5p1kg4h2ec4qgugprt0fbf9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.myapplication",
+            "certificate_hash": "b3baf8caaad2d3f0ee5609106b7028e735d2c662"
+          }
+        },
+        {
+          "client_id": "861844783919-nrar42qhrgtsnph00vhvgqulq9nbes4s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.myapplication",
+            "certificate_hash": "c252566fca47e2c4dacf5b8cb23722f97b1a10a1"
+          }
+        },
         {
           "client_id": "861844783919-jasqne4771rcfkau3hrbh0r9jrelbpra.apps.googleusercontent.com",
           "client_type": 3
