@@ -22,4 +22,17 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="cellulare">cellulare</string>
+    <string name="numero_cellulare">numero_cellulare</string>
+    <string name="e_mail">e_mail</string>
+    <string name="password">password</string>
+    <string name="biografia">biografia</string>
+    <string name="nickname">nickname</string>
+    <string name="textview">textview</string>
+    <string name="fatti_conoscere_inserisci_qui_la_tua_biografia">fatti_conoscere_inserisci_qui_la_tua_biografia</string>
+    <string name="example_nome_utente_gmail_com">example_nome_utente_gmail_com</string>
+    <string name="accept">accept</string>
+    <string name="nomeCompleto">nomeCompleto</string>
+    <string name="accedi_o_registrati">Accedi o registrati</string>
+    <string name="link"> Sei un cuoco?!\n<a href="" >Clicca per accedere in area privata!</a></string>
 </resources>
