@@ -95,13 +95,29 @@ public class UserProfileActivity<modifica_abilitata> extends AppCompatActivity {
         //-----------------------BOTTONI-----------------------------------------------------
         modificaFoto=(FloatingActionButton) findViewById(R.id.modificaFoto);
         modificaFoto.setVisibility(View.GONE);
-
         modificaProfilo= (FloatingActionButton) findViewById(R.id.modificaProfilo);
         //-----------------------------------------------------------------------------------
         //----------------------UTENTE LOGGATO-----------------------------------------------
-        mAuth=FirebaseAuth.getInstance();
 
-        currentUsermail = mAuth.getCurrentUser().getEmail();
+        //Verifichiamo se l'activity è chiamata da loginActivity o dal ItemCommento
+        Intent intent = getIntent();
+        String value = intent.getStringExtra("tipo");
+        String user= intent.getStringExtra("utente");
+
+        if(value.equals("commento")){
+            currentUsermail=user;
+            modificaProfilo.setVisibility(View.INVISIBLE);
+        }else if(value.equals("login")) {
+            mAuth = FirebaseAuth.getInstance();
+            currentUsermail = mAuth.getCurrentUser().getEmail();
+            System.out.println(" user prof current="+currentUsermail);
+        }else{
+            System.out.println("ERROREE: "+value);
+            mAuth = FirebaseAuth.getInstance();
+            currentUsermail = mAuth.getCurrentUser().getEmail();
+            System.out.println(" else current"+currentUsermail);
+        }
+
         //-----------------------------------------------------------------------------------
         db= FirebaseFirestore.getInstance();
         /*DocumentReference docRef = db.collection("utenti").document("" + mAuth.getUid());

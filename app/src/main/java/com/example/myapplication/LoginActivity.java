@@ -136,10 +136,13 @@ public class LoginActivity extends AppCompatActivity {
                                     Object obj = documentSnapshot.toObject(Object.class);
                                     if (obj instanceof Utente) {
                                         Intent intent = new Intent(LoginActivity.this, UserProfileActivity.class);
+                                        intent.putExtra("tipo","login");
+                                        intent.putExtra("utente","");
                                         startActivity(intent);
                                     }
                                     else {
                                         //apri profilo cuoco
+
                                     }
                                 }
                             });
@@ -164,7 +167,7 @@ public class LoginActivity extends AppCompatActivity {
                                                     nuovoCuoco.setNome(user.getEmail().substring(0,user.getEmail().indexOf("@")));
                                                     nuovoCuoco.setImageProf(user.getEmail()+".jpg");
                                                     utenti.document(""+mAuth.getUid()).set(nuovoCuoco);
-                                                    //-------vai al profilo del cuoco
+                                                    //-------vai al profilo del cuoco-------------------
                                                 }
                                                 else {
 
@@ -178,6 +181,8 @@ public class LoginActivity extends AppCompatActivity {
 
                                                     //vai a USER PROFILE
                                                     Intent intent = new Intent(LoginActivity.this, UserProfileActivity.class);
+                                                    intent.putExtra("tipo","login");
+                                                    intent.putExtra("utente","");
                                                     startActivity(intent);
                                                }
 

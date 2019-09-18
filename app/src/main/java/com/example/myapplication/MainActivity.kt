@@ -137,6 +137,9 @@ class MainActivity : AppCompatActivity() {
 
             if(mAuth.currentUser!=null){
                 val i = Intent(this@MainActivity,UserProfileActivity::class.java)
+                System.out.println("SONO QUI")
+                i.putExtra("tipo", "login")
+                i.putExtra("utente", "")
                 startActivity(i)
             }else {
                 val i = Intent(this@MainActivity, LoginActivity::class.java)
@@ -146,7 +149,7 @@ class MainActivity : AppCompatActivity() {
         })
 
 
-        val fab: FloatingActionButton = findViewById(R.id.fab)
+        val fab: FloatingActionButton = findViewById(R.id.fab_search)
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()

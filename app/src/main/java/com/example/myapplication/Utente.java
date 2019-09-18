@@ -82,6 +82,20 @@ public class Utente {
         this.imageProf = imageProf;
     }
 
+    @Override
+    public String toString() {
+        return "Utente{" +
+                "nome='" + nome + '\'' +
+                ", nick='" + nick + '\'' +
+                ", bio='" + bio + '\'' +
+                ", tel='" + tel + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", imageProf='" + imageProf + '\'' +
+                ", rot=" + rot +
+                '}';
+    }
+
     public String getPassword() {
         return password;
     }
