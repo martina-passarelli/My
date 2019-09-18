@@ -6,6 +6,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
+
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -29,6 +30,7 @@
             tools:ignore="MissingConstraints"
             tools:layout_editor_absoluteX="0dp"
             tools:layout_editor_absoluteY="0dp">
+
 
             <ImageView
                 android:id="@+id/img"
@@ -81,6 +83,7 @@
                 android:translationX="0dp"
                 android:translationY="0dp"
                 android:visibility="visible" />
+
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/modificaFoto"

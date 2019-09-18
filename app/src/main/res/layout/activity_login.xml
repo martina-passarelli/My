@@ -53,6 +53,28 @@
         app:layout_constraintTop_toBottomOf="@+id/username"
         app:layout_constraintVertical_bias="0.0" />
 
+    <EditText
+        android:id="@+id/codice"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="108dp"
+
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="460dp"
+        android:autofillHints=""
+        android:hint="Codice"
+        android:inputType="text"
+        android:selectAllOnFocus="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/password"
+        app:layout_constraintVertical_bias="0.273"
+        tools:ignore="UnknownId"
+        tools:targetApi="o" />
+
     <Button
         android:id="@+id/login"
         style="@style/Widget.AppCompat.Button.Small"
@@ -66,9 +88,10 @@
         android:text="@string/accedi_o_registrati"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.468"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password"
-        app:layout_constraintVertical_bias="0.388" />
+        app:layout_constraintVertical_bias="0.556" />
 
     <TextView
         android:id="@+id/link"
@@ -80,7 +103,7 @@
         android:layout_marginEnd="48dp"
         android:layout_marginBottom="64dp"
 
-        android:clickable="false"
+        android:clickable="true"
         android:contextClickable="false"
         android:text="@string/link"
         android:textSize="12sp"
@@ -88,7 +111,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/login"
-        app:layout_constraintVertical_bias="0.076" />
+        app:layout_constraintVertical_bias="0.592"
+        android:focusable="true" />
 
     <ProgressBar
         android:id="@+id/loading"

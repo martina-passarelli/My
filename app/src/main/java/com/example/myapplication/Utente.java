@@ -7,7 +7,7 @@ public class Utente {
     private String nome,nick, bio, tel,password;
     private String email;
     private String imageProf;
-    private boolean rot;
+    private int rot;
 
     public Utente() {
     }
@@ -20,10 +20,10 @@ public class Utente {
         this.bio = "";
         this.tel="";
         this.imageProf=null;
-        this.rot=false;
+        this.rot=0;
     }
 
-    public Utente(String nome, String email, String nick, String bio, String tel, String password, String imageProf,boolean rot) {
+    public Utente(String nome, String email, String nick, String bio, String tel, String password, String imageProf,int rot) {
         this.nome = nome;
         this.bio=bio;
         this.nick = nick;
@@ -90,11 +90,11 @@ public class Utente {
         this.password = password;
     }
 
-    public void setRot(boolean rot) {
+    public void setRot(int rot) {
         this.rot = rot;
     }
 
-    public boolean getRot() {
+    public int getRot() {
         return rot;
     }
 }

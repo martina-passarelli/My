@@ -3,8 +3,10 @@ package com.example.myapplication;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -24,6 +26,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -101,8 +104,18 @@ public class UserProfileActivity<modifica_abilitata> extends AppCompatActivity {
         currentUsermail = mAuth.getCurrentUser().getEmail();
         //-----------------------------------------------------------------------------------
         db= FirebaseFirestore.getInstance();
+        /*DocumentReference docRef = db.collection("utenti").document("" + mAuth.getUid());
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                utente = documentSnapshot.toObject(Utente.class);
+
+                costruisciProfilo(utente);
+            }
+        });*/
+
         //recupero le informazioni dell'utente corrente
-        Task<QuerySnapshot> col= db.collection("utenti").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        Task<QuerySnapshot> col= db.collection("utenti2").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot col) {
                 if(!col.isEmpty()){
@@ -219,7 +232,7 @@ public class UserProfileActivity<modifica_abilitata> extends AppCompatActivity {
                         }
                         //salvataggio delle informazioni dell'utente
                         Utente up = new Utente(nome,utente.getEmail(),nick,bio,tel, utente.getPassword(),currentUsermail+".jpg",utente.getRot());
-                        db.collection("utenti").document(id).set(up);
+                        db.collection("utenti2").document(id).set(up);
                         modifica_abilitata=false;
                         nuova_password.setText("");
                         vecchia_password.setText("");
@@ -260,22 +273,72 @@ public class UserProfileActivity<modifica_abilitata> extends AppCompatActivity {
             utente.setImageProf(currentUsermail+".jpg");
         if (imageUri != null) {
             try {
+                String imagePath;
+                if (data.toString().contains("content:")) {
+                    imagePath = getRealPathFromURI(imageUri);
+                } else if (data.toString().contains("file:")) {
+                    imagePath = imageUri.getPath();
+                } else {
+                    imagePath = null;
+                }
+
+                ExifInterface exifInterface = new ExifInterface(imagePath);
+                int rotation = Integer.parseInt(exifInterface.getAttribute(ExifInterface.TAG_ORIENTATION));
+                int rotationInDegrees = exifToDegrees(rotation);
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
                 //se l'immagine ha un'orientazione la giro
-                int width = bitmap.getWidth();
+                /*int width = bitmap.getWidth();
                 int height = bitmap.getHeight();
 
                 if (width > height) {
-                    bitmap = rotate(bitmap, 90);
-                    utente.setRot(true);
+                    bitmap = rotate(bitmap,90);
+                    utente.setRot(90);
                 }
-                else utente.setRot(false);
+                else if (width < height) {
+                    bitmap = rotate(bitmap, -90);
+                    utente.setRot(-90);
+                }
+
+                else utente.setRot(0);
+                img.setImageBitmap(bitmap);*/
+                utente.setRot(rotationInDegrees);
+                System.out.println(utente.getRot()+"ecco");
+                bitmap=rotate(bitmap,rotationInDegrees);
                 img.setImageBitmap(bitmap);
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public String getRealPathFromURI(Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = {MediaStore.Images.Media.DATA};
+            cursor = getContentResolver().query(contentUri, proj, null, null,
+                    null);
+            int column_index = cursor
+                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    private static int exifToDegrees(int exifOrientation) {
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
+            return 90;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
+            System.out.println("rota");
+            return 180;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            return 270;
+        }
+        return 0;
     }
 
     private Bitmap rotate(Bitmap bm, int rotation) {
@@ -322,10 +385,10 @@ public class UserProfileActivity<modifica_abilitata> extends AppCompatActivity {
                 storage.child(currentUsermail+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                       if(utente.getRot())
-                            Picasso.with(UserProfileActivity.this).load(uri).rotate(90).fit().centerCrop().into(img);
-                       else
-                        Picasso.with(UserProfileActivity.this).load(uri).fit().centerCrop().into(img);
+                      // if(utente.getRot())
+                            Picasso.with(UserProfileActivity.this).load(uri).rotate(utente.getRot()).fit().centerCrop().into(img);
+                       //else
+                        //Picasso.with(UserProfileActivity.this).load(uri).fit().centerCrop().into(img);
                     }
                 });
             } catch (Exception e) {

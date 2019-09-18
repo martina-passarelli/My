@@ -27,8 +27,10 @@ import com.google.android.gms.tasks.Task
 import androidx.annotation.NonNull
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.FragmentActivity
+import com.example.myapplication.UtilityImage.prova
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnSuccessListener
+import com.google.common.base.Predicates.instanceOf
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseUser
@@ -39,9 +41,11 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
+
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     //image view di nav_header_main.xml
@@ -53,6 +57,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var firestore : FirebaseFirestore
 
     private  lateinit var utente : Utente
+
+    private lateinit var cuoco: Cuoco
 
     private lateinit var mailMenu : TextView
 
@@ -78,29 +84,50 @@ class MainActivity : AppCompatActivity() {
 
 
         if(mAuth.currentUser!=null) {
-            val docRef = firestore.collection("utenti").document("" + mAuth.uid)
-            docRef.get().addOnSuccessListener { documentSnapshot ->
-                utente = documentSnapshot.toObject(Utente::class.java)!!
-                if (utente.imageProf != null) {
-                try {
-                    storage.child(utente.email + ".jpg").getDownloadUrl()
-                        .addOnSuccessListener(OnSuccessListener<Uri> { uri ->
-                            if (utente.rot)
-                                Picasso.with(this@MainActivity).load(uri).rotate(90f).fit().centerCrop().into(
-                                    imageMenu
-                                )
-                            else
-                                Picasso.with(this@MainActivity).load(uri).fit().centerCrop().into(
-                                    imageMenu
-                                )
-                        })
-                    mailMenu.setText(utente.email)
-                    nomeMenu.setText(utente.nome)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+            val docRef = firestore.collection("utenti2").document("" + mAuth.uid)
 
-            }
+            docRef.get().addOnSuccessListener { documentSnapshot ->
+                try {
+                       // if(prova(documentSnapshot)) {
+                            utente = documentSnapshot.toObject(Utente::class.java)!!
+                            if (utente.imageProf != null) {
+                                storage.child(utente.email + ".jpg").getDownloadUrl()
+                                    .addOnSuccessListener(OnSuccessListener<Uri> { uri ->
+                                        //if (utente.rot)
+                                        Picasso.with(this@MainActivity).load(uri)
+                                            .rotate(utente.rot.toFloat()).fit().centerCrop()
+                                            .into(imageMenu)
+                                    })
+
+                            }
+
+                            mailMenu.setText(utente.email)
+                            nomeMenu.setText(utente.nome)
+                       // }
+                        /* else {
+
+
+                        }*/
+
+                    } catch (e: Exception) {
+                    cuoco=documentSnapshot.toObject(Cuoco::class.java)!!
+                    if (cuoco.imageProf != null) {
+                        storage.child(cuoco.email + ".jpg").getDownloadUrl()
+                            .addOnSuccessListener(OnSuccessListener<Uri> { uri ->
+                                //if (utente.rot)
+                                Picasso.with(this@MainActivity).load(uri)
+                                    .rotate(cuoco.rot.toFloat()).fit().centerCrop()
+                                    .into(imageMenu)
+                            })
+                    }
+                    mailMenu.setText(cuoco.email)
+                    nomeMenu.setText(cuoco.nome)
+                        e.printStackTrace()
+                    }
+
+
+
+
 
             }
         }

@@ -5,6 +5,8 @@ import android.graphics.Matrix;
 import android.util.Base64;
 import android.widget.ImageView;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+
 import java.io.ByteArrayOutputStream;
 
 public class UtilityImage {
@@ -55,6 +57,14 @@ public class UtilityImage {
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
 
 
+    }
+
+    public static boolean prova(DocumentSnapshot ds){
+        Object obj = ds.toObject(Object.class);
+        if (obj instanceof Utente){
+            return true;
+        }
+        return false;
     }
 }
 
