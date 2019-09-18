@@ -37,6 +37,7 @@ public class ListaRicette_Fragment extends Fragment{
     private ArrayList<Ricetta> ricettaList=new ArrayList<>();
     private View view;
     private Bundle savedInstanceState;
+    private TextInputLayout text_input;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,7 +59,8 @@ public class ListaRicette_Fragment extends Fragment{
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        TextInputLayout text_input=(TextInputLayout)view.findViewById(R.id.input_ricerca);
+        text_input=(TextInputLayout)view.findViewById(R.id.input_ricerca);
+
     }
 
 
@@ -67,11 +69,16 @@ public class ListaRicette_Fragment extends Fragment{
         if(parms.equals("search")){
 
             colR=ff.collection("ricette");
+            String testo= text_input.getEditText().getText().toString().trim();//contiene il testo da cercare
+
             Client client = new Client("348522f0fb1c5e16852ff83238805714", "fc1c214d14331aa60c3b706f5f725ee5");
             Index index = client.getIndex("index_object");
 
 
+
+
         }else{//DA SISTEMARE PER CATEGORIE
+
             colR = ff.collection("ricette"); //collezione riferita a ricett
             colR.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override

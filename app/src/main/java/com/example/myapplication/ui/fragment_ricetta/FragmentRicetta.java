@@ -70,12 +70,6 @@ public class FragmentRicetta extends Fragment {
         TextView textDesc=(TextView) view.findViewById(R.id.tDescrizione);
         textDesc.setText(descr);
 
-        //TextView textInfo=(TextView) view.findViewById(R.id.tIngredienti);
-        //textInfo.setText(info);
-
-        //TextView textRicetta=(TextView) view.findViewById(R.id.tRicetta);
-        //textRicetta.setText(ricetta);
-
         ImageView img= (ImageView) view.findViewById(R.id.imageHomeRicetta);
 
         byte[] immag = Base64.decode(foto, Base64.DEFAULT);
