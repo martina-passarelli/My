@@ -104,7 +104,10 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Login avvenuto con successo", Toast.LENGTH_LONG).show();
                              user= FirebaseAuth.getInstance().getCurrentUser() ;
                             Intent intent = new Intent(LoginActivity.this, UserProfileActivity.class);
-                           startActivity(intent);
+                           //AGGIUNTI PER IDENTIFICARE SE UserProfileActivity VIENE RICHIAMATA DA LoginActivity o ItemCommentFragment
+                            intent.putExtra("tipo","login");
+                            intent.putExtra("utente","");
+                            startActivity(intent);
 
 
 
@@ -132,8 +135,9 @@ public class LoginActivity extends AppCompatActivity {
                                                 //vai a USER PROFILE
 
                                                 Intent intent = new Intent(LoginActivity.this, UserProfileActivity.class);
-
-                                                 startActivity(intent);
+                                                intent.putExtra("tipo","login");
+                                                intent.putExtra("utente","");
+                                                startActivity(intent);
 
 
 
