@@ -62,7 +62,7 @@
                 android:isScrollContainer="true"
                 android:minHeight="40dp"
                 android:text="Coomento"
-                android:textColor="@color/colorAccent"
+                android:textColor="#000000"
                 android:textSize="14dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/id_layout_utente" />

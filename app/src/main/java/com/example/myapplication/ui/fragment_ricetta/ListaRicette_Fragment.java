@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,12 +21,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.algolia.search.saas.Client;
 import com.algolia.search.saas.Index;
 import com.example.myapplication.R;
+import com.example.myapplication.ui.fragment_preferiti.Preferiti;
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -38,6 +41,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class ListaRicette_Fragment extends Fragment{
     private MyAdapter tutorAdapter;
@@ -65,16 +70,11 @@ public class ListaRicette_Fragment extends Fragment{
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(tutorAdapter);
-
         return myView;
     }
 
 
     public void search(String testo){
-
-        //  text_input=(TextInputLayout)view.findViewById(R.id.input_ricerca);
-        colR=ff.collection("ricette");
-        //  String testo= text_input.getEditText().getText().toString().trim();//contiene il testo da cercare
 
         Client client = new Client("348522f0fb1c5e16852ff83238805714", "fc1c214d14331aa60c3b706f5f725ee5");
         Index index = client.getIndex("ricette");
@@ -104,16 +104,11 @@ public class ListaRicette_Fragment extends Fragment{
 
 
     }
+
+    //SCEGLIE LA CATEGORIA
     public void doSomething(String parms){
-//
-        if(parms.equals("search")){
-
-
-
-
-        }else{//DA SISTEMARE PER CATEGORIE
-
-            colR = ff.collection("ricette"); //collezione riferita a ricett
+        colR = ff.collection("ricette"); //collezione riferita a ricett
+        if(parms.equals("tutti")) {
             colR.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -129,26 +124,63 @@ public class ListaRicette_Fragment extends Fragment{
                     tutorAdapter.notifyDataSetChanged();
                 }
             });
-        }
+        }else{
+            colR.whereEqualTo("categoria",parms).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String id = document.getId();
+                            Ricetta ricetta = document.toObject(Ricetta.class);
+                            ricetta.setId_ricetta(id);
+                            ricettaList.add(ricetta);
+                        }
+                    tutorAdapter.notifyDataSetChanged();
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
+                    }
+                }
+            });
 
+        }
     }
 
-    private ArrayList<String> creaPreferiti() {
-        return new ArrayList<>();  }
+    public void trovaPreferiti(String utente){
+        CollectionReference colPref=ff.collection("preferiti");
+        colPref.whereEqualTo("id_utente",utente).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Preferiti preferiti=document.toObject(Preferiti.class);
+                        aggiungi(preferiti.getId_ricetta());
+                    }
+
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
+
+    public void aggiungi(String id_ricetta) {
+
+        if (id_ricetta != null) {
+            colR = ff.collection("ricette");
+            DocumentReference docRef = colR.document("" + id_ricetta);
+            docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    Ricetta ricetta = documentSnapshot.toObject(Ricetta.class);
+                    ricetta.setId_ricetta(id_ricetta);
+                    ricettaList.add(ricetta);
+                    tutorAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+    }
 
 
-    public void creaList(Cursor cursor){
-       /* while(cursor.moveToNext()){
-            String id=cursor.getString(0);
-            String nome=cursor.getString(1);
-            String categoria=cursor.getString(2);
-            String descrizione=cursor.getString(3);
-            String foto=cursor.getString(4);
-            String ingredienti=cursor.getString(5);
-            String ric=cursor.getString(6);
-            Ricetta ricetta=new Ricetta(id,nome,categoria,descrizione,foto,ingredienti,ric);
-            ricettaList.add(ricetta);
-        }*/}
 
     private Context mContext;
 
@@ -163,10 +195,5 @@ public class ListaRicette_Fragment extends Fragment{
         super.onDetach();
         mContext = null;
     }
-   /* @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_item_list, container, false);
-    }*/
 
 }

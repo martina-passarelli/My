@@ -63,10 +63,11 @@
                 android:foreground="?attr/colorControlHighlight"
                 android:gravity="top|right"
                 android:text="Nome Cuoco"
+                android:textAlignment="textStart"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/common_google_signin_btn_text_dark_focused"
                 android:textSize="18sp"
-                android:textStyle="italic"
+                android:textStyle="bold|italic"
                 tools:layout_editor_absoluteY="142dp" />
 
         </LinearLayout>

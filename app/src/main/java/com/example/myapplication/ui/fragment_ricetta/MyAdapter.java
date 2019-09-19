@@ -44,7 +44,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
            // img.setClickable(false);
 
             card=(CardView) v.findViewById(R.id.id_card__ricetta);
-
+            FloatingActionButton floatingActionButton=(FloatingActionButton)v.findViewById(R.id.fab_search);
 
            //ViewGroup.LayoutParams params = (ViewGroup.LayoutParams) nome_cuoco.getLayoutParams();
 
@@ -60,6 +60,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 FragmentRicetta ricettaFragment = new FragmentRicetta();
                 ricettaFragment.setArguments(bundle);
                 AppCompatActivity activity = (AppCompatActivity) v.getContext();
+
                 ricettaFragment.onAttach(v.getContext());
                 activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment, ricettaFragment).addToBackStack(null).commit();
             });

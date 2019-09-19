@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.myapplication.ui.fragment_ricetta.ListaRicette_Fragment;
@@ -20,39 +21,28 @@ public class ListaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista);
-
-        ListaRicette_Fragment fragment=new ListaRicette_Fragment();
-       // fragment.onAttach(this.getApplicationContext());
-        fragment.doSomething("tutte");
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment,fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        TextInputLayout text_input; text_input=findViewById(R.id.input_ricerca);
+        Intent intent= getIntent();
+        String categoria=intent.getStringExtra("categoria");
+        if(categoria!=null) {
+            ListaRicette_Fragment fragment = new ListaRicette_Fragment();
+            fragment.doSomething(categoria);
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.fragment, fragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }else{
+            String testo=intent.getStringExtra("testo");
+            ListaRicette_Fragment fragment = new ListaRicette_Fragment();
+            fragment.search(testo);
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.fragment, fragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
 
-
-        //---------------------QUERY PER LA RICERCA-------------------------------------------------
-
-        FloatingActionButton fab = findViewById(R.id.fab_search);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("RestrictedApi")
-            @Override
-            public void onClick(View view) {
-                String testo=text_input.getEditText().getText().toString().toLowerCase().trim();
-                ListaRicette_Fragment fragment=new ListaRicette_Fragment();
-                fragment.search(testo);
-                text_input.setVisibility(View.GONE);
-                fab.setVisibility(View.GONE);
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.fragment,fragment);
-                fragmentTransaction.addToBackStack("Lista ricette");
-                fragmentTransaction.commit();
-            }
-        });
+        }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
