@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.fragment_utente;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -10,15 +10,19 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 
+import com.example.myapplication.R;
+import com.example.myapplication.Utente;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -29,20 +33,20 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
-import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class UserProfileActivity<modifica_abilitata> extends AppCompatActivity {
+import static android.app.Activity.RESULT_OK;
+
+public class FragmentUtente extends Fragment {
+    private String currentId;
     private static final int SELECT_PICTURE = 100;
-    //label nickname
     private TextView nickname;
     //campi del profilo
     private EditText nomeUtente;
@@ -74,87 +78,58 @@ public class UserProfileActivity<modifica_abilitata> extends AppCompatActivity {
 
     private String id;
 
-    @SuppressLint("RestrictedApi")
+
     @Override
-    protected void onCreate( Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_userprofile);
+    }
+
+
+    public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
+        // Defines the xml file for the fragment
+        return inflater.inflate(R.layout.fragment_utente, parent, false);
+
+    }
+
+    @SuppressLint({"ResourceAsColor", "RestrictedApi"})
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         //--------------------------COMPONENTI GRAFICHE--------------------------------------
-        nomeUtente=(EditText)findViewById(R.id.nomeCompleto);
-        nickname= (TextView) findViewById(R.id.nick);
-        password=(EditText) findViewById(R.id.password);
-        telefono=(EditText) findViewById(R.id.telefono);
-        vecchia_password=(EditText) findViewById(R.id.vecchia_password);
-        nuova_password=(EditText) findViewById(R.id.nuova_password);
+        nomeUtente=(EditText)view.findViewById(R.id.nomeCompleto);
+        nickname= (TextView) view.findViewById(R.id.nick);
+        password=(EditText) view.findViewById(R.id.password);
+        telefono=(EditText) view.findViewById(R.id.telefono);
+        vecchia_password=(EditText) view.findViewById(R.id.vecchia_password);
+        nuova_password=(EditText) view.findViewById(R.id.nuova_password);
         nuova_password.setText("");
         vecchia_password.setText("");
-        mail=(EditText) findViewById(R.id.mail);
-        biografia=(EditText) findViewById(R.id.bio);
-        img= (CircleImageView) findViewById(R.id.imageMenu);
-       //------------------------------------------------------------------------------------
+        mail=(EditText) view.findViewById(R.id.mail);
+        biografia=(EditText) view.findViewById(R.id.bio);
+        img= (CircleImageView) view.findViewById(R.id.imageMenu);
+        //------------------------------------------------------------------------------------
         //-----------------------BOTTONI-----------------------------------------------------
-        modificaFoto=(FloatingActionButton) findViewById(R.id.modificaFoto);
+        modificaFoto=(FloatingActionButton) view.findViewById(R.id.modificaFoto);
         modificaFoto.setVisibility(View.GONE);
-        modificaProfilo= (FloatingActionButton) findViewById(R.id.modificaProfilo);
-        //-----------------------------------------------------------------------------------
-        //----------------------UTENTE LOGGATO-----------------------------------------------
-
-        //Verifichiamo se l'activity è chiamata da loginActivity o dal ItemCommento
-        Intent intent = getIntent();
-        String value = intent.getStringExtra("tipo");
-        String user= intent.getStringExtra("utente");
-
-        if(value.equals("commento")){
-            currentUsermail=user;
-            modificaProfilo.setVisibility(View.INVISIBLE);
-        }else if(value.equals("login")) {
-            mAuth = FirebaseAuth.getInstance();
-            currentUsermail = mAuth.getCurrentUser().getEmail();
-            System.out.println(" user prof current="+currentUsermail);
-        }else{
-            System.out.println("ERROREE: "+value);
-            mAuth = FirebaseAuth.getInstance();
-            currentUsermail = mAuth.getCurrentUser().getEmail();
-            System.out.println(" else current"+currentUsermail);
-        }
-
-        //-----------------------------------------------------------------------------------
+        modificaProfilo= (FloatingActionButton) view.findViewById(R.id.modificaProfilo);
+        if(!currentId.equals(FirebaseAuth.getInstance().getUid())){ modificaProfilo.setVisibility(View.GONE);}
+        //----------------------TROVA UTENTE----------------------------------------------------
         db= FirebaseFirestore.getInstance();
-        /*DocumentReference docRef = db.collection("utenti").document("" + mAuth.getUid());
+        DocumentReference docRef = db.collection("utenti2").document("" + currentId);
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 utente = documentSnapshot.toObject(Utente.class);
-
                 costruisciProfilo(utente);
             }
-        });*/
-
-        //recupero le informazioni dell'utente corrente
-        Task<QuerySnapshot> col= db.collection("utenti2").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot col) {
-                if(!col.isEmpty()){
-                    List<DocumentSnapshot> list=col.getDocuments();
-                    for(DocumentSnapshot d:list){
-                        utente = d.toObject(Utente.class);
-                        id=d.getId();
-                        if (utente.getEmail().equals(currentUsermail)) {
-                            //settaggio del profilo
-                            costruisciProfilo(utente);
-                            break;
-                        }
-                    }
-                }
-            }
         });
+
         //riferimento allo storage
         storage = FirebaseStorage.getInstance().getReference();
         //--------------------BOTTONE MODIFICA FOTO-----------------------------------
         modificaFoto.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-               chooseImage();
+                chooseImage();
             }
         });
 
@@ -177,8 +152,6 @@ public class UserProfileActivity<modifica_abilitata> extends AppCompatActivity {
                     //se clicca sul bottone
                     modifica_abilitata=true;
 
-
-
                 }else{
                     nome = nomeUtente.getText().toString();
                     bio= biografia.getText().toString();
@@ -191,6 +164,7 @@ public class UserProfileActivity<modifica_abilitata> extends AppCompatActivity {
                     biografia.setEnabled(false);
                     telefono.setEnabled(false);
                     modificaFoto.setVisibility(View.GONE);
+
                     //quando riclicca sul bottone aggiorno le informazioni dell'utente
                     try {
                         //se ha scelto un'immagine
@@ -202,7 +176,7 @@ public class UserProfileActivity<modifica_abilitata> extends AppCompatActivity {
                                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                         @Override
                                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                            Toast.makeText(getApplicationContext(), "File Uploaded ", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(getContext(), "File Uploaded ", Toast.LENGTH_LONG).show();
                                         }
                                     });
                         }
@@ -211,9 +185,8 @@ public class UserProfileActivity<modifica_abilitata> extends AppCompatActivity {
                             System.out.println(vecchia_password.getText()+"VECCHIA");
                             if(vecchia_password.getText().toString().equals(pass) && !nuova_password.getText().equals("")
                                     && nuova_password.getText().length()>=6
-                                        && !vecchia_password.getText().equals(nuova_password.getText())){
+                                    && !vecchia_password.getText().equals(nuova_password.getText())){
                                 String nuova_pass=nuova_password.getText().toString();
-
 
                                 AuthCredential credential = EmailAuthProvider
                                         .getCredential(currentUsermail, utente.getPassword());
@@ -230,7 +203,7 @@ public class UserProfileActivity<modifica_abilitata> extends AppCompatActivity {
                                                             } else {
                                                                 CharSequence text = "Inserisci correttamente la tua vecchia  password!";
                                                                 int duration = Toast.LENGTH_SHORT;
-                                                                Toast.makeText(getApplicationContext(),text, duration).show();
+                                                                Toast.makeText(getContext(),text, duration).show();
                                                             }
                                                         }
                                                     });
@@ -243,27 +216,89 @@ public class UserProfileActivity<modifica_abilitata> extends AppCompatActivity {
                                 CharSequence text = "Inserisci correttamente le password, ricorda che " +
                                         "la nuova password deve avere almeno 6 caratteri!";
                                 int duration = Toast.LENGTH_SHORT;
-                                Toast.makeText(getApplicationContext(),text, duration).show();
+                                Toast.makeText(getContext(),text, duration).show();
                             }
                         }
                         //salvataggio delle informazioni dell'utente
                         Utente up = new Utente(nome,utente.getEmail(),nick,bio,tel, utente.getPassword(),currentUsermail+".jpg",utente.getRot());
                         db.collection("utenti2").document(id).set(up);
-                        modifica_abilitata=false;
+
                         nuova_password.setText("");
                         vecchia_password.setText("");
-                        nuova_password.setVisibility(View.GONE);
-                        vecchia_password.setVisibility(View.GONE);
+                        //nuova_password.setVisibility(View.INVISIBLE);
+                        //vecchia_password.setVisibility(View.INVISIBLE);
+                       // modifica_abilitata=false;
 
                     }catch (Exception e){
                         e.printStackTrace();
                     }
+                    nuova_password.setVisibility(View.INVISIBLE);
+                    vecchia_password.setVisibility(View.INVISIBLE);
+                    modifica_abilitata=false;
                 }
             }
         });
+    }
 
+
+
+
+
+
+
+
+
+
+
+    public void doSomething(String currentID) {
+        this.currentId=currentID;
+    }
+    public void costruisciProfilo(Utente utente) {
+        nome=utente.getNome();
+        nick=utente.getNick();
+        currentUsermail=utente.getEmail();//DA VERIFICARE
+        //se il nome o il nick sono null vengono impostati come l'inizio della mail
+        if(nome==""){
+            nome=currentUsermail.substring(0,currentUsermail.indexOf("@"));
+            System.out.println("nomeeeee"+nome);
+        }
+        if(nick==""){
+            nick=currentUsermail.substring(0,currentUsermail.indexOf("@"));
+        }
+        pass=utente.getPassword();
+        bio=utente.getBio();
+        tel=utente.getTel();
+
+        //--------------SETTARE I DATI NELLA COMPONENTE GRAFICA---------------------------------------
+
+        nomeUtente.setText(nome);
+        password.setText(pass);
+        if(tel!=null) telefono.setText(tel);
+        mail.setText(currentUsermail);
+        if(bio!=null) biografia.setText(bio);
+        nickname.setText(nick);
+
+        //--------------------CARICA L'IMMAGINE NELLA VIEW------------------------------------------
+        if(utente.getImageProf() !=null){
+            try {
+                storage.child(currentUsermail+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Picasso.with(getActivity()).load(uri).rotate(utente.getRot()).fit().centerCrop().into(img);
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
+        //------------------LABEL NON MODIFICABILI---------------------------------------------------
+        nomeUtente.setEnabled(false);
+        biografia.setEnabled(false);
+        telefono.setEnabled(false);
+        mail.setEnabled(false);
+        password.setEnabled(false);
+    }
     private void cambiaPassword(String nuova_pass) {
         password.setText(nuova_pass);
         utente.setPassword(nuova_pass);
@@ -271,22 +306,20 @@ public class UserProfileActivity<modifica_abilitata> extends AppCompatActivity {
 
     //metodo per scegliere l'immagine dalla galleria
     private void chooseImage() {
-        ActivityCompat.requestPermissions(UserProfileActivity.this,
-                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
-
+        ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, SELECT_PICTURE);
     }
-    //activity result del bottone immagine
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == SELECT_PICTURE && resultCode == RESULT_OK
                 && data != null && data.getData() != null )
             imageUri = data.getData();
-            utente.setImageProf(currentUsermail+".jpg");
+        utente.setImageProf(currentUsermail+".jpg");
         if (imageUri != null) {
             try {
                 String imagePath;
@@ -301,22 +334,8 @@ public class UserProfileActivity<modifica_abilitata> extends AppCompatActivity {
                 ExifInterface exifInterface = new ExifInterface(imagePath);
                 int rotation = Integer.parseInt(exifInterface.getAttribute(ExifInterface.TAG_ORIENTATION));
                 int rotationInDegrees = exifToDegrees(rotation);
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
                 //se l'immagine ha un'orientazione la giro
-                /*int width = bitmap.getWidth();
-                int height = bitmap.getHeight();
-
-                if (width > height) {
-                    bitmap = rotate(bitmap,90);
-                    utente.setRot(90);
-                }
-                else if (width < height) {
-                    bitmap = rotate(bitmap, -90);
-                    utente.setRot(-90);
-                }
-
-                else utente.setRot(0);
-                img.setImageBitmap(bitmap);*/
                 utente.setRot(rotationInDegrees);
                 System.out.println(utente.getRot()+"ecco");
                 bitmap=rotate(bitmap,rotationInDegrees);
@@ -332,7 +351,7 @@ public class UserProfileActivity<modifica_abilitata> extends AppCompatActivity {
         Cursor cursor = null;
         try {
             String[] proj = {MediaStore.Images.Media.DATA};
-            cursor = getContentResolver().query(contentUri, proj, null, null,
+            cursor = getActivity().getContentResolver().query(contentUri, proj, null, null,
                     null);
             int column_index = cursor
                     .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
@@ -369,61 +388,6 @@ public class UserProfileActivity<modifica_abilitata> extends AppCompatActivity {
 
         }
         return bm;
-    }
-
-    public void costruisciProfilo(Utente utente) {
-        nome=utente.getNome();
-        nick=utente.getNick();
-        //se il nome o il nick sono null vengono impostati come l'inizio della mail
-        if(nome==""){
-            nome=currentUsermail.substring(0,currentUsermail.indexOf("@"));
-            System.out.println("nomeeeee"+nome);
-        }
-        if(nick==""){
-            nick=currentUsermail.substring(0,currentUsermail.indexOf("@"));
-        }
-        pass=utente.getPassword();
-        bio=utente.getBio();
-        tel=utente.getTel();
-
-        //--------------SETTARE I DATI NELLA COMPONENTE GRAFICA---------------------------------------
-
-        nomeUtente.setText(nome);
-        password.setText(pass);
-        if(tel!=null) telefono.setText(tel);
-        mail.setText(currentUsermail);
-        if(bio!=null) biografia.setText(bio);
-        nickname.setText(nick);
-
-        //--------------------CARICA L'IMMAGINE NELLA VIEW------------------------------------------
-        if(utente.getImageProf() !=null){
-            try {
-                storage.child(currentUsermail+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                      // if(utente.getRot())
-                            Picasso.with(UserProfileActivity.this).load(uri).rotate(utente.getRot()).fit().centerCrop().into(img);
-                       //else
-                        //Picasso.with(UserProfileActivity.this).load(uri).fit().centerCrop().into(img);
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        //------------------LABEL NON MODIFICABILI---------------------------------------------------
-        nomeUtente.setEnabled(false);
-        biografia.setEnabled(false);
-        telefono.setEnabled(false);
-        mail.setEnabled(false);
-        password.setEnabled(false);
-    }
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(UserProfileActivity.this, MainActivity.class);
-        startActivity(intent);
-
     }
 
 }

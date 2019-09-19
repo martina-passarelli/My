@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.fragment_cuoco;
 
 public class Cuoco {
     private String nome, tel,password;

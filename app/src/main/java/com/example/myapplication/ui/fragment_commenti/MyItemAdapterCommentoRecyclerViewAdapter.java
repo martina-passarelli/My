@@ -15,8 +15,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.myapplication.ProfiloActivity;
 import com.example.myapplication.R;
-import com.example.myapplication.UserProfileActivity;
 import com.example.myapplication.Utente;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -94,10 +94,9 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
                 @Override
                 public void onClick(View view) {
                     Context context = view.getContext();
-                    Intent myIntent = new Intent(context, UserProfileActivity.class);
+                    Intent myIntent = new Intent(context, ProfiloActivity.class);
                     myIntent.putExtra("tipo", "commento");//Optional parameters
-                    System.out.println("UTENTE INRERESSATO: "+utente.toString());
-                    myIntent.putExtra("utente", holder.email);
+                    myIntent.putExtra("utente", holder.id_utente);
                     context.startActivity(myIntent);
                 }
             });

@@ -3,9 +3,6 @@ package com.example.myapplication
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -18,30 +15,18 @@ import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 
-import com.google.android.gms.tasks.Task
-import androidx.annotation.NonNull
-import androidx.core.view.GravityCompat
-import androidx.fragment.app.FragmentActivity
-import com.example.myapplication.UtilityImage.prova
-import com.google.android.gms.tasks.OnCompleteListener
+import com.example.myapplication.ui.fragment_cuoco.Cuoco
 import com.google.android.gms.tasks.OnSuccessListener
-import com.google.common.base.Predicates.instanceOf
 import com.google.firebase.auth.EmailAuthProvider
-import com.google.firebase.auth.AuthCredential
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
-import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -136,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         imageMenu.setOnClickListener(View.OnClickListener {
 
             if(mAuth.currentUser!=null){
-                val i = Intent(this@MainActivity,UserProfileActivity::class.java)
+                val i = Intent(this@MainActivity,ProfiloActivity::class.java)
                 System.out.println("SONO QUI")
                 i.putExtra("tipo", "login")
                 i.putExtra("utente", "")
@@ -221,6 +206,4 @@ class MainActivity : AppCompatActivity() {
 
         return super.onOptionsItemSelected(item);
     }
-
-
 }
