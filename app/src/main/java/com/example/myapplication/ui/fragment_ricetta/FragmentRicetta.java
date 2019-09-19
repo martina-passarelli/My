@@ -43,14 +43,15 @@ public class FragmentRicetta extends Fragment {
         if(bundle != null){
            id_cuoco=bundle.get("id_cuoco").toString();
            id = bundle.get("id").toString();
-            nome=bundle.get("nome").toString();
+           nome=bundle.get("nome").toString();
             //ricetta=bundle.get("ricetta").toString();
-            descr=bundle.get("descr").toString();
-            info=bundle.get("info").toString();
-            foto=bundle.get("foto").toString();
+           descr=bundle.get("descr").toString();
+           info=bundle.get("info").toString();
+           foto=bundle.get("foto").toString();
         }
         bundle.putString("descr",descr);
         bundle.putString("info",info);
+        bundle.putString("id_ricetta",id);
         FragmentDescrizione descrizioneFragment = new FragmentDescrizione();
         descrizioneFragment.setArguments(bundle);
         getChildFragmentManager().beginTransaction().add(R.id.id_frame_layout,descrizioneFragment).addToBackStack(null).commit();

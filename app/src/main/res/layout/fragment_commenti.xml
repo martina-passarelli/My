@@ -10,7 +10,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/view_commenti"
         android:layout_width="match_parent"
-        android:layout_height="320dp"
+        android:layout_height="300dp"
         app:fastScrollVerticalThumbDrawable="@android:drawable/screen_background_dark"
         app:layout_constraintBottom_toTopOf="@id/id_card_scriviCommento"
         app:layout_constraintEnd_toEndOf="parent"

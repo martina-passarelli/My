@@ -4,17 +4,13 @@ public class Preferiti {
     String id_ricetta, id_utente;
     public Preferiti(){}
 
-    public Preferiti(String id_cuoco, String id_utente) {
-        this.id_ricetta= id_cuoco;
+    public Preferiti(String id_ricetta, String id_utente) {
+        this.id_ricetta= id_ricetta;
         this.id_utente = id_utente;
     }
 
     public String getId_ricetta() {
         return id_ricetta;
-    }
-
-    public void setId_cuoco(String id_cuoco) {
-        this.id_ricetta = id_cuoco;
     }
 
     public String getId_utente() {

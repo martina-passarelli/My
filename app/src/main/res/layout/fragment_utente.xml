@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout2"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_nome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:overScrollMode="always"
+        android:scrollbarSize="?android:attr/actionBarSize"
+        android:scrollbars="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        tools:ignore="MissingConstraints">
+
+
+        <TextView
+            android:id="@+id/nome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:gravity="bottom"
+            android:text="@string/nickname"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
+            android:textSize="18sp"
+            android:textStyle="normal|italic"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+        <EditText
+            android:id="@+id/nomeCompleto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:cursorVisible="true"
+            android:gravity="center_horizontal"
+            android:inputType="text"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@+id/nome" />
+
+
+        <TextView
+            android:id="@+id/bioUtente"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:gravity="bottom"
+            android:inputType="textMultiLine"
+            android:text="@string/biografia"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
+            android:textSize="18sp"
+            android:textStyle="normal|italic"
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@+id/nomeCompleto" />
+
+
+        <EditText
+            android:id="@+id/bio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@+id/bioUtente"
+            tools:layout_editor_absoluteX="0dp"
+            tools:targetApi="o" />
+
+        <TextView
+            android:id="@+id/telefonoUtente"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:gravity="bottom"
+            android:inputType="textMultiLine"
+            android:text="@string/cellulare"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
+            android:textSize="18sp"
+            android:textStyle="normal|italic"
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@+id/bio" />
+
+        <EditText
+            android:id="@+id/telefono"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:importantForAutofill="no"
+            android:inputType="phone"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@+id/telefonoUtente" />
+
+        <TextView
+            android:id="@+id/mail2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:gravity="bottom"
+            android:inputType="textMultiLine"
+            android:text="@string/e_mail"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
+            android:textSize="18sp"
+            android:textStyle="normal|italic"
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@+id/telefono" />
+
+        <EditText
+            android:id="@+id/mail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom|center_horizontal"
+            android:importantForAutofill="no"
+            android:inputType="textEmailAddress"
+            android:textSize="14sp"
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@+id/mail2" />
+
+        <TextView
+            android:id="@+id/label_pass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:gravity="bottom"
+            android:inputType="textMultiLine"
+            android:text="@string/password"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
+            android:textSize="18sp"
+            android:textStyle="normal|italic"
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@+id/mail" />
+
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:clickable="false"
+            android:contentDescription="@string/prompt_password"
+            android:ems="10"
+            android:inputType="textPassword"
+            android:textAlignment="center"
+            android:textSize="14sp"
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@+id/label_pass"
+            tools:targetApi="o" />
+
+        <EditText
+            android:id="@+id/vecchia_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="Inserisci qui la tua vecchia password!"
+            android:clickable="false"
+            android:contentDescription="@string/prompt_password"
+            android:contextClickable="false"
+            android:ems="10"
+            android:hint="Inserisci qui la tua vecchia password!"
+            android:password="true"
+            android:textAlignment="center"
+            android:textSize="14sp"
+            android:visibility="invisible"
+            app:layout_constraintTop_toBottomOf="@+id/password"
+            tools:targetApi="o" />
+
+        <EditText
+            android:id="@+id/nuova_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="Inserisci qui la tua vecchia password!"
+            android:contentDescription="@string/prompt_password"
+            android:ems="10"
+            android:hint='Inserisci qui la tua nuova password!'
+            android:password="true"
+            android:textAlignment="center"
+            android:textSize="14sp"
+            android:visibility="invisible"
+            app:layout_constraintTop_toBottomOf="@+id/vecchia_password"
+            tools:targetApi="o" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/modificaProfilo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="40dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="visible"
+        app:backgroundTint="@color/common_google_signin_btn_text_light_focused"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:rippleColor="@color/com_facebook_button_background_color_focused_disabled"
+        app:srcCompat="@android:drawable/ic_menu_edit"
+        tools:ignore="@color/cast_expanded_controller_ad_container_white_stripe_color" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

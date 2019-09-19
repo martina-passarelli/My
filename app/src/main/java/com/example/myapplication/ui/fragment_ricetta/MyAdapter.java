@@ -60,7 +60,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 FragmentRicetta ricettaFragment = new FragmentRicetta();
                 ricettaFragment.setArguments(bundle);
                 AppCompatActivity activity = (AppCompatActivity) v.getContext();
-
                 ricettaFragment.onAttach(v.getContext());
                 activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment, ricettaFragment).addToBackStack(null).commit();
             });
