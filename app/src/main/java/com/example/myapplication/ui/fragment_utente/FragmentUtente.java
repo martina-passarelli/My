@@ -81,6 +81,7 @@ public class FragmentUtente extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
     }
 
@@ -129,6 +130,7 @@ public class FragmentUtente extends Fragment {
         modificaFoto.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+
                 chooseImage();
             }
         });
@@ -241,17 +243,10 @@ public class FragmentUtente extends Fragment {
     }
 
 
-
-
-
-
-
-
-
-
-
     public void doSomething(String currentID) {
+
         this.currentId=currentID;
+
     }
     public void costruisciProfilo(Utente utente) {
         nome=utente.getNome();
@@ -260,11 +255,11 @@ public class FragmentUtente extends Fragment {
         //se il nome o il nick sono null vengono impostati come l'inizio della mail
         if(nome==""){
             nome=currentUsermail.substring(0,currentUsermail.indexOf("@"));
-            System.out.println("nomeeeee"+nome);
         }
         if(nick==""){
             nick=currentUsermail.substring(0,currentUsermail.indexOf("@"));
         }
+
         pass=utente.getPassword();
         bio=utente.getBio();
         tel=utente.getTel();
@@ -337,7 +332,6 @@ public class FragmentUtente extends Fragment {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
                 //se l'immagine ha un'orientazione la giro
                 utente.setRot(rotationInDegrees);
-                System.out.println(utente.getRot()+"ecco");
                 bitmap=rotate(bitmap,rotationInDegrees);
                 img.setImageBitmap(bitmap);
 

@@ -5,7 +5,7 @@ import org.json.JSONObject;
 
 public class Ricetta {
 
-    private String  nome, ingredienti, id_cuoco, descrizione, foto;
+    private String  nome, ingredienti, id_cuoco, descrizione, foto,ricetta,categoria;
     private String id_ricetta="";
 
     public Ricetta(){
@@ -30,6 +30,25 @@ public class Ricetta {
         this.foto = foto;
 
     }
+
+    public String getRicetta() {
+        return ricetta;
+    }
+
+    public void setRicetta(String ricetta) {
+        this.ricetta = ricetta;
+    }
+
+    public Ricetta(String titolo, String ingredienti, String id_cuoco , String descrizione, String foto, String ricetta, String categoria) {
+        this.ingredienti=ingredienti;
+        this.id_cuoco = id_cuoco;
+        this.nome = titolo;
+        this.descrizione = descrizione;
+        this.foto = foto;
+        this.ricetta=ricetta;
+        this.categoria=categoria;
+
+    }
     public void setId_ricetta(String id){this.id_ricetta=id;}
     public String getId_ricetta(){return id_ricetta;}
 
@@ -41,6 +60,13 @@ public class Ricetta {
         this.ingredienti = ingredienti;
     }
 
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
 
     public String getId_cuoco() {
         return id_cuoco;
@@ -83,6 +109,7 @@ public class Ricetta {
         jo.put("descrizione",descrizione);
         jo.put("foto",foto);
         jo.put("id_ricetta",id_ricetta);
+        jo.put("categoria",categoria);
         return jo;
     }
 }

@@ -129,14 +129,10 @@ public class LoginActivity extends AppCompatActivity {
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                     Object obj = documentSnapshot.toObject(Object.class);
                                     if (obj instanceof Utente) {
-                                        Intent intent = new Intent(LoginActivity.this, ProfiloActivity.class);
-                                        intent.putExtra("tipo","login");
-                                        intent.putExtra("utente","");
-                                        startActivity(intent);
+                                        vaiProfilo("utente");
                                     }
                                     else {
-                                        //apri profilo cuoco
-
+                                        vaiProfilo("cuoco");
                                     }
                                 }
                             });
@@ -162,22 +158,23 @@ public class LoginActivity extends AppCompatActivity {
                                                     nuovoCuoco.setImageProf(user.getEmail()+".jpg");
                                                     utenti.document(""+mAuth.getUid()).set(nuovoCuoco);
                                                     //-------vai al profilo del cuoco-------------------
+                                                    vaiProfilo("cuoco");
                                                 }
                                                 else {
 
-                                                    Utente nuovoUtente = new Utente(user.getEmail(), password);
+                                                    Utente nuovoUtente = new Utente();
+                                                    nuovoUtente.setEmail(user.getEmail());
+                                                    nuovoUtente.setPassword(password);
                                                     nuovoUtente.setNome(user.getEmail().substring(0, user.getEmail().indexOf("@")));
                                                     nuovoUtente.setNick(user.getEmail().substring(0, user.getEmail().indexOf("@")));
                                                     nuovoUtente.setImageProf(user.getEmail() + ".jpg");
+
                                                     //la key dell'utente è quella del suo identificativo
                                                     //negli utenti loggati
                                                     utenti.document("" + mAuth.getUid()).set(nuovoUtente);
 
                                                     //vai a USER PROFILE
-                                                    Intent intent = new Intent(LoginActivity.this, ProfiloActivity.class);
-                                                    intent.putExtra("tipo","login");
-                                                    intent.putExtra("utente","");
-                                                    startActivity(intent);
+                                                    vaiProfilo("utente");
                                                }
 
 
@@ -239,7 +236,15 @@ public class LoginActivity extends AppCompatActivity {
     public void onBackPressed() {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
+    }
 
+
+    public void vaiProfilo(String tipo_utente){
+        Intent intent = new Intent(LoginActivity.this, ProfiloActivity.class);
+        intent.putExtra("tipo","login");
+        intent.putExtra("utente","");
+        intent.putExtra("tipo_utente",tipo_utente);
+        startActivity(intent);
     }
 
 

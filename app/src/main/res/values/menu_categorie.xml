@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="tipo_categorie">
+        <item>Torta</item>
+        <item>Ciambellone</item>
+        <item>Crostata</item>
+        <item>Mousse</item>
+        <item>Cheesecake</item>
+        <item>Biscotti</item>
+    </string-array>
+</resources>

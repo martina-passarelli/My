@@ -1,8 +1,5 @@
 package com.example.myapplication.ui.fragment_commenti;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -15,9 +12,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.myapplication.ProfiloActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.Utente;
+import com.example.myapplication.ui.fragment_cuoco.Cuoco;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,6 +34,8 @@ import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapter<MyItemAdapterCommentoRecyclerViewAdapter.ViewHolder> {
     private Utente utente;
+    private Cuoco cuoco;
+    private String tipo_utente;
     private final List<Commento> mValues;
     //private final OnListFragmentInteractionListener mListener;
     private FirebaseAuth firebaseAuth= FirebaseAuth.getInstance();
@@ -62,30 +65,16 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
             //-------------------------------OTTENIAMO I DATI DELL'UTENTE------------------------------------------------------------
             if(holder.id_utente!=null){
                 DocumentReference doc_utente= ff.collection("utenti2").document(""+holder.id_utente);
-
                 doc_utente.get().addOnSuccessListener((documentSnapshot) -> {
-                    utente =documentSnapshot.toObject(Utente.class);
-                    // SETTA IMMAGINE DELL'UTENTE
-                    holder.email=utente.getEmail();
-                    if(utente.getImageProf()!=null){
-                     try{
-                        storage.getReference().child(utente.getEmail()+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                           // if(utente.getRot())
-                             //   Picasso.with(holder.image_utente.getContext()).load(uri).rotate(90f).fit().centerCrop().into(holder.image_utente);
-                            //else
-                                Picasso.with(holder.image_utente.getContext()).load(uri).fit().centerCrop().into(holder.image_utente);
-                        }
-                        });
-                     }catch(Exception e){
-                         e.printStackTrace();
-                     }
+                    Object ob =documentSnapshot.toObject(Object.class);
+                    if(ob instanceof Utente) {// SE UTENTE
+                        utente=documentSnapshot.toObject(Utente.class);
+                        ottieni_dati(holder,utente);
+                    }else{// SE CUOCO
+                        cuoco=documentSnapshot.toObject(Cuoco.class);
+                        ottieni_dati(holder,cuoco);
                     }
-                    //----------------------------------------------------------------------------------------------------------------
-                    holder.nome_utente=utente.getNome();
-                    holder.utente.setText(holder.nome_utente);
-                    });
+                });
             }
 
             //-----------------------------------------------------------------------------------------------------------------------
@@ -94,10 +83,7 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
                 @Override
                 public void onClick(View view) {
                     Context context = view.getContext();
-                    Intent myIntent = new Intent(context, ProfiloActivity.class);
-                    myIntent.putExtra("tipo", "commento");//Optional parameters
-                    myIntent.putExtra("utente", holder.id_utente);
-                    context.startActivity(myIntent);
+                    vai_profilo(holder,context);
                 }
             });
 
@@ -107,35 +93,89 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
                 holder.rimuovi.setOnClickListener(new View.OnClickListener(){
                 @Override
                     public void onClick(View view){
-                    //Bisogna rimuovere l'oggetto dalla lista
-
-                    //Bisogna rimuovere dal firestore il commento
-                        colR.document(""+commento.getId())
-                            .delete()
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    removeAt(holder.getAdapterPosition());
-
-                                    Log.d(TAG, "Commento rimosso!");
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w(TAG, "Error deleting document", e);
-                                }
-                            });
+                        rimuovi_commento(holder, commento);
                     }
                 });
             }else holder.rimuovi.setVisibility(View.INVISIBLE);
 
         }
     }
+
+
+    public void rimuovi_commento(ViewHolder holder, Commento commento){
+        colR.document(""+commento.getId())
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        removeAt(holder.getAdapterPosition());
+
+                        Log.d(TAG, "Commento rimosso!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting document", e);
+                    }
+                });
+    }
+
     public void removeAt(int position) {
         mValues.remove(position);
         notifyItemRemoved(position);
-        //notifyItemRangeChanged(position, mValues.size());
+    }
+
+    public void vai_profilo(ViewHolder holder, Context context){
+
+        Intent myIntent = new Intent(context, ProfiloActivity.class);
+        myIntent.putExtra("tipo", "commento");//Optional parameters
+        myIntent.putExtra("utente", holder.id_utente);
+        myIntent.putExtra("tipo_utente",holder.tipo);
+        System.out.println("TIPO UTENTE"+ holder.tipo);
+        context.startActivity(myIntent);
+    }
+
+    public void ottieni_dati(ViewHolder holder, Cuoco cuoco){
+        holder.tipo="cuoco";
+        holder.email = cuoco.getEmail();
+        if (cuoco.getImageProf() != null) {
+            try {
+                storage.getReference().child(cuoco.getEmail() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {//DA SISTEMARE ROTAZIONE IMMAGINE
+                        Picasso.with(holder.image_utente.getContext()).load(uri).fit().centerCrop().into(holder.image_utente);
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        //----------------------------------------------------------------------------------------------------------------
+        holder.nome_utente = cuoco.getNome();
+        holder.utente.setText(holder.nome_utente);
+    }
+
+
+    public void ottieni_dati (ViewHolder holder, Utente utente){
+
+        holder.email = utente.getEmail();
+        holder.tipo="utente";
+        if (utente.getImageProf() != null) {
+            try {
+                storage.getReference().child(utente.getEmail() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {//DA SISTEMARE ROTAZIONE IMMAGINE
+                        Picasso.with(holder.image_utente.getContext()).load(uri).fit().centerCrop().into(holder.image_utente);
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        //----------------------------------------------------------------------------------------------------------------
+        holder.nome_utente = utente.getNome();
+        holder.utente.setText(holder.nome_utente);
 
     }
 
@@ -155,6 +195,7 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
         public String testo_commento;
         public String nome_utente;
         public String id_utente;
+        public String tipo;
         public String email;
         public ViewHolder(View view) {
             super(view);
@@ -168,6 +209,7 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
             testo_commento=""; //Contiene il testo del commento
             id_utente=""; //Contiene l'id dell'utente
             email="";
+            tipo="";
         }
 
         @Override

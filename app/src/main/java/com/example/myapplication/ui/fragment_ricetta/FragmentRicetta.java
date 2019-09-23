@@ -28,8 +28,6 @@ public class FragmentRicetta extends Fragment {
     private boolean isPref=false;
     private Context mContext;
     private boolean sezione_commenti=false;
-    //private Session s;
-   // private String email;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,7 +90,7 @@ public class FragmentRicetta extends Fragment {
                     FragmentManager manager = getChildFragmentManager();
                     FragmentTransaction transaction = manager.beginTransaction();
                     transaction.replace(R.id.id_frame_layout, fragment_commenti);
-                    transaction.addToBackStack("DESCR");
+                    transaction.addToBackStack(null);
                     transaction.commit();
                     sezione_commenti = true;
                 }
@@ -111,57 +109,8 @@ public class FragmentRicetta extends Fragment {
                 }
             }
         });
-        //Button pref=(Button) view.findViewById(R.id.button_pref);
- //       pref.setVisibility(View.GONE);
-
-
-
-       /* s=new Session(mContext);
-        email=s.getusename();
-
-        if(!email.equals(null) || !email.equals("") ) {
-            pref.setVisibility(View.VISIBLE);
-            getInfo();
-            if(isPref==true)
-                pref.setBackgroundResource(R.drawable.pref_ok);
-            else pref.setBackgroundResource(R.drawable.pref);
-        }
-
-        pref.setOnClickListener((view1)->{
-            UtenteRicetta ur= new UtenteRicetta(mContext);
-            ur.open();
-            if (isPref == false) {
-                ur.inserisciUtenteRicetta(email, id);
-                pref.setBackgroundResource(R.drawable.pref_ok);
-                isPref = true;
-            } else {
-                ur.deleteR(id,email);
-                pref.setBackgroundResource(R.drawable.pref);
-                isPref = false;
-            }
-            ur.close();
-        });*/
     }
 
-
-    public void getInfo(){
-
-       /* UtenteRicetta ur= new UtenteRicetta(mContext);
-
-        Log.i("Prova1", String.valueOf(s.getusename().equals(null)));
-        Log.i("Prova2", String.valueOf(s.getusename().equals("")));
-
-        if(email.equals(null)==false|| !email.equals("")==false) {
-            ur.open();
-            Cursor cursor = ur.ottieniTutteRicette(s.getusename());
-            while (cursor.moveToNext()) {
-                if (cursor.getString(2).equals(id)) {
-                    isPref = true;
-                } else isPref = false;
-            }
-        }
-        ur.close();*/
-    }
 
     @Override
     public void onAttach(Context context) {

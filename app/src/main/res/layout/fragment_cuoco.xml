@@ -87,7 +87,7 @@
         <FrameLayout
             android:id="@+id/frame_cuoco"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="400dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/button_lista">
 
@@ -110,6 +110,19 @@
             android:text="Eventi"
             app:layout_constraintStart_toEndOf="@id/button_lista"
             app:layout_constraintTop_toBottomOf="@id/id_contenitore_dati" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_cuoco"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:clickable="true"
+            app:backgroundTint="@color/common_google_signin_btn_text_light_focused"
+            app:layout_constraintBottom_toBottomOf="@id/frame_cuoco"
+            app:layout_constraintEnd_toEndOf="@id/frame_cuoco"
+            app:maxImageSize="30dp"
+            app:srcCompat="@android:drawable/ic_menu_add" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

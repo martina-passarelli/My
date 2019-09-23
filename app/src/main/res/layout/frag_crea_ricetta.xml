@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/crea_ricetta"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_margin="15dp"
+    android:isScrollContainer="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:isScrollContainer="true">
+
+        <TextView
+            android:id="@+id/etichetta_foto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Aggiungi_foto"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edit_nome" />
+
+        <ImageView
+            android:id="@+id/foto_ricetta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etichetta_foto"
+            app:srcCompat="@android:drawable/ic_input_add" />
+
+        <TextView
+            android:id="@+id/etichetta_nome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Inserisci il nome della ricetta:"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/edit_nome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etichetta_nome" />
+
+        <TextView
+            android:id="@+id/etichetta_descrizione"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Inserisci una descrizone:"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/foto_ricetta" />
+
+        <EditText
+            android:id="@+id/edit_descrizione"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etichetta_descrizione" />
+
+        <TextView
+            android:id="@+id/etichetta_ingredienti"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ingredienti:"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edit_descrizione" />
+
+        <EditText
+            android:id="@+id/edit_ingredienti"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etichetta_ingredienti" />
+
+        <TextView
+            android:id="@+id/etichetta_ricetta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ricetta:"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edit_ingredienti" />
+
+        <EditText
+            android:id="@+id/edit_ricetta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etichetta_ricetta" />
+
+        <TextView
+            android:id="@+id/etichetta_categoria"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Categoria:"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
+            android:textSize="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edit_ricetta" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fatto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:backgroundTint="@color/common_google_signin_btn_text_light_focused"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/modifica_abilitata" />
+
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/tipo_categorie"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etichetta_categoria" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

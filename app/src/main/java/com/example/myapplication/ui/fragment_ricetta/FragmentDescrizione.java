@@ -36,6 +36,7 @@ public class FragmentDescrizione extends Fragment {
     private String id_pref;
 
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
     }
 

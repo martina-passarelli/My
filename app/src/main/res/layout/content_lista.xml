@@ -13,6 +13,7 @@
         android:name="com.example.myapplication.ui.fragment_ricetta.ListaRicette_Fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/sfondo_grigio"
         tools:ignore="MissingConstraints"
         tools:layout="@layout/fragment_item_list" />
 

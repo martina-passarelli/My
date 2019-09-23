@@ -1,24 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linear_listaEventi"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_constraintStart_toStartOf="parent">
+    android:orientation="vertical">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list_ricetta"
-        android:name="com.example.myapplication.ui.ItemFragment"
+        android:id="@+id/lista_eventi"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layoutManager="LinearLayoutManager"
-        tools:context=".ui.ItemFragment"
-        tools:listitem="@layout/fragment_item" />
-
-
-
+        tools:listitem="@layout/item_evento" />
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-

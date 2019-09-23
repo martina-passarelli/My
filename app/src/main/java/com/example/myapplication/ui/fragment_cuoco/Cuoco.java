@@ -6,9 +6,22 @@ public class Cuoco {
     private String imageProf;
     private int rot;
 
+    public Cuoco(){}
+
     public Cuoco (String mail, String password){
         this.email=email;
         this.nome=nome;
+    }
+
+
+
+    public Cuoco(String nome, String tel, String password, String email, String imageProf, int rot) {
+        this.nome = nome;
+        this.tel = tel;
+        this.password = password;
+        this.email = email;
+        this.imageProf = imageProf;
+        this.rot = rot;
     }
 
     public String getNome() {

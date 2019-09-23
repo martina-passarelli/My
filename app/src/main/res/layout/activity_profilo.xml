@@ -7,7 +7,7 @@
     tools:context=".ProfiloActivity">
 
     <FrameLayout
-        android:id="@+id/fragment_profilo"
+        android:id="@+id/fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

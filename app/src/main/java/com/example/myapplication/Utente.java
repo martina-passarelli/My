@@ -12,7 +12,7 @@ public class Utente {
     public Utente() {
     }
 
-    public Utente(String email,String password){
+    /*public Utente(String email,String password){
         this.password=password;
         this.email=email;
         this.nome= "";
@@ -21,7 +21,8 @@ public class Utente {
         this.tel="";
         this.imageProf=null;
         this.rot=0;
-    }
+    }*/
+
 
     public Utente(String nome, String email, String nick, String bio, String tel, String password, String imageProf,int rot) {
         this.nome = nome;

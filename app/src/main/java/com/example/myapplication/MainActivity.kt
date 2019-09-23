@@ -88,13 +88,9 @@ class MainActivity : AppCompatActivity() {
 
                             mailMenu.setText(utente.email)
                             nomeMenu.setText(utente.nome)
-                       // }
-                        /* else {
-
-
-                        }*/
 
                     } catch (e: Exception) {
+
                     cuoco=documentSnapshot.toObject(Cuoco::class.java)!!
                     if (cuoco.imageProf != null) {
                         storage.child(cuoco.email + ".jpg").getDownloadUrl()
@@ -109,11 +105,6 @@ class MainActivity : AppCompatActivity() {
                     nomeMenu.setText(cuoco.nome)
                         e.printStackTrace()
                     }
-
-
-
-
-
             }
         }
 
@@ -121,11 +112,10 @@ class MainActivity : AppCompatActivity() {
         imageMenu.setOnClickListener(View.OnClickListener {
 
             if(mAuth.currentUser!=null){
-                val i = Intent(this@MainActivity,ProfiloActivity::class.java)
-                System.out.println("SONO QUI")
-                i.putExtra("tipo", "login")
-                i.putExtra("utente", "")
-                startActivity(i)
+                if(cuoco!=null)
+                    vai_profilo("cuoco")
+                else
+                    vai_profilo("utente")
             }else {
                 val i = Intent(this@MainActivity, LoginActivity::class.java)
                 startActivity(i)
@@ -148,6 +138,15 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
     }
+
+    private fun vai_profilo(s: String) {
+        val i = Intent(this@MainActivity,ProfiloActivity::class.java)
+        i.putExtra("tipo", "login")
+        i.putExtra("utente", "")
+        i.putExtra("tipo_utente", s)
+        startActivity(i)
+    }
+
 
     //i tre puntini al lato aprono un menu con logout ed elimina profilo
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
