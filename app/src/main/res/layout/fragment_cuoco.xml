@@ -21,8 +21,8 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/image_cuoco"
-                android:layout_width="181dp"
-                android:layout_height="181dp"
+                android:layout_width="180dp"
+                android:layout_height="180dp"
                 android:layout_marginLeft="20dp"
                 android:src="@drawable/cuoca"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -34,6 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 android:background="#D2FFFFFF"
+                android:fontFamily="cursive"
                 android:text="TextView"
                 android:textAlignment="center"
                 android:textColor="@color/common_google_signin_btn_text_dark_focused"
