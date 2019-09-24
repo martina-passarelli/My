@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Evento {
-    private String nome,id_cuoco,descrizione,data,ora,luogo;
+    private String nome,id_cuoco,descrizione,data,ora,luogo,id;
     private int max_partecipanti;
     //private List<String> lista_partecipanti=new ArrayList<>();
 
@@ -87,6 +87,13 @@ public class Evento {
 
     public void setMax_partecipanti(int max_partecipanti) {
         this.max_partecipanti = max_partecipanti;
+    }
+
+    public String getId() {
+        return id;
+    }
+    public void setId(String id){
+        this.id=id;
     }
 
     /*public List<String> getLista_partecipanti() {

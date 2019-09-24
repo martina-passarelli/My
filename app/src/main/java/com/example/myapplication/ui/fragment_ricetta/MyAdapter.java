@@ -100,10 +100,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             System.out.println(tmp.getNome());
             holder.nome_ricetta.setText(holder.nom);
             holder.nome_cuoco.setText(tmp.getId_cuoco());
+
             String immagine= tmp.getFoto();
             byte[] immag = Base64.decode(immagine, Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(immag, 0, immag.length);
-            holder.image.setImageBitmap(bitmap);}
+            holder.image.setImageBitmap(bitmap);
+        }
     }
     @Override
     public int getItemCount() {

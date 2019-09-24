@@ -52,7 +52,7 @@ public class Fragment_CreaRicetta extends Fragment {
 
     private ImageView image_foto;
     private Uri imageUri;
-    private String imagePath;//Valore da salvare in ricetta
+    private String imageString;//Valore da salvare in ricetta
     private int rotazione;
 
 
@@ -122,7 +122,7 @@ public class Fragment_CreaRicetta extends Fragment {
                 String ingr=edit_ingr.getText().toString();
                 String nome=edit_nome.getText().toString();
                 if(ricetta!=null && descr!=null && ingr!=null && nome!=null) {
-                    Ricetta r=new Ricetta(nome,ingr,id_cuoco,descr,imagePath,ricetta,categoria);
+                    Ricetta r=new Ricetta(nome,ingr,id_cuoco,descr,imageString,ricetta,categoria);
                     aggiungi_inFirestore(r);
                     ricaricaFrammento();
                 }
@@ -173,7 +173,7 @@ public class Fragment_CreaRicetta extends Fragment {
                 image_foto.setImageURI(imageUri);
 
                 //operazioni volte a girare l'immagine nel caso in cui abbia una orientazione
-
+                String imagePath;
                 Uri targetUri = data.getData();
                 if (data.toString().contains("content:")) {
                     imagePath = getRealPathFromURI(targetUri);
@@ -193,7 +193,7 @@ public class Fragment_CreaRicetta extends Fragment {
                     //salvo l'orientazione in modo che prima di salvare l'immagine nel db la giro
                     rotazione = rotationInDegrees;
                     Bitmap bi = ((BitmapDrawable) image_foto.getDrawable()).getBitmap();
-                    String imageString = UtilityImage.BitmapToString(bi, rotazione, image_foto);
+                    imageString = UtilityImage.BitmapToString(bi, rotazione, image_foto);
 
 
                 } catch (IOException e) {
