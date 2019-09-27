@@ -97,8 +97,8 @@
 
             <ImageView
                 android:id="@+id/imageHomeRicetta"
-                android:layout_width="137dp"
-                android:layout_height="109dp"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
                 android:layout_margin="20dp"
                 android:contentDescription="TODO"
                 app:layout_constraintBottom_toBottomOf="parent"
