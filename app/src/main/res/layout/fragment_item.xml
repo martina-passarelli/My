@@ -13,7 +13,7 @@
         android:layout_height="210dp"
         android:clickable="true"
         android:persistentDrawingCache="animation"
-        app:cardBackgroundColor="#CECECE"
+        app:cardBackgroundColor="#D6D5D5"
         app:cardCornerRadius="@dimen/nav_header_vertical_spacing"
         app:cardElevation="8dp"
         app:cardMaxElevation="8dp"
@@ -38,16 +38,17 @@
                 android:layout_height="match_parent"
                 android:layout_margin="15dp"
                 android:animateLayoutChanges="true"
-                android:background="#B5FAF7F7"
+                android:background="#C6FAF7F7"
                 android:clickable="false"
                 android:orientation="vertical"
                 tools:visibility="visible">
 
                 <TextView
                     android:id="@+id/nome_ricetta"
-                    android:layout_width="wrap_content"
+                    android:layout_width="150dp"
                     android:layout_height="wrap_content"
 
+                    android:background="#D6D5D5"
                     android:fontFamily="cursive"
                     android:foreground="#00FCF9F9"
                     android:gravity="center"
@@ -60,6 +61,7 @@
                     android:id="@+id/nome_cuoco"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="#D6D5D5"
                     android:fontFamily="casual"
                     android:gravity="top|right"
                     android:text="Nome Cuoco"
