@@ -127,7 +127,6 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
     }
 
     public void vai_profilo(ViewHolder holder, Context context){
-
         Intent myIntent = new Intent(context, ProfiloActivity.class);
         myIntent.putExtra("tipo", "commento");//Optional parameters
         myIntent.putExtra("utente", holder.id_utente);

@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +37,12 @@ public class FragmentCuoco extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(!sezione_eventi) {
+            ListaRicette_Fragment ricette_fragment = new ListaRicette_Fragment();
+            ricette_fragment.ottieni_lista(currentId);
+            getChildFragmentManager().beginTransaction().replace(R.id.frame_cuoco, ricette_fragment).commit();
+        }else crea_lista_eventi(currentId);
+
 
     }
 
@@ -45,9 +52,7 @@ public class FragmentCuoco extends Fragment {
         View view= inflater.inflate(R.layout.fragment_cuoco, container, false);
         //OTTENIAMO LA LISTA DI RICETTE DA LUI FORNITO: RICORDIAMO CHE IN RICETTE E' PRESENTE IL CAMPO
         //ID_CUOCO CHE MANTIENE L'ID DEL CUOCO CHE L'HA CREATO
-        ListaRicette_Fragment ricette_fragment=new ListaRicette_Fragment();
-        ricette_fragment.ottieni_lista(currentId);
-        getChildFragmentManager().beginTransaction().add(R.id.frame_cuoco,ricette_fragment).addToBackStack(null).commit();
+
         return view;
 
     }
@@ -62,6 +67,7 @@ public class FragmentCuoco extends Fragment {
     private FirebaseFirestore db;
     private StorageReference storage=FirebaseStorage.getInstance().getReference();
     private boolean sezione_eventi=false;
+    //QUANDO SI RITORNA AL BOTTONE PRECEDENTE BISGNA TORNARE IN SEZIONE EVENTI, QUINDI SETTARLO COME TRUE
     @SuppressLint({"ResourceAsColor", "RestrictedApi"})
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -72,9 +78,10 @@ public class FragmentCuoco extends Fragment {
         ricette=(Button)view.findViewById(R.id.button_lista);
         eventi=(Button)view.findViewById(R.id.button_eventi);
         add=(FloatingActionButton)view.findViewById(R.id.add_cuoco);
+
+
         //PRELEVIAMO I DATI APPARTENENTI AL CUOCO E SETTIAMO LE LABEL
         ottieni_dati();
-
         //OTTENIAMO LA LISTA DI EVENTI A CUI PARTECIPA
         eventi.setOnClickListener(new View.OnClickListener()
         {
@@ -95,7 +102,7 @@ public class FragmentCuoco extends Fragment {
             @Override
             public void onClick(View v) {
                 if(sezione_eventi==true) {
-                    getChildFragmentManager().popBackStackImmediate();
+                    getChildFragmentManager().popBackStack("LISTA", FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     ricette.setClickable(false);
                     eventi.setClickable(true);
                     sezione_eventi = false;
@@ -126,13 +133,12 @@ public class FragmentCuoco extends Fragment {
     private void crea_lista_eventi(String currentId) {
         Lista_Fragment_Evento fragment_evento= new Lista_Fragment_Evento();
         fragment_evento.doSomething(currentId);
-        getChildFragmentManager().beginTransaction().replace(R.id.frame_cuoco,fragment_evento).addToBackStack(null).commit();
-
+        getChildFragmentManager().beginTransaction().replace(R.id.frame_cuoco,fragment_evento).addToBackStack("LISTA").commit();
     }
 
     public void aggiungi_ricetta(){
         Fragment_CreaRicetta fragment_creaRicetta=new Fragment_CreaRicetta();
-        getChildFragmentManager().beginTransaction().replace(R.id.frame_cuoco,fragment_creaRicetta).addToBackStack("FRAG_CUOCO").commit();
+        getChildFragmentManager().beginTransaction().replace(R.id.frame_cuoco,fragment_creaRicetta).commit();
     }
 
     @SuppressLint("RestrictedApi")
@@ -175,9 +181,7 @@ public class FragmentCuoco extends Fragment {
 
     @Override
     public void onAttach(Context context) {
-
         super.onAttach(context);
-
     }
 
     @Override

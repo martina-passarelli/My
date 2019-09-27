@@ -52,7 +52,7 @@ public class FragmentRicetta extends Fragment {
         bundle.putString("id_ricetta",id);
         FragmentDescrizione descrizioneFragment = new FragmentDescrizione();
         descrizioneFragment.setArguments(bundle);
-        getChildFragmentManager().beginTransaction().add(R.id.id_frame_layout,descrizioneFragment).addToBackStack(null).commit();
+        getChildFragmentManager().beginTransaction().replace(R.id.id_frame_layout,descrizioneFragment).addToBackStack(null).commit();
 
         return view;
     }
