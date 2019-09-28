@@ -25,7 +25,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private List<Ricetta> mDataset;
 //SI OCCUPA DELLA GESTIONE DEI SINGOLI ELEMENTI DELLA LISTA
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView nome_ricetta;
+        public TextView nome_ricetta,descr_ricetta;
         public TextView nome_cuoco;
         public ImageView image;
         public CardView card;
@@ -38,15 +38,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             nome_ricetta= (TextView)v.findViewById(R.id.nome_ricetta);
             nome_cuoco=(TextView)v.findViewById(R.id.nome_cuoco);
             image=(ImageView)v.findViewById(R.id.image_dolce);
-//            nome_cuoco.setClickable(false);
-           // descrzione=(TextView) v.findViewById(R.id.)
-           // img=(LinearLayout) v.findViewById(R.id.id_linearLayout_cardCake);
-           // img.setClickable(false);
-
+            descr_ricetta=(TextView)v.findViewById(R.id.ricetta_card);
             card=(CardView) v.findViewById(R.id.id_card__ricetta);
             FloatingActionButton floatingActionButton=(FloatingActionButton)v.findViewById(R.id.fab_search);
-
-           //ViewGroup.LayoutParams params = (ViewGroup.LayoutParams) nome_cuoco.getLayoutParams();
 
             card.setOnClickListener((view)->{
 
@@ -95,8 +89,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             holder.id_cuoco=tmp.getId_cuoco();
             holder.id_ricetta=tmp.getId_ricetta();
 
-
-            System.out.println(tmp.getNome());
             holder.nome_ricetta.setText(holder.nom);
             holder.nome_cuoco.setText(tmp.getId_cuoco());
 

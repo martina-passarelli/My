@@ -4,11 +4,13 @@ import android.net.Uri;
 
 import java.util.ArrayList;
 
+
 public class Utente {
 
     private String nome,nick, bio, tel,password;
     private String email;
     private String imageProf;
+    private ArrayList<String> lista_preferiti;
     private ArrayList<String> lista_eventi;
     private int rot;
 
@@ -109,6 +111,10 @@ public class Utente {
 
     public ArrayList<String> getLista_eventi() {
         return lista_eventi;
+    }
+
+    public ArrayList<String> getLista_preferiti() {
+        return lista_preferiti;
     }
 
     public void setLista_eventi(ArrayList<String> lista_eventi) {

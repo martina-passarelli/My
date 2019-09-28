@@ -14,7 +14,6 @@
         android:clickable="true"
         android:persistentDrawingCache="animation"
         app:cardBackgroundColor="#D6D5D5"
-        app:cardCornerRadius="@dimen/nav_header_vertical_spacing"
         app:cardElevation="8dp"
         app:cardMaxElevation="8dp"
         app:cardPreventCornerOverlap="false"
