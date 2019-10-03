@@ -84,7 +84,9 @@ public class Fragment_ListaPartecipanti extends Fragment {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Evento e= documentSnapshot.toObject(Evento.class);
                 int num=e.getMax_partecipanti();
-                ArrayList<String> lista_p=(ArrayList<String>) e.getLista_part();
+                ArrayList<String> lista_p=new ArrayList<>();
+
+                if(e.getLista_part()!=null) lista_p=(ArrayList<String>) e.getLista_part();
 
                 if(!lista_p.contains(utente_corrente) && lista_p.size()<num) {
                     add_partecipante(lista_p,num);
@@ -105,7 +107,8 @@ public class Fragment_ListaPartecipanti extends Fragment {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Evento evento=documentSnapshot.toObject(Evento.class);
-                ArrayList<String> lista_p=(ArrayList<String>) evento.getLista_part();
+                ArrayList<String> lista_p= new ArrayList<>();
+                if(evento.getLista_part()!=null)lista_p=(ArrayList<String>) evento.getLista_part();
                 int num=evento.getMax_partecipanti();
                 label_part.setText(lista_p.size()+"/"+num);
 
@@ -113,6 +116,7 @@ public class Fragment_ListaPartecipanti extends Fragment {
                     list.add(s);
                     tutorAdapter.notifyDataSetChanged();
                 }
+
                 //SETTIAMO IL BOTTONE DI ISCRIZIONE
                 if (list.contains(utente_corrente))
                     iscriviti.setText("Esci");

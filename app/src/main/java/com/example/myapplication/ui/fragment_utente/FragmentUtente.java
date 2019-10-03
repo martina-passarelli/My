@@ -22,7 +22,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.myapplication.R;
-import com.example.myapplication.Utente;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -99,6 +98,7 @@ public class FragmentUtente extends Fragment {
         nomeUtente=(EditText)view.findViewById(R.id.nomeCompleto);
         nickname= (TextView) view.findViewById(R.id.nick);
         password=(EditText) view.findViewById(R.id.password);
+        password.setVisibility(view.INVISIBLE);
         telefono=(EditText) view.findViewById(R.id.telefono);
         vecchia_password=(EditText) view.findViewById(R.id.vecchia_password);
         nuova_password=(EditText) view.findViewById(R.id.nuova_password);
@@ -130,7 +130,6 @@ public class FragmentUtente extends Fragment {
         modificaFoto.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-
                 chooseImage();
             }
         });
@@ -227,13 +226,11 @@ public class FragmentUtente extends Fragment {
 
                         nuova_password.setText("");
                         vecchia_password.setText("");
-                        //nuova_password.setVisibility(View.INVISIBLE);
-                        //vecchia_password.setVisibility(View.INVISIBLE);
-                       // modifica_abilitata=false;
 
                     }catch (Exception e){
                         e.printStackTrace();
                     }
+                    password.setVisibility(View.INVISIBLE);
                     nuova_password.setVisibility(View.INVISIBLE);
                     vecchia_password.setVisibility(View.INVISIBLE);
                     modifica_abilitata=false;

@@ -1,10 +1,13 @@
 package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import com.example.myapplication.ui.fragment_cuoco.FragmentCuoco;
 import com.example.myapplication.ui.fragment_utente.FragmentUtente;
@@ -15,7 +18,18 @@ public class ProfiloActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_profilo);
+        Toolbar toolbar = findViewById(R.id.toolbar_profilo);
+        setSupportActionBar(toolbar);
+
+        Button button= (Button)findViewById(R.id.toolbar_home_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(ProfiloActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
 
         Intent intent=getIntent();
         String tipo_utente=intent.getStringExtra("tipo_utente");

@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.myapplication.R
+import com.example.myapplication.ui.fragment_seguiti.ListSeguiti
 
 class ShareFragment : Fragment() {
 
@@ -21,11 +22,12 @@ class ShareFragment : Fragment() {
     ): View? {
         shareViewModel =
             ViewModelProviders.of(this).get(ShareViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_share, container, false)
-        val textView: TextView = root.findViewById(R.id.text_share)
-        shareViewModel.text.observe(this, Observer {
-            textView.text = it
-        })
+        val root = inflater.inflate(R.layout.lista_seguiti, container, false)
+        val fragment = ListSeguiti()
+        val fragmentTransaction = activity!!.supportFragmentManager.beginTransaction()
+        fragmentTransaction.add(R.id.nav_host_fragment, fragment)
+        fragmentTransaction.commit()
+
         return root
     }
 }

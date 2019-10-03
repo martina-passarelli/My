@@ -3,6 +3,7 @@ package com.example.myapplication.ui.fragment_evento;
 import java.util.List;
 public class Evento {
     private String nome,id_cuoco,descrizione,data,ora,luogo,id;
+    private double latitudine,longitudine;
     private int max_partecipanti;
     private List<String> lista_part;
 
@@ -15,6 +16,35 @@ public class Evento {
     }
 
     public Evento(){}
+
+    public double getLatitudine() {
+        return latitudine;
+    }
+
+    public void setLatitudine(double latitudine) {
+        this.latitudine = latitudine;
+    }
+
+    public double getLongitudine() {
+        return longitudine;
+    }
+
+    public void setLongitudine(double longitudine) {
+        this.longitudine = longitudine;
+    }
+
+    public Evento(String nome, String id_cuoco, String descrizione, String data, String ora, String luogo, int max_partecipant, double latitudine, double longitudine, List<String> lista_part) {
+        this.nome = nome;
+        this.id_cuoco = id_cuoco;
+        this.descrizione = descrizione;
+        this.data = data;
+        this.ora = ora;
+        this.luogo = luogo;
+        this.latitudine = latitudine;
+        this.longitudine = longitudine;
+        this.max_partecipanti = max_partecipant;
+        this.lista_part = lista_part;
+    }
 
     public Evento(String nome_evento, String id_cuoco, String descrizione, String luogo, String data, String ora, int max_partecipanti, List<String> lista) {
         this.nome = nome_evento;

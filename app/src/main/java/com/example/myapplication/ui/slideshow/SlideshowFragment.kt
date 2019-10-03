@@ -26,7 +26,7 @@ class SlideshowFragment : Fragment() {
         val fragment = Lista_Fragment_Evento()
         fragment.eventi_utente()
         val fragmentTransaction = activity!!.supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.nav_host_fragment, fragment)
+        fragmentTransaction.add(R.id.nav_host_fragment, fragment)
         fragmentTransaction.commit()
 
         return root

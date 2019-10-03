@@ -45,6 +45,8 @@ public class Adapter_Evento extends RecyclerView.Adapter <Adapter_Evento.ViewHol
             holder.label_luogo.setText(evento.getLuogo());
             holder.label_data.setText(evento.getData());
             holder.label_ora.setText(evento.getOra());
+            holder.longitudine=evento.getLongitudine();
+            holder.latitudine=evento.getLatitudine();
             //settiamo il nome del cuoco dal suo id
             DocumentReference doc_cuoco=ff.collection("utenti2").document(""+evento.getId_cuoco());
             doc_cuoco.get().addOnSuccessListener((documentSnapshot) -> {
@@ -68,6 +70,7 @@ public class Adapter_Evento extends RecyclerView.Adapter <Adapter_Evento.ViewHol
         private final CardView card_evento;
         private String  id_cuoco,id_evento;
         private final TextView label_nome, label_cuoco, label_luogo, label_data, label_ora;
+        private double longitudine,latitudine;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -79,10 +82,11 @@ public class Adapter_Evento extends RecyclerView.Adapter <Adapter_Evento.ViewHol
             label_data=(TextView)itemView.findViewById(R.id.data_evento);
             card_evento=(CardView)itemView.findViewById(R.id.id_card_evento);
             card_evento.setOnClickListener((view)->{
-
                 Bundle bundle=new Bundle();
                 bundle.putString("id_evento", id_evento);
                 bundle.putString("id_cuoco",id_cuoco);
+                bundle.putDouble("latitudine", latitudine);
+                bundle.putDouble("longitudine", longitudine);
                 //AVVIARE IL FRAMMENTO
                 Fragment_Evento fragment_evento=new Fragment_Evento();
                 fragment_evento.setArguments(bundle);

@@ -12,7 +12,10 @@ import com.google.android.material.textfield.TextInputLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.transition.Slide;
 
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.view.View;
 
 public class ListaActivity extends AppCompatActivity {
@@ -30,6 +33,7 @@ public class ListaActivity extends AppCompatActivity {
             ListaRicette_Fragment fragment = new ListaRicette_Fragment();
             fragment.doSomething(categoria);
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
             fragmentTransaction.replace(R.id.fragment, fragment);
             fragmentTransaction.commit();
         }else{
@@ -37,6 +41,7 @@ public class ListaActivity extends AppCompatActivity {
             ListaRicette_Fragment fragment = new ListaRicette_Fragment();
             fragment.search(testo);
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
             fragmentTransaction.replace(R.id.fragment, fragment);
             fragmentTransaction.commit();
         }

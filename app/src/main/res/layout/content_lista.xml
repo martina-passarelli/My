@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/sfondo_bianco_2"
+    android:background="@drawable/sfondo_grigio"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".ListaActivity">
 

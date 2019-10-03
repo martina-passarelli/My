@@ -12,6 +12,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:minHeight="720dp">
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/mapView"
+            android:layout_width="212dp"
+            android:layout_height="187dp"
+            android:layout_marginStart="32dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/home_luogo" />
 
 
         <TextView

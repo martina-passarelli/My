@@ -20,6 +20,8 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 
 import com.example.myapplication.ui.fragment_cuoco.Cuoco
+import com.example.myapplication.ui.fragment_utente.Utente
+import com.example.myapplication.ui.home_page.HomePage
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
@@ -72,63 +74,55 @@ class MainActivity : AppCompatActivity() {
             val docRef = firestore.collection("utenti2").document("" + mAuth.uid)
 
             docRef.get().addOnSuccessListener { documentSnapshot ->
-                try {
-                       // if(prova(documentSnapshot)) {
-                            utente = documentSnapshot.toObject(Utente::class.java)!!
-                            if (utente.imageProf != null) {
-                                storage.child(utente.email + ".jpg").getDownloadUrl()
-                                    .addOnSuccessListener(OnSuccessListener<Uri> { uri ->
-                                        //if (utente.rot)
-                                        Picasso.with(this@MainActivity).load(uri)
-                                            .rotate(utente.rot.toFloat()).fit().centerCrop()
-                                            .into(imageMenu)
-                                    })
-
-                            }
-
-                            mailMenu.setText(utente.email)
-                            nomeMenu.setText(utente.nome)
-
-                    } catch (e: Exception) {
-
-                    cuoco=documentSnapshot.toObject(Cuoco::class.java)!!
-                    if (cuoco.imageProf != null) {
-                        storage.child(cuoco.email + ".jpg").getDownloadUrl()
+                if(documentSnapshot.get("bio")!=null){
+                    utente = documentSnapshot.toObject(Utente::class.java)!!
+                    if (utente!!.imageProf != null) {
+                        storage.child(utente!!.email + ".jpg").getDownloadUrl()
                             .addOnSuccessListener(OnSuccessListener<Uri> { uri ->
-                                //if (utente.rot)
                                 Picasso.with(this@MainActivity).load(uri)
-                                    .rotate(cuoco.rot.toFloat()).fit().centerCrop()
+                                    .rotate(utente!!.rot.toFloat()).fit().centerCrop()
                                     .into(imageMenu)
                             })
                     }
-                    mailMenu.setText(cuoco.email)
-                    nomeMenu.setText(cuoco.nome)
-                        e.printStackTrace()
+                    mailMenu.setText(utente!!.email)
+                    nomeMenu.setText(utente!!.nome)
+                }
+                else{
+                    cuoco=documentSnapshot.toObject(Cuoco::class.java)!!
+                    if (cuoco!!.imageProf != null) {
+                        storage.child(cuoco!!.email + ".jpg").getDownloadUrl()
+                            .addOnSuccessListener(OnSuccessListener<Uri> { uri ->
+                                Picasso.with(this@MainActivity).load(uri)
+                                    .rotate(cuoco!!.rot.toFloat()).fit().centerCrop()
+                                    .into(imageMenu)
+                            })
                     }
+                    mailMenu.setText(cuoco!!.email)
+                    nomeMenu.setText(cuoco!!.nome)
+                }
             }
         }
 
+
         //cliccando sull'image view si apre l'activity login
         imageMenu.setOnClickListener(View.OnClickListener {
-
             if(mAuth.currentUser!=null){
-                if(cuoco!=null)
-                    vai_profilo("cuoco")
-                else
-                    vai_profilo("utente")
-            }else {
-                val i = Intent(this@MainActivity, LoginActivity::class.java)
-                startActivity(i)
-            }
+                val docRef = firestore.collection("utenti2").document("" + mAuth.uid)
 
+                docRef.get().addOnSuccessListener { documentSnapshot ->
+                    if (documentSnapshot.get("bio") != null)
+                        vai_profilo("utente")
+                    else
+                        vai_profilo("cuoco")
+                }
+            }
         })
 
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+
 
         appBarConfiguration = AppBarConfiguration(
             setOf(
@@ -139,6 +133,7 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
     }
+
 
     private fun vai_profilo(s: String) {
         val i = Intent(this@MainActivity,ProfiloActivity::class.java)
@@ -153,7 +148,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.impostazione_menu, menu)
-
         return true
     }
 
@@ -162,48 +156,50 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId;
         if(id==R.id.esci && mAuth.currentUser!=null) {
             FirebaseAuth.getInstance().signOut();
 
-            val i = Intent(this@MainActivity, MainActivity::class.java)
+            val i = Intent(this@MainActivity, HomePage::class.java)
             startActivity(i)
             Toast.makeText(
-                applicationContext,
-                "Logout avvenuto con successo",
-                Toast.LENGTH_LONG
-            ).show()
+                applicationContext, "Logout avvenuto con successo", Toast.LENGTH_LONG).show()
             return true;
         }
         if(id==R.id.elimina_account && mAuth.currentUser!=null) {
+
+            val pass :String = if(cuoco!=null) cuoco!!.password
+            else utente!!.password
+
             val user =mAuth.currentUser
 
             val credential = EmailAuthProvider
-                .getCredential(user?.email.toString(),utente.password )
-
+                .getCredential(user?.email.toString(),pass )
+            val uid = mAuth.uid
             // Prompt the user to re-provide their sign-in credentials
             user!!.reauthenticate(credential)
                 .addOnCompleteListener {
                     user.delete()
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
+                                System.out.println("ID="+uid)
+                                val docRef = firestore.collection("utenti2").document(""+uid).delete().addOnCompleteListener {
 
+                                    val i = Intent(this@MainActivity, HomePage::class.java)
+                                    startActivity(i)
+                                    Toast.makeText(
+                                        applicationContext, "Eliminazione avvenuta", Toast.LENGTH_LONG).show()
+                                }.addOnFailureListener {
+
+                                }
                             }
                         }
-                    val docRef = firestore.collection("utenti").document(""+mAuth.uid)
-                        .delete()
-                        .addOnSuccessListener {
-                            Toast.makeText(
-                                applicationContext,
-                                "Eliminazione avvenuta",
-                                Toast.LENGTH_LONG
-                            ).show()  }
-                        .addOnFailureListener {  }
                 }
             return true
         }
-
         return super.onOptionsItemSelected(item);
     }
+
 }

@@ -17,6 +17,12 @@ import com.example.myapplication.ProfiloActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.ui.fragment_cuoco.Cuoco;
 import com.example.myapplication.ui.fragment_partecipanti.Fragment_ListaPartecipanti;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentReference;
@@ -25,9 +31,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Fragment_Evento extends Fragment {
     private Bundle bundle;
+    private MapView mappa;
+    private GoogleMap gmap;
     private TextView cuoco,nome_evento,ora,data,luogo;
     private FloatingActionButton add_part;
     private String id_evento,id_cuoco;
+    private double longitudine,latitudine;
     public Evento e;
 
     @Override
@@ -43,6 +52,8 @@ public class Fragment_Evento extends Fragment {
         if(bundle != null){
             id_evento=bundle.getString("id_evento");
             id_cuoco=bundle.getString("id_cuoco");
+            longitudine=bundle.getDouble("longitudine");
+            latitudine=bundle.getDouble("latitudine");
         }
         preleva_evento(id_evento);
         return view;
@@ -99,7 +110,32 @@ public class Fragment_Evento extends Fragment {
                 partecipanti.setClickable(false);
             }
         });
+
+        //**********visualizzazione mappa con bandierina
+        mappa=((MapView)view.findViewById(R.id.mapView));
+        mappa.onCreate(savedInstanceState);
+        mappa.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                inserisciBandierina(googleMap);
+            }
+        });
     }
+
+    private void inserisciBandierina(GoogleMap googleMap) {
+        gmap = googleMap;
+        gmap.addMarker(new MarkerOptions().position(new LatLng(latitudine,
+                longitudine))).showInfoWindow();
+        gmap.getUiSettings().setMapToolbarEnabled(false);
+        gmap.getUiSettings().setScrollGesturesEnabled(false);
+        moveCamera(new LatLng(latitudine,longitudine),17f);
+
+    }
+    private void moveCamera(LatLng latLng, float zoom){
+        gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
+
+    }
+
 
 
     private void apri_profilo(){
@@ -141,8 +177,6 @@ public class Fragment_Evento extends Fragment {
         context = null;
     }
 
-
-
     private void preleva_evento(String id_evento) {
         FirebaseFirestore ff= FirebaseFirestore.getInstance();
         DocumentReference doc=ff.collection("eventi").document("" + id_evento);
@@ -175,5 +209,29 @@ public class Fragment_Evento extends Fragment {
         FragmentDescrEvento descrizioneFragment = new FragmentDescrEvento();
         descrizioneFragment.setArguments(bundle);
         getChildFragmentManager().beginTransaction().add(R.id.frame_home_ricetta,descrizioneFragment).addToBackStack(null).commit();
+    }
+
+    @Override
+    public void onResume() {
+        mappa.onResume();
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mappa.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mappa.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mappa.onLowMemory();
     }
 }

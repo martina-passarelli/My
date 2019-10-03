@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.ProfiloActivity;
 import com.example.myapplication.R;
-import com.example.myapplication.Utente;
+import com.example.myapplication.ui.fragment_utente.Utente;
 import com.example.myapplication.ui.fragment_cuoco.Cuoco;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -37,7 +37,6 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
     private Cuoco cuoco;
     private String tipo_utente;
     private final List<Commento> mValues;
-    //private final OnListFragmentInteractionListener mListener;
     private FirebaseAuth firebaseAuth= FirebaseAuth.getInstance();
     private FirebaseFirestore ff= FirebaseFirestore.getInstance();
     private CollectionReference colR=ff.collection("commenti");
@@ -131,7 +130,6 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
         myIntent.putExtra("tipo", "commento");//Optional parameters
         myIntent.putExtra("utente", holder.id_utente);
         myIntent.putExtra("tipo_utente",holder.tipo);
-        System.out.println("TIPO UTENTE"+ holder.tipo);
         context.startActivity(myIntent);
     }
 
@@ -143,7 +141,7 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
                 storage.getReference().child(cuoco.getEmail() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {//DA SISTEMARE ROTAZIONE IMMAGINE
-                        Picasso.with(holder.image_utente.getContext()).load(uri).fit().centerCrop().into(holder.image_utente);
+                        Picasso.with(holder.image_utente.getContext()).load(uri).rotate(cuoco.getRot()).fit().centerCrop().into(holder.image_utente);
                     }
                 });
             } catch (Exception e) {
@@ -165,7 +163,7 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
                 storage.getReference().child(utente.getEmail() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {//DA SISTEMARE ROTAZIONE IMMAGINE
-                        Picasso.with(holder.image_utente.getContext()).load(uri).fit().centerCrop().into(holder.image_utente);
+                        Picasso.with(holder.image_utente.getContext()).load(uri).rotate(utente.getRot()).fit().centerCrop().into(holder.image_utente);
                     }
                 });
             } catch (Exception e) {

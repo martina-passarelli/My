@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.fragment_utente;
 
 import android.net.Uri;
 
@@ -12,9 +12,8 @@ public class Utente {
     private String imageProf;
     private ArrayList<String> lista_preferiti;
     private ArrayList<String> lista_eventi;
+    private ArrayList<String> lista_cuochi;
     private int rot;
-
-
 
     public Utente() {
     }
@@ -76,6 +75,7 @@ public class Utente {
     }
 
     public void setImageProf(String imageProf) {
+
         this.imageProf = imageProf;
     }
 
@@ -119,5 +119,13 @@ public class Utente {
 
     public void setLista_eventi(ArrayList<String> lista_eventi) {
         this.lista_eventi = lista_eventi;
+    }
+
+    public ArrayList<String> getLista_cuochi() {
+        return lista_cuochi;
+    }
+
+    public void setLista_cuochi(ArrayList<String> lista_cuochi) {
+        this.lista_cuochi = lista_cuochi;
     }
 }

@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
@@ -43,7 +44,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             FloatingActionButton floatingActionButton=(FloatingActionButton)v.findViewById(R.id.fab_search);
 
             card.setOnClickListener((view)->{
-
                 Bundle bundle = new Bundle();
                 bundle.putString("nome",nom);
                 bundle.putString("descr",descr);
@@ -55,7 +55,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 ricettaFragment.setArguments(bundle);
                 AppCompatActivity activity = (AppCompatActivity) v.getContext();
                 ricettaFragment.onAttach(v.getContext());
-                activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment, ricettaFragment).addToBackStack(null).commit();
+                FragmentTransaction transiction = activity.getSupportFragmentManager().beginTransaction();
+                transiction.setCustomAnimations(R.anim.nav_default_enter_anim,R.anim.nav_default_exit_anim);
+                transiction.replace(R.id.fragment, ricettaFragment).addToBackStack(null).commit();
             });
 
         }
@@ -92,6 +94,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             holder.nome_ricetta.setText(holder.nom);
             holder.nome_cuoco.setText(tmp.getId_cuoco());
 
+            //DA MODIFICARE
             String immagine= tmp.getFoto();
             byte[] immag = Base64.decode(immagine, Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(immag, 0, immag.length);

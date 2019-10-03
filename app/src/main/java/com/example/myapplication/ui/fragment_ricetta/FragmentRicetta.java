@@ -86,8 +86,9 @@ public class FragmentRicetta extends Fragment {
                     fragment_commenti.doSomething(id);
                     FragmentManager manager = getChildFragmentManager();
                     FragmentTransaction transaction = manager.beginTransaction();
+                    transaction.setCustomAnimations(R.anim.anim_left,R.anim.nav_default_exit_anim);
                     transaction.replace(R.id.id_frame_layout, fragment_commenti);
-                    transaction.addToBackStack(null);
+                    transaction.addToBackStack("DESCRIZIONE");
                     transaction.commit();
                     sezione_commenti = true;
                 }
@@ -101,7 +102,7 @@ public class FragmentRicetta extends Fragment {
             @Override
             public void onClick(View v) {
                 if(sezione_commenti==true) {
-                    getChildFragmentManager().popBackStackImmediate();
+                    getChildFragmentManager().popBackStack("DESCRIZIONE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     sezione_commenti = false;
                 }
             }

@@ -7,6 +7,15 @@ public class Ricetta {
 
     private String  nome, ingredienti, id_cuoco, descrizione, foto,ricetta,categoria;
     private String id_ricetta="";
+    private int rot;
+
+    public int getRot() {
+        return rot;
+    }
+
+    public void setRot(int rot) {
+        this.rot = rot;
+    }
 
     public Ricetta(){
     }

@@ -23,17 +23,15 @@
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
 
-    <fragment
+    <activity
         android:id="@+id/nav_tools"
-        android:name="com.example.myapplication.ui.tools.ToolsFragment"
-        android:label="@string/menu_tools"
-        tools:layout="@layout/fragment_tools" />
+        android:name="com.example.myapplication.ActivityMappa"
+        android:label="@string/menu_tools" />
 
     <fragment
         android:id="@+id/nav_share"
         android:name="com.example.myapplication.ui.share.ShareFragment"
-        android:label="@string/menu_share"
-        tools:layout="@layout/fragment_share" />
+        android:label="@string/menu_share" />
 
     <fragment
         android:id="@+id/nav_send"
