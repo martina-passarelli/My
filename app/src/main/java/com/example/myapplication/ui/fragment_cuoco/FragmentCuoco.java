@@ -4,6 +4,10 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -12,6 +16,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,9 +45,12 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.app.Activity.RESULT_OK;
 
 public class FragmentCuoco extends Fragment {
    private String currentId;
@@ -97,7 +105,7 @@ public class FragmentCuoco extends Fragment {
         add=(FloatingActionButton)view.findViewById(R.id.add_cuoco);
         segui=(Button)view.findViewById(R.id.button_segui);
 
-    //********modifica profilo*****************
+        //**********modifica profilo*****************
         modificaFoto = view.findViewById(R.id.modificaFotoCuoco);
         modificaFoto.setVisibility(View.GONE);
         modificaProfilo = view.findViewById(R.id.modificaCuoco);
@@ -338,15 +346,12 @@ public class FragmentCuoco extends Fragment {
                 emailCuoco.setText(cuoco.getEmail());
 
                 if(currentId.equals(FirebaseAuth.getInstance().getUid())) {
-
                     //Il cuoco non può seguire se stesso
                     segui.setVisibility(View.INVISIBLE);
                     segui.setClickable(false);
                 }
 
-                else
-
-                    if(cuoco.getImageProf() !=null){
+                if(cuoco.getImageProf() !=null){
                     try {
                         storage.child(cuoco.getEmail()+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
@@ -366,7 +371,7 @@ public class FragmentCuoco extends Fragment {
 
     private void aggiungi_evento(){
         FragmentNuovoEvento fragmentNuovoEvento = new FragmentNuovoEvento();
-        getChildFragmentManager().beginTransaction().replace(R.id.frame_cuoco,fragmentNuovoEvento).addToBackStack(null).commit();
+        getChildFragmentManager().beginTransaction().replace(R.id.frame_cuoco,fragmentNuovoEvento).commit();
     }
 
 
@@ -417,6 +422,82 @@ public class FragmentCuoco extends Fragment {
 
     public void doSomething(String currentID) {
         this.currentId=currentID;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == SELECT_PICTURE && resultCode == RESULT_OK
+                && data != null && data.getData() != null )
+            imageUri = data.getData();
+        cuoco.setImageProf(cuoco.getEmail()+".jpg");
+        if (imageUri != null) {
+            try {
+                String imagePath;
+                if (data.toString().contains("content:")) {
+                    imagePath = getRealPathFromURI(imageUri);
+                } else if (data.toString().contains("file:")) {
+                    imagePath = imageUri.getPath();
+                } else {
+                    imagePath = null;
+                }
+
+                ExifInterface exifInterface = new ExifInterface(imagePath);
+                int rotation = Integer.parseInt(exifInterface.getAttribute(ExifInterface.TAG_ORIENTATION));
+                int rotationInDegrees = exifToDegrees(rotation);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
+                //se l'immagine ha un'orientazione la giro
+                cuoco.setRot(rotationInDegrees);
+                bitmap=rotate(bitmap,rotationInDegrees);
+                foto_cuoco.setImageBitmap(bitmap);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public String getRealPathFromURI(Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = {MediaStore.Images.Media.DATA};
+            cursor = getActivity().getContentResolver().query(contentUri, proj, null, null,
+                    null);
+            int column_index = cursor
+                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    private static int exifToDegrees(int exifOrientation) {
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
+            return 90;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
+            System.out.println("rota");
+            return 180;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            return 270;
+        }
+        return 0;
+    }
+
+    private Bitmap rotate(Bitmap bm, int rotation) {
+        if (rotation != 0) {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(rotation);
+            try {
+                Bitmap bmOut = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
+                return bmOut;
+            }catch (Exception e){}
+
+
+        }
+        return bm;
     }
 
 }

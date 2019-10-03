@@ -8,9 +8,9 @@ public class Cuoco {
 
     public Cuoco(){}
 
-    public Cuoco (String mail, String password){
+    public Cuoco (String email, String password){
         this.email=email;
-        this.nome=nome;
+        this.password=password;
     }
 
 

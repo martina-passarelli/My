@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.LayoutInflater;
@@ -19,11 +20,16 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.myapplication.R;
 import com.example.myapplication.ui.fragment_commenti.ItemCommentoFragment;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 public class FragmentRicetta extends Fragment {
     private String id,nome,ricetta,descr,foto,info,id_cuoco;
     private boolean isPref=false;
     private Context mContext;
+    private int rot;
     private boolean sezione_commenti=false;
 
     @Override
@@ -39,6 +45,7 @@ public class FragmentRicetta extends Fragment {
            id_cuoco=bundle.get("id_cuoco").toString();
            id = bundle.get("id").toString();
            nome=bundle.get("nome").toString();
+           rot=bundle.getInt("rot");
             //ricetta=bundle.get("ricetta").toString();
            descr=bundle.get("descr").toString();
            info=bundle.get("info").toString();
@@ -54,8 +61,6 @@ public class FragmentRicetta extends Fragment {
         return view;
     }
 
-    // This event is triggered soon after onCreateView().
-    // Any view setup should occur here.  E.g., view lookups and attaching view listeners.
     @SuppressLint("ResourceAsColor")
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -67,10 +72,8 @@ public class FragmentRicetta extends Fragment {
         textDesc.setText(descr);
 
         ImageView img= (ImageView) view.findViewById(R.id.imageHomeRicetta);
+        caricaImg(foto,rot,img);
 
-        byte[] immag = Base64.decode(foto, Base64.DEFAULT);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(immag, 0, immag.length);
-        img.setImageBitmap(bitmap);
 
         Button commenti= (Button)view.findViewById(R.id.button_commenti);
 
@@ -110,6 +113,21 @@ public class FragmentRicetta extends Fragment {
     }
 
 
+    private void caricaImg(String foto, int rot, ImageView img) {
+        StorageReference storage= FirebaseStorage.getInstance().getReference();
+        if(foto !=null){
+            try {
+                storage.child(foto).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Picasso.with(getActivity()).load(uri).rotate(rot).fit().centerCrop().into(img);
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

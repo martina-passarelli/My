@@ -221,25 +221,26 @@ public class FragmentNuovoEvento extends Fragment {
                         if(d.get("nome").toString().equals(luogo)){
                             Luogo luogoF=d.toObject(Luogo.class);
                             double latitudine= luogoF.getLatitudine();
-                            System.out.println("lati+"+latitudine);
                             double longitudine = luogoF.getLongitudine();
                             aggiungiEventoFirebase(nome,partecipanti,descrizione,orario,data,luogoF.getNome(),latitudine,longitudine);
-                            ricaricaFrammentoListaEventi();
                             break;
                         }
                     }
+
                 }
             }
         });
+        ricaricaFrammentoListaEventi();
 
     }
 
     private void ricaricaFrammentoListaEventi() {
         FragmentCuoco frag=(FragmentCuoco)getParentFragment();
         frag.changeVisibility();
-        Lista_Fragment_Evento eventi=new Lista_Fragment_Evento();
-        eventi.eventi_utente();
-        getFragmentManager().beginTransaction().replace(R.id.frame_cuoco,eventi).commit();
+
+        Lista_Fragment_Evento list_eventi=new Lista_Fragment_Evento();
+        list_eventi.doSomething(FirebaseAuth.getInstance().getUid());
+        getFragmentManager().beginTransaction().replace(R.id.frame_cuoco,list_eventi).commit();
     }
 
 
@@ -247,6 +248,7 @@ public class FragmentNuovoEvento extends Fragment {
                                         double latitudine, double longitudine) {
         String idCuoco = mAuth.getUid();
         Evento nuovoEvento = new Evento(nome,idCuoco,descrizione,data,orario,luogo,partecipanti,latitudine,longitudine, new ArrayList<String>());
+
         FirebaseFirestore.getInstance().collection("eventi").document().set(nuovoEvento)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -268,18 +270,15 @@ public class FragmentNuovoEvento extends Fragment {
                     List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                     for (DocumentSnapshot d : list) {
                         if(d.get("nome").toString().equals(nome)){
-                            System.out.println(d.get("nome")+ "--- nome");
                            Evento e= d.toObject(Evento.class);
                            e.setId(d.getId());
-
-                           System.out.println(d.getId()+"---------id");
                            riferimento.document(d.getId()).set(e);
+
                         }
                     }
                 }
             }
         });
-
 
     }
 

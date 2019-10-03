@@ -84,12 +84,14 @@ public class Lista_Fragment_Evento extends Fragment {
             @SuppressLint("ResourceAsColor")
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                ArrayList<String> lista_eventi = (ArrayList<String>) documentSnapshot.get("lista_eventi");
-                list.clear();
-                for(String s: lista_eventi){
-                    add_evento(s);
+                ArrayList<String> lista_eventi =new ArrayList<>();
+                if(documentSnapshot.get("lista_eventi")!=null) {
+                    lista_eventi = (ArrayList<String>) documentSnapshot.get("lista_eventi");
+                    list.clear();
+                    for (String s : lista_eventi) {
+                        add_evento(s);
+                    }
                 }
-
             }
         });
 

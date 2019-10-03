@@ -63,7 +63,6 @@ public class Fragment_CreaRicetta extends Fragment {
 
 
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
     }
 
@@ -86,8 +85,7 @@ public class Fragment_CreaRicetta extends Fragment {
 
         image_foto=(ImageView)view.findViewById(R.id.foto_ricetta);
         image_foto.setOnClickListener((view1) -> {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
+            ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
             Intent intent = new Intent();
             intent.setType("image/*");
             intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -219,7 +217,6 @@ public class Fragment_CreaRicetta extends Fragment {
                 rotazioneImg= rotationInDegrees;
                 bitmap = rotate(bitmap, rotationInDegrees);
                 image_foto.setImageBitmap(bitmap);
-
 
             } catch (IOException e) {
                 e.printStackTrace();

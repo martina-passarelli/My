@@ -142,9 +142,13 @@ public class ListaRicette_Fragment extends Fragment{
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if(documentSnapshot!=null) {
+
                     ArrayList<String> lista_preferiti = (ArrayList<String>) documentSnapshot.get("lista_preferiti");
-                    ricettaList.clear();
-                    for(String s: lista_preferiti) aggiungi(s);
+                    if(lista_preferiti==null)lista_preferiti=new ArrayList<>();
+                    else{
+                        ricettaList.clear();
+                        for(String s: lista_preferiti) aggiungi(s);
+                    }
                 }
             }
         });
