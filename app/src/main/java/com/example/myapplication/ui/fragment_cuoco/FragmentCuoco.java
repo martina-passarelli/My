@@ -318,7 +318,11 @@ public class FragmentCuoco extends Fragment {
     }
 
     private void crea_lista_eventi(String currentId) {
+        Bundle bundle= new Bundle();
+        bundle.putString("id",currentId);
+        bundle.putBoolean("do",true);
         Lista_Fragment_Evento fragment_evento= new Lista_Fragment_Evento();
+        fragment_evento.setArguments(bundle);
         fragment_evento.doSomething(currentId);
         getChildFragmentManager().beginTransaction().replace(R.id.frame_cuoco,fragment_evento).addToBackStack("LISTA").commit();
     }
@@ -390,7 +394,6 @@ public class FragmentCuoco extends Fragment {
                     lista_cuochi.remove(currentId);
                     aggiorna(lista_cuochi);
                     segui.setBackgroundColor( -3355444);
-
                     segui.setText("Segui");
                 }else {
                     lista_cuochi.add(currentId);

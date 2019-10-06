@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.fragment_evento;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,18 +16,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
 import com.example.myapplication.ui.fragment_cuoco.Cuoco;
 import com.example.myapplication.ui.fragment_cuoco.FragmentCuoco;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static androidx.constraintlayout.widget.Constraints.TAG;
+
 public class Adapter_Evento extends RecyclerView.Adapter <Adapter_Evento.ViewHolder>{
 
-    private List<Evento> eventoList;
+    private ArrayList<Evento> eventoList;
     private FirebaseFirestore ff=FirebaseFirestore.getInstance();
 
-    public Adapter_Evento(List<Evento> list){
+    public Adapter_Evento(ArrayList<Evento> list){
         eventoList=list;
     }
 
@@ -58,10 +63,59 @@ public class Adapter_Evento extends RecyclerView.Adapter <Adapter_Evento.ViewHol
 
     }
 
+    public ArrayList<Evento> getData(){
+        return eventoList;
+    }
+
     @Override
     public int getItemCount() {
         return eventoList.size();
     }
+
+    public void removeItem(String id,int position){
+        ff.collection("eventi").document(""+id).delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        removeAt(position);
+                        Log.d(TAG, "Evento rimosso!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting document", e);
+                    }
+                });
+    }
+
+    public void restoreItem(Evento evento, int position){
+        ff.collection("eventi").document(""+evento.getId()).set(evento).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                restoreAt(evento,position);
+                Log.d(TAG, "Evento ripristinato!");
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+    }
+
+
+    private void removeAt(int position) {
+        eventoList.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void restoreAt(Evento item, int position) {
+        eventoList.add(position,item);
+        notifyItemInserted(position);
+    }
+
 
     //---------------------------VIEW HOLDER--------------------------------------------------------
     public class ViewHolder extends RecyclerView.ViewHolder {

@@ -237,9 +237,12 @@ public class FragmentNuovoEvento extends Fragment {
     private void ricaricaFrammentoListaEventi() {
         FragmentCuoco frag=(FragmentCuoco)getParentFragment();
         frag.changeVisibility();
-
+        String currentId= FirebaseAuth.getInstance().getUid();
+        Bundle bundle= new Bundle();
+        bundle.putString("id",currentId);
+        bundle.putBoolean("doS",true);
         Lista_Fragment_Evento list_eventi=new Lista_Fragment_Evento();
-        list_eventi.doSomething(FirebaseAuth.getInstance().getUid());
+        list_eventi.doSomething(currentId);
         getFragmentManager().beginTransaction().replace(R.id.frame_cuoco,list_eventi).commit();
     }
 
@@ -273,13 +276,11 @@ public class FragmentNuovoEvento extends Fragment {
                            Evento e= d.toObject(Evento.class);
                            e.setId(d.getId());
                            riferimento.document(d.getId()).set(e);
-
                         }
                     }
                 }
             }
         });
-
     }
 
     private void aggiungiLuoghi(ArrayList<String> lista) {
