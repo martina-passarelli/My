@@ -14,6 +14,7 @@ public class Utente {
     private ArrayList<String> lista_eventi;
     private ArrayList<String> lista_cuochi;
     private int rot;
+    private double tipo=0;
 
     public Utente() {
     }
@@ -28,6 +29,10 @@ public class Utente {
         this.password=password;
         this.imageProf=imageProf;
         this.rot=rot;
+    }
+
+    public double getTipo() {
+        return tipo;
     }
 
     public String getNome() {

@@ -69,16 +69,20 @@ public class FragmentCuoco extends Fragment {
     private EditText vecchiaPassword;
     private Uri imageUri;
     private static final int SELECT_PICTURE = 100;
+    private String id_utente_corrente=FirebaseAuth.getInstance().getUid();
 
     private Cuoco cuoco;
     private FirebaseFirestore db;
     private StorageReference storage=FirebaseStorage.getInstance().getReference();
     private boolean sezione_eventi=false;
+    private Bundle bundle= new Bundle();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {        super.onCreate(savedInstanceState);
         if(!sezione_eventi) {
             ListaRicette_Fragment ricette_fragment = new ListaRicette_Fragment();
+            bundle.putString("id",currentId);
+            ricette_fragment.setArguments(bundle);
             ricette_fragment.ottieni_lista(currentId);
             getChildFragmentManager().beginTransaction().replace(R.id.frame_cuoco, ricette_fragment).commit();
         }else crea_lista_eventi(currentId);
@@ -101,6 +105,7 @@ public class FragmentCuoco extends Fragment {
         nuovaPassword=(EditText)view.findViewById(R.id.edit_pass_cuoco);
         foto_cuoco=(CircleImageView)view.findViewById(R.id.image_cuoco);
         ricette=(Button)view.findViewById(R.id.button_lista);
+
         eventi=(Button)view.findViewById(R.id.button_eventi);
         add=(FloatingActionButton)view.findViewById(R.id.add_cuoco);
         segui=(Button)view.findViewById(R.id.button_segui);
@@ -108,14 +113,17 @@ public class FragmentCuoco extends Fragment {
         //**********modifica profilo*****************
         modificaFoto = view.findViewById(R.id.modificaFotoCuoco);
         modificaFoto.setVisibility(View.GONE);
-        modificaProfilo = view.findViewById(R.id.modificaCuoco);
-        if(! currentId.equals(FirebaseAuth.getInstance().getUid())) {
-            modificaProfilo.setVisibility(View.GONE);
-            modificaProfilo.setClickable(false);
-        }
+
+
         nuovaPassword.setVisibility(View.GONE);
         vecchiaPassword=view.findViewById(R.id.vecchiaPass);
         vecchiaPassword.setVisibility(View.GONE);
+
+        modificaProfilo = view.findViewById(R.id.modificaCuoco);
+        if(! currentId.equals(id_utente_corrente)) {
+            modificaProfilo.setVisibility(View.GONE);
+            modificaProfilo.setClickable(false);
+        }
 
 
         //PRELEVIAMO I DATI APPARTENENTI AL CUOCO E SETTIAMO LE LABEL
@@ -290,7 +298,7 @@ public class FragmentCuoco extends Fragment {
                 }
             }
             //salvataggio delle informazioni dell'utente
-            Cuoco up = new Cuoco(nome,"",cuoco.getPassword(),cuoco.getEmail(),cuoco.getEmail()+".jpg",cuoco.getRot());
+            Cuoco up = new Cuoco(nome,cuoco.getPassword(),cuoco.getEmail(),cuoco.getEmail()+".jpg",cuoco.getRot());
             db.collection("utenti2").document(currentId).set(up);
             modificaAbilitata=false;
         }catch (Exception e){

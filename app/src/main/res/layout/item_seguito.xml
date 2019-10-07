@@ -9,7 +9,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/id_card_seguito"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="100dp"
         app:cardBackgroundColor="#BADDDDDD"
         app:cardCornerRadius="2dp"
         app:cardElevation="@dimen/activity_horizontal_margin"
@@ -19,13 +19,13 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/border_sf2">
+            android:background="#A1FFFFFF">
 
             <de.hdodenhof.circleimageview.CircleImageView
 
-                android:id="@+id/image_card_cuoco"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:id="@+id/image_card_seguito"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:layout_margin="5dp"
                 android:clickable="false"
                 android:src="@drawable/cuoca"

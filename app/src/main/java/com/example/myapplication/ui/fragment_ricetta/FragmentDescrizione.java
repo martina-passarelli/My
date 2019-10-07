@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class FragmentDescrizione extends Fragment {
-    private String descr,ingred,id_ricetta,id_utente;
+    private String descr,ingred,id_ricetta,id_utente,ricetta;
     private FirebaseFirestore ff=FirebaseFirestore.getInstance();
     private  FloatingActionButton pref;
     private ArrayList<String> preferiti = new ArrayList<>();
@@ -44,7 +44,7 @@ public class FragmentDescrizione extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         Bundle bundle = this.getArguments();
         if(bundle != null){
-
+            ricetta=bundle.getString("ricetta");
             descr=bundle.get("descr").toString();
             ingred=bundle.get("info").toString();
             id_ricetta=bundle.get("id_ricetta").toString();
@@ -54,9 +54,11 @@ public class FragmentDescrizione extends Fragment {
         id_utente=FirebaseAuth.getInstance().getUid();
 
         TextView textDesc=(TextView)view.findViewById(R.id.tRicetta);
-        textDesc.setText(descr);
+        textDesc.setText(ricetta);
+
         TextView textIngred=(TextView) view.findViewById(R.id.tIngredienti);
         textIngred.setText(ingred);
+
         verifica();
 
         pref=(FloatingActionButton)view.findViewById(R.id.floating_pref);

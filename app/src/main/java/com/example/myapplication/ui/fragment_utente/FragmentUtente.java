@@ -5,7 +5,9 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,15 +15,20 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.myapplication.R;
+import com.example.myapplication.ui.fragment_seguiti.ListSeguiti;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -55,6 +62,7 @@ public class FragmentUtente extends Fragment {
     private EditText vecchia_password;
     private EditText telefono;
     private EditText password;
+    private Button seguiti;
     //immagine del profilo
     private CircleImageView img;
     //bottoni
@@ -95,6 +103,7 @@ public class FragmentUtente extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         //--------------------------COMPONENTI GRAFICHE--------------------------------------
+
         nomeUtente=(EditText)view.findViewById(R.id.nomeCompleto);
         nickname= (TextView) view.findViewById(R.id.nick);
         password=(EditText) view.findViewById(R.id.password);
@@ -107,6 +116,33 @@ public class FragmentUtente extends Fragment {
         mail=(EditText) view.findViewById(R.id.mail);
         biografia=(EditText) view.findViewById(R.id.bio);
         img= (CircleImageView) view.findViewById(R.id.imageMenu);
+        CardView card=(CardView)view.findViewById(R.id.card_seguiti);
+
+        ScrollView scrollView = (ScrollView) view.findViewById(R.id.scroll);
+        Drawable dr=scrollView.getBackground();
+        seguiti=(Button)view.findViewById(R.id.button_seguiti);
+        seguiti.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                scrollView.setBackgroundColor(Color.parseColor("#7E858080"));
+                modificaProfilo.setClickable(false);
+                load_seguiti();
+                card.setVisibility(View.VISIBLE);
+            }
+        });
+
+
+        FloatingActionButton close=view.findViewById(R.id.id_close);
+        close.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                scrollView.setBackground(dr);
+                getChildFragmentManager().popBackStack();
+                modificaProfilo.setClickable(true);
+                card.setVisibility(View.INVISIBLE);
+            }
+        });
+
         //------------------------------------------------------------------------------------
         //-----------------------BOTTONI-----------------------------------------------------
         modificaFoto=(FloatingActionButton) view.findViewById(R.id.modificaFoto);
@@ -222,7 +258,7 @@ public class FragmentUtente extends Fragment {
                         }
                         //salvataggio delle informazioni dell'utente
                         Utente up = new Utente(nome,utente.getEmail(),nick,bio,tel, utente.getPassword(),currentUsermail+".jpg",utente.getRot());
-                        db.collection("utenti2").document(id).set(up);
+                        db.collection("utenti2").document(currentId).set(up);
 
                         nuova_password.setText("");
                         vecchia_password.setText("");
@@ -237,6 +273,14 @@ public class FragmentUtente extends Fragment {
                 }
             }
         });
+    }
+
+
+
+    private void load_seguiti() {
+        ListSeguiti lista = new ListSeguiti();
+        getChildFragmentManager().beginTransaction().replace(R.id.fragment,lista).commit();
+
     }
 
 

@@ -1,23 +1,35 @@
 package com.example.myapplication.ui.fragment_cuoco;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class Cuoco {
-    private String nome, tel,password;
+    private String nome,password;
     private String email;
     private String imageProf;
     private int rot;
+    private double tipo=1;
 
-    public Cuoco(){}
+
+    public Cuoco(String nome, String password, String email, String imageProf, int rot, double tipo) {
+        this.nome = nome;
+        this.password = password;
+        this.email = email;
+        this.imageProf = imageProf;
+        this.rot = rot;
+        this.tipo = tipo;
+    }
 
     public Cuoco (String email, String password){
         this.email=email;
         this.password=password;
     }
 
+    public Cuoco(){}
 
 
-    public Cuoco(String nome, String tel, String password, String email, String imageProf, int rot) {
+    public Cuoco(String nome, String password, String email, String imageProf, int rot) {
         this.nome = nome;
-        this.tel = tel;
         this.password = password;
         this.email = email;
         this.imageProf = imageProf;
@@ -28,17 +40,14 @@ public class Cuoco {
         return nome;
     }
 
+    public double getTipo() {
+        return tipo;
+    }
+
     public void setNome(String nome) {
         this.nome = nome;
     }
 
-    public String getTel() {
-        return tel;
-    }
-
-    public void setTel(String tel) {
-        this.tel = tel;
-    }
 
     public String getPassword() {
         return password;
@@ -72,4 +81,16 @@ public class Cuoco {
         this.rot = rot;
     }
 
+    public JSONObject toJSON() throws JSONException {
+
+        JSONObject jo = new JSONObject();
+        jo.put("nome", nome);
+        jo.put("email", email);
+        jo.put("imageProf",imageProf);
+
+        jo.put("password",password);
+        jo.put("rot",rot);
+        jo.put("tipo",tipo);
+        return jo;
+    }
 }

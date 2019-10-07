@@ -32,6 +32,7 @@ public class FragmentRicetta extends Fragment {
     private int rot;
     private boolean sezione_commenti=false;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,14 +47,16 @@ public class FragmentRicetta extends Fragment {
            id = bundle.get("id").toString();
            nome=bundle.get("nome").toString();
            rot=bundle.getInt("rot");
-            //ricetta=bundle.get("ricetta").toString();
+           ricetta=bundle.get("ricetta").toString();
            descr=bundle.get("descr").toString();
            info=bundle.get("info").toString();
            foto=bundle.get("foto").toString();
         }
         bundle.putString("descr",descr);
+        bundle.putString("ricetta", ricetta);
         bundle.putString("info",info);
         bundle.putString("id_ricetta",id);
+
         FragmentDescrizione descrizioneFragment = new FragmentDescrizione();
         descrizioneFragment.setArguments(bundle);
         getChildFragmentManager().beginTransaction().replace(R.id.id_frame_layout,descrizioneFragment).addToBackStack(null).commit();

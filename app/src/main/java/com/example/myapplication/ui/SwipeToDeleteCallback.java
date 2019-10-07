@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.fragment_evento;
+package com.example.myapplication.ui;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -31,7 +31,7 @@ abstract public class SwipeToDeleteCallback extends ItemTouchHelper.Callback {
     private int intrinsicHeight;
 
 
-    SwipeToDeleteCallback(Context context) {
+    protected SwipeToDeleteCallback(Context context) {
         mContext = context;
         mBackground = new ColorDrawable();
         backgroundColor = Color.parseColor("#b80f0a");

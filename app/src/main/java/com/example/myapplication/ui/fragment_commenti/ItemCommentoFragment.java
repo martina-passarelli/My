@@ -151,10 +151,8 @@ public class ItemCommentoFragment extends Fragment {
                                 Commento di=document.toObject(Commento.class);
                                 di.setId(document.getId());
                                 lista_commenti.add(lista_commenti.size(),di);
-                                //recyclerView.setAdapter(tutorAdapter);
                                 recyclerView.scrollToPosition(tutorAdapter.getItemCount()-1);
                                 tutorAdapter.notifyItemInserted(lista_commenti.size()-1);
-                                //tutorAdapter.notifyDataSetChanged();
                             }
                             }
                     });

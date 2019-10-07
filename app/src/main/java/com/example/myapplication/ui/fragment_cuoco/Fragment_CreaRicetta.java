@@ -149,7 +149,7 @@ public class Fragment_CreaRicetta extends Fragment {
                         .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                Toast.makeText(getContext(), "File Uploaded ", Toast.LENGTH_LONG).show();
+                                //Toast.makeText(getContext(), "File Uploaded ", Toast.LENGTH_LONG).show();
                             }
                         });
             }
@@ -161,7 +161,11 @@ public class Fragment_CreaRicetta extends Fragment {
         // DA VERIFICARE SE SI PUO' FARE DIVERSAMENTE
         FragmentCuoco frag=(FragmentCuoco)getParentFragment();
         frag.changeVisibility();
+        Bundle bundle= new Bundle();
+        bundle.putString("id",id_cuoco);
+
         ListaRicette_Fragment ricette_fragment=new ListaRicette_Fragment();
+        ricette_fragment.setArguments(bundle);
         ricette_fragment.ottieni_lista(id_cuoco);
         getFragmentManager().beginTransaction().replace(R.id.frame_cuoco,ricette_fragment).commit();
     }

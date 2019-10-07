@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
-import com.example.myapplication.ui.fragment_ricetta.MyAdapter;
+import com.example.myapplication.ui.SwipeToDeleteCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -137,6 +137,7 @@ public class Lista_Fragment_Evento extends Fragment {
                     lista_eventi = (ArrayList<String>) documentSnapshot.get("lista_eventi");
                     lista_codici=new ArrayList<>();
                     list.clear();
+
                     for (String s : lista_eventi) {
                         add_evento(s);
                     }
@@ -155,7 +156,7 @@ public class Lista_Fragment_Evento extends Fragment {
                 Evento evento=documentSnapshot.toObject(Evento.class);
                 if(evento!=null) {
                     list.add(evento);
-                    lista_codici.add(evento.getId());
+                   // lista_codici.add(evento.getId());
                     tutorAdapter.notifyDataSetChanged();
                 }
             }

@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.ProfiloActivity;
 import com.example.myapplication.R;
+import com.example.myapplication.ui.fragment_cuoco.Cuoco;
 import com.example.myapplication.ui.fragment_utente.Utente;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
@@ -78,7 +79,7 @@ public class Adapter_Seguiti extends RecyclerView.Adapter <Adapter_Seguiti.ViewH
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Utente utente = documentSnapshot.toObject(Utente.class);
+                Cuoco utente = documentSnapshot.toObject(Cuoco.class);
                 //SETTA NOME UTENTE
                 holder.nome_cuoco.setText(utente.getNome());
                 // SETTA IMMAGINE DELL'UTENTE
@@ -109,7 +110,6 @@ public class Adapter_Seguiti extends RecyclerView.Adapter <Adapter_Seguiti.ViewH
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private final View mView;
-        private String  id_utente="";
         private final CardView card;
         private final CircleImageView foto_cuoco;
         private final TextView nome_cuoco;

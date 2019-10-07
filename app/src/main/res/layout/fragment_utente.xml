@@ -2,16 +2,52 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ScrollView01"
+    android:id="@+id/scroll"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_profilo_utente"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:isScrollContainer="true"
         tools:layout_editor_absoluteY="81dp">
 
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_seguiti"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="25dp"
+            android:clickable="false"
+            android:visibility="invisible"
+            app:cardBackgroundColor="@color/common_google_signin_btn_text_light_default"
+            app:cardCornerRadius="@dimen/activity_vertical_margin"
+            app:cardElevation="@dimen/nav_header_vertical_spacing"
+            app:contentPadding="@dimen/nav_header_vertical_spacing"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/id_close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:clickable="true"
+                app:backgroundTint="#D2D50000"
+                app:fabSize="mini"
+                app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
+
+            <FrameLayout
+                android:id="@+id/fragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp">
+
+            </FrameLayout>
+        </androidx.cardview.widget.CardView>
 
         <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/toolbar"
@@ -96,14 +132,24 @@
             android:id="@+id/layout_nome"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_marginTop="20dp"
             android:clickable="false"
             android:overScrollMode="always"
             android:scrollbarSize="?android:attr/actionBarSize"
             android:scrollbars="vertical"
             app:layout_constraintTop_toBottomOf="@+id/toolbar"
-            tools:ignore="MissingConstraints">
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteX="10dp">
 
+
+            <Button
+                android:id="@+id/button_seguiti"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="30dp"
+                android:text="Seguiti"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/nome"
@@ -116,7 +162,8 @@
                 android:textSize="18sp"
                 android:textStyle="normal|italic"
                 android:visibility="visible"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/button_seguiti" />
 
 
             <EditText

@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.fragment_ricetta;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,8 +10,11 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,9 +22,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.algolia.search.saas.Client;
 import com.algolia.search.saas.Index;
 import com.example.myapplication.R;
+import com.example.myapplication.ui.SwipeToDeleteCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -42,8 +49,7 @@ public class ListaRicette_Fragment extends Fragment{
     private CollectionReference colR;
     private FirebaseFirestore ff= FirebaseFirestore.getInstance();
     private ArrayList<Ricetta> ricettaList=new ArrayList<>();
-    private View view;
-    private Bundle savedInstanceState;
+    private String id_profilo="";
 
 
     @Override
@@ -57,6 +63,10 @@ public class ListaRicette_Fragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.fragment_item_list, container, false);
         recyclerView = myView.findViewById(R.id.list_ricetta);
+        Bundle bundle=getArguments();
+        if(bundle!=null && bundle.getString("id").equals(FirebaseAuth.getInstance().getUid())){
+            enableSwipeToDeleteAndUndo();
+        }
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -108,8 +118,10 @@ public class ListaRicette_Fragment extends Fragment{
                         for (DocumentSnapshot d : list) {
                             String id = d.getId();
                             Ricetta ricetta = d.toObject(Ricetta.class);
-                            ricetta.setId_ricetta(id);
-                            ricettaList.add(ricetta);
+                            if(ricetta!=null) {
+                                ricetta.setId_ricetta(id);
+                                ricettaList.add(ricetta);
+                            }
                         }
                     }
                     tutorAdapter.notifyDataSetChanged();
@@ -123,8 +135,10 @@ public class ListaRicette_Fragment extends Fragment{
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String id = document.getId();
                             Ricetta ricetta = document.toObject(Ricetta.class);
-                            ricetta.setId_ricetta(id);
-                            ricettaList.add(ricetta);
+                            if(ricetta!=null) {
+                                ricetta.setId_ricetta(id);
+                                ricettaList.add(ricetta);
+                            }
                         }
                     tutorAdapter.notifyDataSetChanged();
                     } else {
@@ -162,9 +176,11 @@ public class ListaRicette_Fragment extends Fragment{
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     Ricetta ricetta = documentSnapshot.toObject(Ricetta.class);
-                    ricetta.setId_ricetta(id_ricetta);
-                    ricettaList.add(ricetta);
-                    tutorAdapter.notifyDataSetChanged();
+                    if(ricetta!=null) {
+                        ricetta.setId_ricetta(id_ricetta);
+                        ricettaList.add(ricetta);
+                        tutorAdapter.notifyDataSetChanged();
+                    }
                 }
             });
         }
@@ -181,8 +197,10 @@ public class ListaRicette_Fragment extends Fragment{
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String id = document.getId();
                             Ricetta ricetta = document.toObject(Ricetta.class);
-                            ricetta.setId_ricetta(id);
-                            ricettaList.add(ricetta);
+                            if(ricetta!=null) {
+                                ricetta.setId_ricetta(id);
+                                ricettaList.add(ricetta);
+                            }
                         }
                         tutorAdapter.notifyDataSetChanged();
                     } else {
@@ -192,6 +210,31 @@ public class ListaRicette_Fragment extends Fragment{
 
             });
         }
+    }
+
+    private void enableSwipeToDeleteAndUndo() {
+        SwipeToDeleteCallback swipeToDeleteCallback = new SwipeToDeleteCallback(this.getContext()) {
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+                final int position = viewHolder.getAdapterPosition();
+                final Ricetta item = tutorAdapter.getData().get(position);
+                tutorAdapter.removeItem(item.getId_ricetta(),position);
+                ConstraintLayout lin= myView.findViewById(R.id.lin_con);
+                Snackbar snackbar = Snackbar.make(lin, "Ricetta rimossa.", Snackbar.LENGTH_LONG);
+                snackbar.setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        tutorAdapter.restoreItem(item, position);
+                        recyclerView.scrollToPosition(position);
+                    }
+                });
+                snackbar.setActionTextColor(Color.YELLOW);
+                snackbar.show();
+            }
+        };
+
+        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeToDeleteCallback);
+        itemTouchhelper.attachToRecyclerView(recyclerView);
     }
 
 

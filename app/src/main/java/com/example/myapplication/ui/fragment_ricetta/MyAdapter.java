@@ -13,29 +13,35 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import static androidx.constraintlayout.widget.Constraints.TAG;
+
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
-    private List<Ricetta> mDataset;
+    private ArrayList<Ricetta> mDataset;
 //SI OCCUPA DELLA GESTIONE DEI SINGOLI ELEMENTI DELLA LISTA
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView nome_ricetta,descr_ricetta;
         public TextView nome_cuoco;
         public ImageView image;
         public CardView card;
-        public String nom,ricetta, info,descr,foto, id_cuoco;
+        public String nom,ricetta,info,descr,foto, id_cuoco;
         public String id_ricetta;
         public int rot;
         public AppCompatActivity activity;
@@ -52,6 +58,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
             card.setOnClickListener((view)->{
                 Bundle bundle = new Bundle();
+                bundle.putString("ricetta",ricetta);
                 bundle.putString("nome",nom);
                 bundle.putString("descr",descr);
                 bundle.putString("foto",foto);
@@ -71,9 +78,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
 
 
+
     }
 
-    public MyAdapter(List<Ricetta> myDataset) {
+    public MyAdapter(ArrayList<Ricetta> myDataset) {
         mDataset = myDataset;
     }
 
@@ -94,12 +102,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             holder.descr=tmp.getDescrizione();
             holder.nom=tmp.getNome();
             holder.foto=tmp.getFoto();
+            holder.ricetta=tmp.getRicetta();
             holder.info=tmp.getIngredienti();
             holder.id_cuoco=tmp.getId_cuoco();
             holder.id_ricetta=tmp.getId_ricetta();
             holder.rot=tmp.getRot();
+
+
             holder.nome_ricetta.setText(holder.nom);
             holder.nome_cuoco.setText(tmp.getId_cuoco());
+            holder.descr_ricetta.setText(holder.descr);
             String immagine= tmp.getFoto();
             caricaImg(tmp.getFoto(), tmp.getRot(),holder);
         }
@@ -108,6 +120,55 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public int getItemCount() {
         return mDataset.size();
     }
+
+    public ArrayList<Ricetta> getData(){
+        return mDataset;
+    }
+
+    private FirebaseFirestore ff=FirebaseFirestore.getInstance();
+    public void restoreItem(Ricetta ricetta, int position){
+        ff.collection("ricette").document(""+ricetta.getId_ricetta()).set(ricetta).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                restoreAt(ricetta,position);
+                Log.d(TAG, "Evento ripristinato!");
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+    }
+
+    private void restoreAt(Ricetta ricetta, int position) {
+        mDataset.add(position,ricetta);
+        notifyItemInserted(position);
+    }
+
+    public void removeItem(String id,int position){
+        ff.collection("ricette").document(""+id).delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        removeAt(position);
+                        Log.d(TAG, "Evento rimosso!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting document", e);
+                    }
+                });
+    }
+
+    private void removeAt(int position) {
+        mDataset.remove(position);
+        notifyItemRemoved(position);
+    }
+
     private void caricaImg(String foto,int rot,ViewHolder holder){
         StorageReference storage= FirebaseStorage.getInstance().getReference();
         if(foto !=null){

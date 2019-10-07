@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
@@ -33,11 +34,8 @@ import java.util.List;
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapter<MyItemAdapterCommentoRecyclerViewAdapter.ViewHolder> {
-    private Utente utente;
-    private Cuoco cuoco;
-    private String tipo_utente;
+
     private final List<Commento> mValues;
-    private FirebaseAuth firebaseAuth= FirebaseAuth.getInstance();
     private FirebaseFirestore ff= FirebaseFirestore.getInstance();
     private CollectionReference colR=ff.collection("commenti");
     private FirebaseStorage storage=FirebaseStorage.getInstance();
@@ -65,26 +63,31 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
             if(holder.id_utente!=null){
                 DocumentReference doc_utente= ff.collection("utenti2").document(""+holder.id_utente);
                 doc_utente.get().addOnSuccessListener((documentSnapshot) -> {
-                    Object ob =documentSnapshot.toObject(Object.class);
-                    if(ob instanceof Utente) {// SE UTENTE
-                        utente=documentSnapshot.toObject(Utente.class);
-                        ottieni_dati(holder,utente);
-                    }else{// SE CUOCO
-                        cuoco=documentSnapshot.toObject(Cuoco.class);
-                        ottieni_dati(holder,cuoco);
+                    if(documentSnapshot.toObject(Object.class)!=null) {
+                        double ob =documentSnapshot.getDouble("tipo");
+                        ottieni_dati(holder,documentSnapshot);
+                        if (ob==0) {// SE UTENTE
+                            holder.tipo="utente";
+                        } else {// SE CUOCO
+                            holder.tipo="cuoco";
+                        }
+                        //-----------------------------------------------------------------------------------------------------------------------
+                        //---------------CLICK SU PROFILO UTENTE---------------------------------------------------------------------------------
+                        // E' possibile cliccare sul profilo utente solo se esso è presente nel db.
+                        holder.profilo.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Context context = view.getContext();
+                                vai_profilo(holder,context);
+                            }
+                        });
+
                     }
+                    else holder.utente.setText("Account Eliminato");
                 });
             }
 
-            //-----------------------------------------------------------------------------------------------------------------------
-            //---------------CLICK SU PROFILO UTENTE---------------------------------------------------------------------------------
-            holder.profilo.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Context context = view.getContext();
-                    vai_profilo(holder,context);
-                }
-            });
+
 
             //-----------------------------------------------------------------------------------------------------------------------
             //-----------------------RIMOZIONE COMMENTO----------------------------------------------------------------------------------------
@@ -98,6 +101,36 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
             }else holder.rimuovi.setVisibility(View.INVISIBLE);
 
         }
+    }
+
+    public void vai_profilo(ViewHolder holder, Context context){
+        Intent myIntent = new Intent(context, ProfiloActivity.class);
+        myIntent.putExtra("tipo", "commento");//Optional parameters
+        myIntent.putExtra("utente", holder.id_utente);
+        myIntent.putExtra("tipo_utente",holder.tipo);
+        context.startActivity(myIntent);
+    }
+
+
+    public void ottieni_dati(ViewHolder holder, DocumentSnapshot documentSnapshot){
+        //A PARTIRE DAL DOCUMENT SNAPSHOT RICAVIAMO I DATI: I CAMPI CHE SI VOGLIONO OTTENERE SONO COMUNI SIA AL CUOCO CHE ALL'UTENTE.
+        holder.email =documentSnapshot.getString("email");
+        if (documentSnapshot.getString("imageProf")!= null) {
+            try {
+                storage.getReference().child(holder.email + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {//DA SISTEMARE ROTAZIONE IMMAGINE
+                        Picasso.with(holder.image_utente.getContext()).load(uri).rotate(documentSnapshot.getDouble("rot").intValue()).fit().centerCrop().into(holder.image_utente);
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        //----------------------------------------------------------------------------------------------------------------
+        holder.nome_utente = documentSnapshot.getString("nome");
+        holder.utente.setText(holder.nome_utente);
+
     }
 
 
@@ -125,56 +158,8 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
         notifyItemRemoved(position);
     }
 
-    public void vai_profilo(ViewHolder holder, Context context){
-        Intent myIntent = new Intent(context, ProfiloActivity.class);
-        myIntent.putExtra("tipo", "commento");//Optional parameters
-        myIntent.putExtra("utente", holder.id_utente);
-        myIntent.putExtra("tipo_utente",holder.tipo);
-        context.startActivity(myIntent);
-    }
-
-    public void ottieni_dati(ViewHolder holder, Cuoco cuoco){
-        holder.tipo="cuoco";
-        holder.email = cuoco.getEmail();
-        if (cuoco.getImageProf() != null) {
-            try {
-                storage.getReference().child(cuoco.getEmail() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {//DA SISTEMARE ROTAZIONE IMMAGINE
-                        Picasso.with(holder.image_utente.getContext()).load(uri).rotate(cuoco.getRot()).fit().centerCrop().into(holder.image_utente);
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        //----------------------------------------------------------------------------------------------------------------
-        holder.nome_utente = cuoco.getNome();
-        holder.utente.setText(holder.nome_utente);
-    }
 
 
-    public void ottieni_dati (ViewHolder holder, Utente utente){
-
-        holder.email = utente.getEmail();
-        holder.tipo="utente";
-        if (utente.getImageProf() != null) {
-            try {
-                storage.getReference().child(utente.getEmail() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {//DA SISTEMARE ROTAZIONE IMMAGINE
-                        Picasso.with(holder.image_utente.getContext()).load(uri).rotate(utente.getRot()).fit().centerCrop().into(holder.image_utente);
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        //----------------------------------------------------------------------------------------------------------------
-        holder.nome_utente = utente.getNome();
-        holder.utente.setText(holder.nome_utente);
-
-    }
 
     @Override
     public int getItemCount() {

@@ -32,7 +32,6 @@ public class Fragment_IMieiEventi extends Fragment {
         fragment_evento.setArguments(bundle);
         fragment_evento.eventi_utente();
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-
         fragmentTransaction.replace(R.id.fragment,fragment_evento);
         fragmentTransaction.commit();
 

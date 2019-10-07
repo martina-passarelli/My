@@ -46,12 +46,12 @@
                 android:id="@+id/email_cuoco"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
                 android:background="#D2FFFFFF"
+                android:fontFamily="casual"
                 android:text="@string/e_mail"
                 android:textColor="@color/common_google_signin_btn_text_dark_focused"
-                android:textSize="20dp"
-                android:textStyle="bold"
+                android:textSize="16dp"
+                android:textStyle="normal"
                 app:layout_constraintBottom_toTopOf="@id/image_cuoco"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintRight_toRightOf="@id/image_cuoco"
@@ -60,21 +60,23 @@
 
             <EditText
                 android:id="@+id/vecchiaPass"
+                style="@style/Widget.AppCompat.AutoCompleteTextView"
                 android:layout_width="188dp"
                 android:layout_height="22dp"
                 android:layout_margin="20dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="20dp"
 
+                android:layout_marginEnd="20dp"
                 android:background="#D2FFFFFF"
-                android:hint="inserisci la vecchia password"
+                android:fontFamily="casual"
+                android:hint="Inserisci la vecchia password"
                 android:inputType="textPassword"
                 android:textColor="@color/common_google_signin_btn_text_dark_focused"
+                android:textColorHint="@color/common_google_signin_btn_text_dark_focused"
                 android:textSize="14sp"
-                android:textStyle="bold"
+                android:textStyle="normal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintRight_toRightOf="@id/image_cuoco"
-                app:layout_constraintTop_toBottomOf="@id/modificaCuoco" />
+                app:layout_constraintTop_toBottomOf="@id/email_cuoco" />
 
             <EditText
                 android:id="@+id/edit_pass_cuoco"
@@ -82,9 +84,12 @@
                 android:layout_height="20dp"
                 android:layout_margin="20dp"
                 android:background="#D2FFFFFF"
+                android:fontFamily="casual"
                 android:ems="10"
-                android:hint="inserisci la nuova password"
+                android:hint="Inserisci la nuova password"
 
+                android:textColor="@color/common_google_signin_btn_text_dark_focused"
+                android:textColorHint="@color/common_google_signin_btn_text_dark_focused"
                 android:inputType="textPassword"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -99,12 +104,11 @@
                 android:clickable="true"
 
                 android:foregroundGravity="right"
-                app:layout_constraintBottom_toTopOf="@id/email_cuoco"
+                app:backgroundTint="@color/common_google_signin_btn_text_light_default"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintRight_toRightOf="@id/nome_cuoco"
-                app:layout_constraintTop_toBottomOf="@id/nome_cuoco"
-                app:layout_constraintVertical_bias="0.0"
-                app:srcCompat="@drawable/ic_menu_manage" />
+                app:srcCompat="@android:drawable/ic_menu_manage" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/modificaFotoCuoco"
@@ -121,7 +125,16 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:rippleColor="@color/com_facebook_button_background_color_focused_disabled" />
 
-
+            <Button
+                android:id="@+id/button_segui"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Segui"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/image_cuoco"
+                app:layout_constraintTop_toBottomOf="@id/email_cuoco" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -153,15 +166,6 @@
             android:layout_margin="10dp"
             android:text="Eventi"
             app:layout_constraintStart_toEndOf="@id/button_lista"
-            app:layout_constraintTop_toBottomOf="@id/id_contenitore_dati" />
-
-        <Button
-            android:id="@+id/button_segui"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text="Segui"
-            app:layout_constraintStart_toEndOf="@id/button_eventi"
             app:layout_constraintTop_toBottomOf="@id/id_contenitore_dati" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
