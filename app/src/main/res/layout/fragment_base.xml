@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#817E7E"
+        android:minHeight="50dp"
+        app:popupTheme="@style/AppTheme.PopupOverlay">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:tabTextColor="#E1FFFFFF">
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/id_tab_ricette"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ricette" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/id_tab_chef"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chef" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/id_tab_eventi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Eventi " />
+        </com.google.android.material.tabs.TabLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

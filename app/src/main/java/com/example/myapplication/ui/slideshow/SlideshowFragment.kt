@@ -4,9 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.myapplication.R
 import com.example.myapplication.ui.fragment_evento.Lista_Fragment_Evento
@@ -26,7 +24,7 @@ class SlideshowFragment : Fragment() {
         val fragment = Lista_Fragment_Evento()
         fragment.eventi_utente()
         val fragmentTransaction = activity!!.supportFragmentManager.beginTransaction()
-        fragmentTransaction.add(R.id.nav_host_fragment, fragment)
+        fragmentTransaction.add(R.id.fragment, fragment)
         fragmentTransaction.commit()
 
         return root

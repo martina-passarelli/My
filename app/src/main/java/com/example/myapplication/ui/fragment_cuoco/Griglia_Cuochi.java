@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.fragment_cuoco;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,10 +56,8 @@ public class Griglia_Cuochi extends Fragment {
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(mLayoutManager);
-
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this.getContext(), DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(itemDecoration);
-
         recyclerView.setAdapter(tutorAdapter);
         return myView;
     }
@@ -117,5 +116,23 @@ public class Griglia_Cuochi extends Fragment {
 
             }
         });
+    }
+
+
+
+    private Context context;
+    @Override
+    public void onAttach(Context context){
+        super.onAttach(context);
+        context=context;
+    }
+    @Override
+    public void onDetach(){
+        super.onDetach();
+    }
+    @Override
+    public void onPause() {
+
+        super.onPause();
     }
 }

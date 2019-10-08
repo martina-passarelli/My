@@ -23,9 +23,10 @@
         android:id="@+id/insert_testo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
         android:background="#B9FFFFFF"
-        app:errorEnabled="true"
-        tools:ignore="MissingConstraints">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="10dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/input_cerca_cuoco"
@@ -38,7 +39,10 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/griglia"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="58dp"
+        android:isScrollContainer="true"
+        android:overScrollMode="always"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/fab_search_cuoco"

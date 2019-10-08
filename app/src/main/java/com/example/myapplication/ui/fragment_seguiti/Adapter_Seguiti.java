@@ -81,19 +81,21 @@ public class Adapter_Seguiti extends RecyclerView.Adapter <Adapter_Seguiti.ViewH
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Cuoco utente = documentSnapshot.toObject(Cuoco.class);
                 //SETTA NOME UTENTE
-                holder.nome_cuoco.setText(utente.getNome());
-                // SETTA IMMAGINE DELL'UTENTE
-                if(utente.getImageProf() !=null){
-                    try {
-                        storage.child(utente.getEmail()+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                activity = (AppCompatActivity) holder.mView.getContext();
-                                Picasso.with(activity).load(uri).rotate(utente.getRot()).fit().centerCrop().into(holder.foto_cuoco);
-                            }
-                        });
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                if(utente!=null) {
+                    holder.nome_cuoco.setText(utente.getNome());
+                    // SETTA IMMAGINE DELL'UTENTE
+                    if (utente.getImageProf() != null) {
+                        try {
+                            storage.child(utente.getEmail() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    activity = (AppCompatActivity) holder.mView.getContext();
+                                    Picasso.with(activity).load(uri).rotate(utente.getRot()).fit().centerCrop().into(holder.foto_cuoco);
+                                }
+                            });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -119,7 +121,7 @@ public class Adapter_Seguiti extends RecyclerView.Adapter <Adapter_Seguiti.ViewH
             super(itemView);
             mView=itemView;
             nome_cuoco=(TextView)itemView.findViewById(R.id.id_nome_seguito);
-            foto_cuoco=(CircleImageView) itemView.findViewById(R.id.image_card_cuoco);
+            foto_cuoco=(CircleImageView) itemView.findViewById(R.id.image_card_seguito);
             card=(CardView)itemView.findViewById(R.id.id_card_seguito);
 
         }

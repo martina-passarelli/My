@@ -33,6 +33,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
@@ -77,11 +78,7 @@ public class Lista_Fragment_Evento extends Fragment {
         return myView;
     }
 
-    /*@Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        if(doS)doSomething(id_utente);
-        else eventi_utente();
-    }*/
+
 
     private void enableSwipeToDeleteAndUndo() {
         SwipeToDeleteCallback swipeToDeleteCallback = new SwipeToDeleteCallback(this.getContext()) {
@@ -178,6 +175,26 @@ public class Lista_Fragment_Evento extends Fragment {
                         Log.w(TAG, "Error updating document", e);
                     }
                 });
+    }
+
+
+    public void eventiTotali(){
+        ff.collection("eventi").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if (!queryDocumentSnapshots.isEmpty()) {
+                    List<DocumentSnapshot> lista = queryDocumentSnapshots.getDocuments();
+                    for (DocumentSnapshot d : lista) {
+                        Evento evento= d.toObject(Evento.class);
+                        list.add(evento);
+
+                    }
+                    tutorAdapter.notifyDataSetChanged();
+                }
+            }
+
+        });
+
     }
 
     private Context mContext;

@@ -55,9 +55,13 @@ public class Adapter_Evento extends RecyclerView.Adapter <Adapter_Evento.ViewHol
             //settiamo il nome del cuoco dal suo id
             DocumentReference doc_cuoco=ff.collection("utenti2").document(""+evento.getId_cuoco());
             doc_cuoco.get().addOnSuccessListener((documentSnapshot) -> {
+
                 Cuoco cuoco =documentSnapshot.toObject(Cuoco.class);
-                holder.id_cuoco=evento.getId_cuoco();
-                holder.label_cuoco.setText(cuoco.getNome());
+                if(cuoco!=null) {
+                    holder.id_cuoco = evento.getId_cuoco();
+                    holder.label_cuoco.setText(cuoco.getNome());
+                }
+
             });
         }
 
