@@ -23,10 +23,13 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -78,33 +81,31 @@ public class ItemCommentoFragment extends Fragment {
 
         FirebaseFirestore ff= FirebaseFirestore.getInstance();
         CollectionReference colR=ff.collection("commenti");
-        id_commento=parms;
+        id_commento=parms; //sarebbe l'id della ricetta commentata
+        //preleva_commento(parms);
         //QUERY: selezionare tutti i commenti riferiti a quella ricetta
-        colR.whereEqualTo("id_commento",parms).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        colR.orderBy("date",Query.Direction.ASCENDING).
+                whereEqualTo("id_commento",parms).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                // Log.d(TAG, document.getId() + " => " + document.getData());
                                 Commento di=document.toObject(Commento.class);
-                                di.setId(document.getId());
                                 lista_commenti.add(di);
                             }
+                            recyclerView.scrollToPosition(lista_commenti.size()-1);
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
                         tutorAdapter.notifyDataSetChanged();
                     }
                 });
-
-
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         //QUESTA PARTE SI OCCUPA DELLA CONDIVISIONE DEL COMMENTO!
         TextInputLayout text_input=(TextInputLayout)view.findViewById(R.id.input_commento);
-
         Button condividi= (Button)view.findViewById(R.id.button_commenta);
         condividi.setOnClickListener(new View.OnClickListener()
         {
@@ -120,25 +121,10 @@ public class ItemCommentoFragment extends Fragment {
 
                     //DATI DEL COMMENTO
                     String utente=FirebaseAuth.getInstance().getUid();
-                    Map<String, Object> commento = new HashMap<>();
-                    commento.put("id_commento", id_commento);
-                    commento.put("id_utente", utente);
-                    commento.put("testo_commento", testo);
                     Commento comm=new Commento(id_commento,firebaseAuth.getUid(),testo);
+                    System.out.println("ORAAAAAAAA"+FieldValue.serverTimestamp().toString());
 
-                    colR.document().set(commento)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Log.d(TAG, "Commento condiviso!");
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w(TAG, "Errore condivisione fallita", e);
-                                }
-                            });
+                    colR.document().set(comm);
 
                     //DEVO OTTENERE ID RANDOM..VERIFICARE SE SI PUo' OTTENERE IN MODO MIGLIORE
                      colR.whereEqualTo("id_commento",id_commento).whereEqualTo("id_utente",utente).
@@ -148,15 +134,16 @@ public class ItemCommentoFragment extends Fragment {
                             if (task.isSuccessful()) {
                                 QuerySnapshot snapshot= task.getResult();
                                 DocumentSnapshot document= snapshot.getDocuments().get(0);
-                                Commento di=document.toObject(Commento.class);
-                                di.setId(document.getId());
-                                lista_commenti.add(lista_commenti.size(),di);
+                                String id=document.getId();
+                                comm.setId(id);
+                                colR.document(""+id).set(comm);
+                                lista_commenti.add(lista_commenti.size(),comm);
                                 recyclerView.scrollToPosition(tutorAdapter.getItemCount()-1);
                                 tutorAdapter.notifyItemInserted(lista_commenti.size()-1);
-                            }
-                            }
-                    });
 
+                            }
+                       }
+                    });
                     text_input.getEditText().setText("");
 
                 }else{
@@ -169,8 +156,10 @@ public class ItemCommentoFragment extends Fragment {
 
     }
 
+    public void change_id(String id){
 
 
+    }
     private Context mContext;
 
     @Override

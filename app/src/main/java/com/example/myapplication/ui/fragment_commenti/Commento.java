@@ -1,27 +1,39 @@
 package com.example.myapplication.ui.fragment_commenti;
 
-import android.os.health.TimerStat;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.ServerTimestamp;
 
-import java.sql.Timestamp;
-import java.util.Calendar;
+
+import java.io.Serializable;
+
 import java.util.Date;
+import java.util.Locale;
 
-public class Commento {
+public class Commento implements Serializable {
 
-    private String id,id_commento, id_utente, testo_commento;
-    private int giorno, mese, ora;
+    public String id,id_commento, id_utente, testo_commento;
+
+    @ServerTimestamp
+    public Date date=new Date();
 
     public Commento(){
-
     }
 
-    public Commento(String id_commento, String id_utente, String testo_commento) {
+
+    public Commento(String id_commento, String id_utente, String testo_commento){
         this.id_commento = id_commento;
         this.id_utente = id_utente;
         this.testo_commento = testo_commento;
-        giorno = Calendar.DAY_OF_MONTH;
-        mese= Calendar.MONTH;
-        ora= Calendar.HOUR_OF_DAY;
+    }
+
+
+    public void setId_commento(String id_commento) {
+        this.id_commento = id_commento;
+    }
+
+
+    public void setId_utente(String id_utente) {
+        this.id_utente = id_utente;
     }
 
     public String getId_commento() {

@@ -2,8 +2,10 @@ package com.example.myapplication.ui.fragment_ricetta;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
@@ -79,12 +81,19 @@ public class FragmentRicetta extends Fragment {
 
 
         Button commenti= (Button)view.findViewById(R.id.button_commenti);
+        ColorStateList no_click = commenti.getBackgroundTintList();
+
+        Button descrizione_button= (Button)view.findViewById(R.id.button_descr);
+       ColorStateList click=descrizione_button.getBackgroundTintList();
 
         commenti.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v) {
                 if(sezione_commenti==false) {
+
+                    descrizione_button.setBackgroundTintList(no_click);
+                    commenti.setBackgroundTintList(click);
                     //ENTRA IN GIOCO IL FRAMMENTO DEI COMMENTI
                     ItemCommentoFragment fragment_commenti = new ItemCommentoFragment();
                     //IL METODO doSomething(String value) E' USATO PER PRENDERE SOLO I COMMENTI
@@ -96,19 +105,24 @@ public class FragmentRicetta extends Fragment {
                     transaction.replace(R.id.id_frame_layout, fragment_commenti);
                     transaction.addToBackStack("DESCRIZIONE");
                     transaction.commit();
+
                     sezione_commenti = true;
                 }
             }
         });
 
-        Button descrizione_button= (Button)view.findViewById(R.id.button_descr);
+
 
         descrizione_button.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v) {
                 if(sezione_commenti==true) {
+                    commenti.setBackgroundTintList(no_click);
+                    descrizione_button.setBackgroundTintList(click);
+
                     getChildFragmentManager().popBackStack("DESCRIZIONE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
                     sezione_commenti = false;
                 }
             }

@@ -2,6 +2,7 @@ package com.example.myapplication.ui.fragment_evento;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,13 +82,17 @@ public class Fragment_Evento extends Fragment {
         descrizione.setClickable(false);//Si apre direttamente nella sezione descrizione
         Button partecipanti=(Button)view.findViewById(R.id.button_partec);
 
+        ColorStateList click= descrizione.getBackgroundTintList();
+        ColorStateList no_click=partecipanti.getBackgroundTintList();
 
         descrizione.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                getChildFragmentManager().popBackStack("DESCRIZIONE",FragmentManager.POP_BACK_STACK_INCLUSIVE);
                descrizione.setClickable(false);
+               descrizione.setBackgroundTintList(click);
                partecipanti.setClickable(true);
+               partecipanti.setBackgroundTintList(no_click);
             }
         });
 
@@ -107,7 +112,9 @@ public class Fragment_Evento extends Fragment {
                 transaction.addToBackStack("DESCRIZIONE");
                 transaction.commit();
                 descrizione.setClickable(true);
+                descrizione.setBackgroundTintList(no_click);
                 partecipanti.setClickable(false);
+                partecipanti.setBackgroundTintList(click);
             }
         });
 
@@ -154,7 +161,7 @@ public class Fragment_Evento extends Fragment {
         doc.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if(documentSnapshot!=null) {
+                if(documentSnapshot.toObject(Object.class)!=null) {
                     Cuoco prof_cuoco = documentSnapshot.toObject(Cuoco.class);
                     cuoco.setText(prof_cuoco.getNome());
                 }

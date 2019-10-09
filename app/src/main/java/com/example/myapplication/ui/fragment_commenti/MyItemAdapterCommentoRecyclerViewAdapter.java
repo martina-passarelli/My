@@ -29,7 +29,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 
+import org.w3c.dom.Text;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
@@ -58,6 +63,9 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
             holder.testo_commento=commento.getTesto_commento();
             holder.commento.setText(holder.testo_commento);
             holder.id_utente=commento.getId_utente();
+            Date date=commento.date;
+            String format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm", Locale.getDefault()).format(date);
+            holder.data.setText(format);
 
             //-------------------------------OTTENIAMO I DATI DELL'UTENTE------------------------------------------------------------
             if(holder.id_utente!=null){
@@ -69,6 +77,7 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
                         if (ob==0) {// SE UTENTE
                             holder.tipo="utente";
                         } else {// SE CUOCO
+                            holder.icon.setVisibility(View.VISIBLE);
                             holder.tipo="cuoco";
                         }
                         //-----------------------------------------------------------------------------------------------------------------------
@@ -169,8 +178,9 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
 //-------------------------------CONTENUTO DI UN ITEMSET------------------------------------------------------------------------------
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView utente;
+        public final TextView utente,data;
         public final TextView commento;
+        public final ImageView icon;
         public final Button rimuovi;
         public final LinearLayout profilo;
         public final ImageView image_utente;
@@ -183,6 +193,8 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
             super(view);
             mView = view;
             utente = (TextView) view.findViewById(R.id.nome_utente_commento);
+            icon= (ImageView) view.findViewById(R.id.icon_chef);
+            data=(TextView) view.findViewById(R.id.text_data);
             rimuovi= (Button)view.findViewById(R.id.button_elimina_commento);
             commento = (TextView) view.findViewById(R.id.id_commento_principale);
             profilo=(LinearLayout)view.findViewById(R.id.id_layout_utente);

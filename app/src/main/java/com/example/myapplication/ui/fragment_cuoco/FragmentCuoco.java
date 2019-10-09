@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -132,6 +133,9 @@ public class FragmentCuoco extends Fragment {
         //VERIFICA SE L'UTENTE SEGUE IL CUOCO
         sei_seguace();
 
+        ColorStateList click= ricette.getBackgroundTintList();
+        ColorStateList no_click= eventi.getBackgroundTintList();
+
         //OTTENIAMO LA LISTA DI EVENTI A CUI PARTECIPA
         eventi.setOnClickListener(new View.OnClickListener()
         {
@@ -140,11 +144,14 @@ public class FragmentCuoco extends Fragment {
                 if(sezione_eventi==false) {
                     crea_lista_eventi(currentId);
                     ricette.setClickable(true);
+                    ricette.setBackgroundTintList(no_click);
                     eventi.setClickable(false);
+                    eventi.setBackgroundTintList(click);
                     sezione_eventi = true;
                 }
             }
         });
+
 
 
         ricette.setOnClickListener(new View.OnClickListener()
@@ -154,7 +161,9 @@ public class FragmentCuoco extends Fragment {
                 if(sezione_eventi==true) {
                     getChildFragmentManager().popBackStack("LISTA", FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     ricette.setClickable(false);
+                    ricette.setBackgroundTintList(click);
                     eventi.setClickable(true);
+                    eventi.setBackgroundTintList(no_click);
                     sezione_eventi = false;
                 }
             }

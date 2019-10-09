@@ -35,7 +35,6 @@
                 android:layout_margin="20dp"
                 android:background="#D2FFFFFF"
                 android:fontFamily="cursive"
-                android:text="TextView"
                 android:textAlignment="center"
                 android:textColor="@color/common_google_signin_btn_text_dark_focused"
                 android:textSize="30dp"
@@ -48,7 +47,6 @@
                 android:layout_height="wrap_content"
                 android:background="#D2FFFFFF"
                 android:fontFamily="casual"
-                android:text="@string/e_mail"
                 android:textColor="@color/common_google_signin_btn_text_dark_focused"
                 android:textSize="16dp"
                 android:textStyle="normal"
@@ -155,6 +153,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
+            android:backgroundTint="#CBB8B6B6"
             android:text="Le mie ricette"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/id_contenitore_dati" />
@@ -164,6 +163,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
+            android:backgroundTint="#E4E4E2E2"
             android:text="Eventi"
             app:layout_constraintStart_toEndOf="@id/button_lista"
             app:layout_constraintTop_toBottomOf="@id/id_contenitore_dati" />

@@ -17,7 +17,7 @@
             android:id="@+id/mapView"
             android:layout_width="match_parent"
             android:layout_height="187dp"
-            android:layout_marginLeft="20dp"
+            android:layout_margin="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/home_luogo" />
@@ -29,7 +29,6 @@
             android:layout_height="wrap_content"
             android:fontFamily="cursive"
             android:gravity="center"
-            android:text="Nome Evento"
             android:textColor="@color/common_google_signin_btn_text_light_pressed"
             android:textSize="30dp"
             app:layout_constraintTop_toTopOf="parent" />
@@ -55,11 +54,11 @@
             android:clickable="true"
             android:fontFamily="sans-serif-condensed-light"
             android:linksClickable="true"
-            android:text="nome cuoco"
             android:textAllCaps="false"
             android:textColor="@color/common_google_signin_btn_text_dark_focused"
             android:textColorLink="@android:color/holo_red_light"
             android:textSize="20sp"
+            android:textStyle="italic"
             app:layout_constraintStart_toEndOf="@id/label_cuoco"
             app:layout_constraintTop_toTopOf="@id/label_cuoco" />
 
@@ -69,7 +68,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:fontFamily="casual"
-            android:text="Luogo"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/label_cuoco" />
@@ -80,7 +78,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:fontFamily="casual"
-            android:text="Data"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/mapView" />
@@ -91,7 +88,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:fontFamily="casual"
-            android:text="Ora"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/home_data" />
@@ -109,7 +105,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:background="@color/common_google_signin_btn_text_dark_disabled"
+            android:backgroundTint="#CBB8B6B6"
             android:text=" Descrizione "
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/home_ora" />
@@ -119,7 +115,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:background="@color/common_google_signin_btn_text_dark_disabled"
+            android:backgroundTint="#E4E4E2E2"
             android:text=" Partecipanti "
             app:layout_constraintStart_toEndOf="@id/button_descr_evento"
             app:layout_constraintTop_toBottomOf="@id/home_ora" />

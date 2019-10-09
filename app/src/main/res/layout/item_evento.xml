@@ -14,7 +14,9 @@
         app:cardBackgroundColor="#BADDDDDD"
         app:cardCornerRadius="4dp"
         app:cardElevation="4dp"
-        app:cardMaxElevation="10dp">
+        app:cardMaxElevation="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,7 +30,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="cursive"
-                android:text="Nome evento"
                 android:textColor="@color/common_google_signin_btn_text_dark_focused"
                 android:textSize="30sp" />
 
@@ -37,7 +38,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="cursive"
-                android:text="Nome cuoco"
                 android:textColor="@color/common_google_signin_btn_text_light_pressed"
                 android:textSize="20sp"
                 android:textStyle="italic" />
@@ -54,7 +54,6 @@
                 android:layout_height="wrap_content"
                 android:background="#BAFAF9F9"
                 android:fontFamily="casual"
-                android:text="Luogo evento"
                 android:textColor="@color/common_google_signin_btn_text_light_pressed" />
 
             <TextView
@@ -63,7 +62,6 @@
                 android:layout_height="wrap_content"
                 android:background="#BAFAF9F9"
                 android:fontFamily="casual"
-                android:text="Data"
                 android:textColor="@color/common_google_signin_btn_text_light_pressed" />
 
             <TextView
@@ -72,7 +70,6 @@
                 android:layout_height="wrap_content"
                 android:background="#BAFAF9F9"
                 android:fontFamily="casual"
-                android:text="Ora"
                 android:textColor="@color/common_google_signin_btn_text_light_pressed" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
