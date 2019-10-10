@@ -108,9 +108,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             holder.id_ricetta=tmp.getId_ricetta();
             holder.rot=tmp.getRot();
 
-
             holder.nome_ricetta.setText(holder.nom);
-            holder.nome_cuoco.setText(tmp.getId_cuoco());
+            holder.nome_cuoco.setText(tmp.getNome_cuoco());
+
             holder.descr_ricetta.setText(holder.descr);
             String immagine= tmp.getFoto();
             caricaImg(tmp.getFoto(), tmp.getRot(),holder);

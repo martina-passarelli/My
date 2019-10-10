@@ -1,5 +1,8 @@
 package com.example.myapplication.ui.fragment_nuovo_evento;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +17,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.example.myapplication.R;
@@ -62,10 +66,12 @@ public class FragmentNuovoEvento extends Fragment {
     private FirebaseFirestore firestore;
     private FirebaseAuth mAuth;
 
+    private Context context;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
     }
 
@@ -73,6 +79,7 @@ public class FragmentNuovoEvento extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.frag_crea_evento, container, false);
+        context=inflater.getContext();
         return myView;
     }
 
@@ -190,7 +197,10 @@ public class FragmentNuovoEvento extends Fragment {
 
     private void aggiungiEvento() {
         String nome=editTextNome.getText().toString();
-        int partecipanti= Integer.parseInt(editTextPartecipanti.getText().toString());
+        int partecipanti;
+        if(!editTextPartecipanti.getText().toString().equals(""))
+            partecipanti= Integer.parseInt(editTextPartecipanti.getText().toString());
+        else partecipanti=0;
         String descrizione= editTextDescrizione.getText().toString();
         int ora = oraPicker.getHour();
         int min = oraPicker.getMinute();
@@ -198,15 +208,19 @@ public class FragmentNuovoEvento extends Fragment {
         int giorno = dataPicker.getDayOfMonth();
         int mese = dataPicker.getMonth()+1;
         int anno = dataPicker.getYear();
-        String data = giorno+"-"+mese+"-"+anno;
-        String luogo = spinnerLuoghi.getSelectedItem().toString();
+        String data = giorno+"/"+mese+"/"+anno;
+        String luogo;
+        if(spinnerLuoghi.getSelectedItem()!=null)
+            luogo = spinnerLuoghi.getSelectedItem().toString();
+        else luogo="";
+        String citta;
+        if(spinnerCitta.getSelectedItem()!=null)
+            citta   =spinnerCitta.getSelectedItem().toString();
+        else citta="";
 
-        System.out.println("luogoooo="+luogo);
-
-        String citta =spinnerCitta.getSelectedItem().toString();
-
-        if (luogo=="" || nome=="" || partecipanti==0 || descrizione=="" ||
-        orario==""|| data==""|| citta==""){
+        if (luogo=="" || luogo==null|| nome=="" ||nome==null ||
+                partecipanti==0 || descrizione=="" || descrizione==null ||
+                orario==""|| data==""|| citta=="" || citta==null ){
             Toast.makeText(this.getContext(), "Devi inserire tutti i campi!!!",Toast.LENGTH_SHORT).show();
             return;
         }
@@ -222,7 +236,31 @@ public class FragmentNuovoEvento extends Fragment {
                             Luogo luogoF=d.toObject(Luogo.class);
                             double latitudine= luogoF.getLatitudine();
                             double longitudine = luogoF.getLongitudine();
-                            aggiungiEventoFirebase(nome,partecipanti,descrizione,orario,data,luogoF.getNome(),latitudine,longitudine);
+                            //*************************l'evento esiste????
+                            CollectionReference riferimento = mDatabase.collection("eventi");
+                            riferimento.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                @Override
+                                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                    boolean aggiungi =true;
+                                    if (!queryDocumentSnapshots.isEmpty()) {
+                                        List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                                        for (DocumentSnapshot d : list) {
+                                            Evento evento = d.toObject(Evento.class);
+                                            if(evento.getLuogo().equals(luogoF.getNome() )&&
+                                                    evento.getCittà().equals(citta) &&
+                                                    evento.getData().equals(data)  ) {
+                                                //mostro un avviso
+                                                showDialog();
+                                                aggiungi=false;
+                                                break;
+                                            }
+                                        }
+                                        if(aggiungi)
+                                            aggiungiEventoFirebase(nome, partecipanti, descrizione, orario, data,
+                                                    luogoF.getNome(), latitudine, longitudine, citta);
+                                    }
+                                }
+                            });
                             break;
                         }
                     }
@@ -231,7 +269,27 @@ public class FragmentNuovoEvento extends Fragment {
             }
         });
         ricaricaFrammentoListaEventi();
+    }
 
+    private void showDialog() {
+        AlertDialog alertDialog = new AlertDialog.Builder(context)
+                .create();
+        alertDialog.setTitle("");
+        alertDialog.setMessage("Evento già esistente in quel luogo");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(Color.BLACK);
+            }
+        });
+        alertDialog.show();
     }
 
     private void ricaricaFrammentoListaEventi() {
@@ -248,9 +306,9 @@ public class FragmentNuovoEvento extends Fragment {
 
 
     private void aggiungiEventoFirebase(String nome, int partecipanti, String descrizione, String orario, String data, String luogo,
-                                        double latitudine, double longitudine) {
+                                        double latitudine, double longitudine, String città) {
         String idCuoco = mAuth.getUid();
-        Evento nuovoEvento = new Evento(nome,idCuoco,descrizione,data,orario,luogo,partecipanti,latitudine,longitudine, new ArrayList<String>());
+        Evento nuovoEvento = new Evento(nome,idCuoco,descrizione,data,orario,luogo,partecipanti,latitudine,longitudine, new ArrayList<String>(),città);
 
         FirebaseFirestore.getInstance().collection("eventi").document().set(nuovoEvento)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -265,6 +323,7 @@ public class FragmentNuovoEvento extends Fragment {
                         Log.w(TAG, "Errore inserimento fallito", e);
                     }
                 });
+
         CollectionReference riferimento = mDatabase.collection("eventi");
         riferimento.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override

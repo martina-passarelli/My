@@ -14,7 +14,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#90FFFFFF"
+        android:background="#D7FFFFFF"
         android:isScrollContainer="true"
         android:orientation="vertical">
 
@@ -34,6 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TextView"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
             android:textSize="16sp"
             tools:ignore="MissingConstraints"
             tools:layout_conversion_absoluteHeight="21dp"
@@ -56,6 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:text="TextView"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
             android:textSize="16sp"
             tools:ignore="MissingConstraints"
             tools:layout_conversion_absoluteHeight="21dp"
@@ -66,7 +68,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
-            android:clickable="true" />
+            android:clickable="true"
+            app:backgroundTint="#EBC0BDBD"
+            app:elevation="8dp" />
     </LinearLayout>
 
 

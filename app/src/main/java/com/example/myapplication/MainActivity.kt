@@ -1,6 +1,8 @@
 package com.example.myapplication
 
+import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import androidx.navigation.findNavController
@@ -17,6 +19,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.google.firebase.auth.FirebaseAuth
 
 import com.example.myapplication.ui.fragment_cuoco.Cuoco
@@ -57,11 +60,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
-        //_________________________________________________
-
-        //_______________________________________________
-
-
         setSupportActionBar(toolbar)
 
         mAuth = FirebaseAuth.getInstance();
@@ -164,34 +162,67 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId;
+        //***esci
         if(id==R.id.esci && mAuth.currentUser!=null) {
-            FirebaseAuth.getInstance().signOut();
-
-            val i = Intent(this@MainActivity, HomePage::class.java)
-            startActivity(i)
-            Toast.makeText(
-                applicationContext, "Logout avvenuto con successo", Toast.LENGTH_LONG).show()
-            return true;
+            showDialogLogOut()
+            return true
         }
+        //***elimina
         if(id==R.id.elimina_account && mAuth.currentUser!=null) {
+            showDialogElimina()
+            return true
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-            val pass :String = if(cuoco!=null) cuoco!!.password
-            else utente!!.password
+    private fun showDialogElimina() {
+        val builder = AlertDialog.Builder(this).create()
+        builder.setTitle("")
+        builder.setMessage("Vuoi veramente eliminare l'account?")
+        builder.setButton(AlertDialog.BUTTON_POSITIVE, "SI",
+            DialogInterface.OnClickListener {
+                    dialog, which ->
+                val id : String? = mAuth.uid
+                operazioniDiEliminazione()
 
-            val user =mAuth.currentUser
+                UtilitaEliminaAccount.eliminaCommenti(id)
+                UtilitaEliminaAccount.eliminaEventiePartecipanti(id)
+                if(cuoco!=null) UtilitaEliminaAccount.eliminaRicette(id)
+            })
+        builder.setButton(AlertDialog.BUTTON_NEGATIVE, "NO",
+            DialogInterface.OnClickListener {
+                    dialog, which ->
+            })
 
-            val credential = EmailAuthProvider
-                .getCredential(user?.email.toString(),pass )
-            val uid = mAuth.uid
-            // Prompt the user to re-provide their sign-in credentials
-            user!!.reauthenticate(credential)
-                .addOnCompleteListener {
-                    user.delete()
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                System.out.println("ID="+uid)
-                                val docRef = firestore.collection("utenti2").document(""+uid).delete().addOnCompleteListener {
+        builder.setOnShowListener(DialogInterface.OnShowListener {
+            builder.getButton(
+                AlertDialog.BUTTON_NEGATIVE
+            ).setTextColor(Color.BLACK)
+            builder.getButton(
+                AlertDialog.BUTTON_POSITIVE
+            ).setTextColor(Color.BLACK)
 
+        })
+        builder.show()
+    }
+
+    private fun operazioniDiEliminazione(){
+        val pass :String = if(cuoco!=null) cuoco!!.password
+        else utente!!.password
+
+        val user =mAuth.currentUser
+
+        val credential = EmailAuthProvider
+            .getCredential(user?.email.toString(),pass )
+        val uid = mAuth.uid
+        // Prompt the user to re-provide their sign-in credentials
+        user!!.reauthenticate(credential)
+            .addOnCompleteListener {
+                user.delete()
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val docRef = firestore.collection("utenti2").document(""+uid)
+                                .delete().addOnCompleteListener {
                                     val i = Intent(this@MainActivity, HomePage::class.java)
                                     startActivity(i)
                                     Toast.makeText(
@@ -199,12 +230,38 @@ class MainActivity : AppCompatActivity() {
                                 }.addOnFailureListener {
 
                                 }
-                            }
                         }
-                }
-            return true
-        }
-        return super.onOptionsItemSelected(item);
+                    }
+            }
     }
 
+
+    private fun showDialogLogOut() {
+        val builder = AlertDialog.Builder(this).create()
+        builder.setTitle("")
+        builder.setMessage("Vuoi veramente uscire?")
+        builder.setButton(AlertDialog.BUTTON_POSITIVE, "SI",
+            DialogInterface.OnClickListener {
+                    dialog, which ->  FirebaseAuth.getInstance().signOut()
+                val i = Intent(this@MainActivity, HomePage::class.java)
+                startActivity(i)
+                Toast.makeText(
+                    applicationContext, "Logout avvenuto con successo", Toast.LENGTH_LONG).show()
+            })
+        builder.setButton(AlertDialog.BUTTON_NEGATIVE, "NO",
+            DialogInterface.OnClickListener {
+                    dialog, which ->
+            })
+
+        builder.setOnShowListener(DialogInterface.OnShowListener {
+            builder.getButton(
+                AlertDialog.BUTTON_NEGATIVE
+            ).setTextColor(Color.BLACK)
+            builder.getButton(
+                AlertDialog.BUTTON_POSITIVE
+            ).setTextColor(Color.BLACK)
+
+        })
+        builder.show()
+    }
 }

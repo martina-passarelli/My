@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.myapplication.ui.fragment_cuoco.Cuoco;
 import com.example.myapplication.ui.fragment_utente.Utente;
+import com.example.myapplication.ui.home_page.HomePage;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -119,8 +120,7 @@ public class LoginActivity extends AppCompatActivity {
                             docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    Object obj = documentSnapshot.toObject(Object.class);
-                                    if (obj instanceof Utente) {
+                                    if (documentSnapshot.getDouble("tipo")==0 ) {
                                         vaiProfilo("utente");
                                     }
                                     else {
@@ -192,7 +192,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        Intent intent = new Intent(LoginActivity.this, HomePage.class);
         startActivity(intent);
     }
 

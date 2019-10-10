@@ -102,7 +102,7 @@
                 android:clickable="true"
 
                 android:foregroundGravity="right"
-                app:backgroundTint="@color/common_google_signin_btn_text_light_default"
+                app:backgroundTint="@color/common_google_signin_btn_text_light_focused"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintRight_toRightOf="@id/nome_cuoco"
@@ -140,9 +140,9 @@
         <FrameLayout
             android:id="@+id/frame_cuoco"
             android:layout_width="match_parent"
-            android:layout_height="410dp"
+            android:layout_height="wrap_content"
             android:isScrollContainer="true"
-            android:minHeight="100dp"
+            android:minHeight="80dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/button_lista">
 
@@ -153,7 +153,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:backgroundTint="#CBB8B6B6"
+            android:backgroundTint="#B8B6B6"
             android:text="Le mie ricette"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/id_contenitore_dati" />
@@ -163,7 +163,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:backgroundTint="#E4E4E2E2"
+            android:backgroundTint="#E4E2E2"
             android:text="Eventi"
             app:layout_constraintStart_toEndOf="@id/button_lista"
             app:layout_constraintTop_toBottomOf="@id/id_contenitore_dati" />

@@ -5,7 +5,7 @@ import org.json.JSONObject;
 
 public class Ricetta {
 
-    private String  nome, ingredienti, id_cuoco, descrizione, foto,ricetta,categoria;
+    private String  nome, ingredienti, id_cuoco, nome_cuoco, descrizione, foto,ricetta,categoria;
     private String id_ricetta="";
     private int rot;
 
@@ -18,6 +18,14 @@ public class Ricetta {
     }
 
     public Ricetta(){
+    }
+
+    public String getNome_cuoco() {
+        return nome_cuoco;
+    }
+
+    public void setNome_cuoco(String nome_cuoco) {
+        this.nome_cuoco = nome_cuoco;
     }
 
     @Override

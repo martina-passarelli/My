@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.ActivityMappa;
 import com.example.myapplication.R;
 import com.example.myapplication.ui.SwipeToDeleteCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -74,6 +75,12 @@ public class Lista_Fragment_Evento extends Fragment {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+        /*
+
+int resId = R.anim.layout_animation_fall_down;
+LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(ctx, resId);
+recyclerview.setLayoutAnimation(animation);
+         */
         recyclerView.setAdapter(tutorAdapter);
         return myView;
     }
@@ -107,14 +114,16 @@ public class Lista_Fragment_Evento extends Fragment {
 
     public void doSomething(String id_cuoco){
         //PRENDIAMO TUTTI GLI EVENTI COLLEGATI ALL'UTENTE CORRISPONDENTE
-
         ff.collection("eventi").whereEqualTo("id_cuoco",id_cuoco).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         Evento evento = document.toObject(Evento.class);
-                        list.add(evento);
+                        if(ActivityMappa.nonScaduto(evento.getData(), evento.getOra())){
+                            list.add(evento);
+                        }
+
                     }
                     tutorAdapter.notifyDataSetChanged();
                 } else {

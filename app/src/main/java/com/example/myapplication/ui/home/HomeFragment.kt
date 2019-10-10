@@ -38,27 +38,27 @@ class HomeFragment : Fragment() {
 
         val cardView_torte= root.findViewById(R.id.id_card_torta) as CardView
         cardView_torte.setOnClickListener(View.OnClickListener {
-            choose("torte") })
+            choose("Torte") })
 
         val cardView_ciamb= root.findViewById(R.id.id_card_ciambellone) as CardView
         cardView_ciamb.setOnClickListener(View.OnClickListener {
-            choose("ciamb") })
+            choose("Ciambelloni") })
 
         val cardView_bisc= root.findViewById(R.id.id_card_biscotti) as CardView
         cardView_bisc.setOnClickListener(View.OnClickListener {
-            choose("biscotti") })
+            choose("Biscotti") })
 
         val cardView_mousse= root.findViewById(R.id.id_card_mousse) as CardView
         cardView_mousse.setOnClickListener(View.OnClickListener {
-            choose("mousse") })
+            choose("Mousse") })
 
         val cardView_chess= root.findViewById(R.id.id_card_chees) as CardView
         cardView_chess.setOnClickListener(View.OnClickListener {
-            choose("chess") })
+            choose("Cheesecake") })
 
         val cardView_crostata= root.findViewById(R.id.id_card_crostata) as CardView
         cardView_crostata.setOnClickListener(View.OnClickListener {
-            choose("crostata") })
+            choose("Crostate") })
 
 
         val text_input: TextInputLayout

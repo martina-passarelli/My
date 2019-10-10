@@ -17,9 +17,11 @@
             android:id="@+id/etichetta_foto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="casual"
             android:text="Aggiungi_foto"
             android:textColor="@color/common_google_signin_btn_text_dark_focused"
             android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/edit_nome" />
 
@@ -36,9 +38,11 @@
             android:id="@+id/etichetta_nome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="casual"
             android:text="Inserisci il nome della ricetta:"
             android:textColor="@color/common_google_signin_btn_text_dark_focused"
             android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -55,9 +59,11 @@
             android:id="@+id/etichetta_descrizione"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="casual"
             android:text="Inserisci una descrizone:"
             android:textColor="@color/common_google_signin_btn_text_dark_focused"
             android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/foto_ricetta" />
 
@@ -74,9 +80,11 @@
             android:id="@+id/etichetta_ingredienti"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="casual"
             android:text="Ingredienti:"
             android:textColor="@color/common_google_signin_btn_text_dark_focused"
             android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/edit_descrizione" />
 
@@ -93,9 +101,11 @@
             android:id="@+id/etichetta_ricetta"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="casual"
             android:text="Ricetta:"
             android:textColor="@color/common_google_signin_btn_text_dark_focused"
             android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/edit_ingredienti" />
 
@@ -112,9 +122,11 @@
             android:id="@+id/etichetta_categoria"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="casual"
             android:text="Categoria:"
             android:textColor="@color/common_google_signin_btn_text_dark_focused"
             android:textSize="20dp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/edit_ricetta" />
 

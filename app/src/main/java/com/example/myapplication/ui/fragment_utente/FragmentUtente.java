@@ -53,7 +53,7 @@ import static android.app.Activity.RESULT_OK;
 public class FragmentUtente extends Fragment {
     private String currentId;
     private static final int SELECT_PICTURE = 100;
-    private TextView nickname;
+    private TextView nickname, label_pass;
     //campi del profilo
     private EditText nomeUtente;
     private EditText biografia;
@@ -103,7 +103,7 @@ public class FragmentUtente extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         //--------------------------COMPONENTI GRAFICHE--------------------------------------
-
+        label_pass=(TextView) view.findViewById(R.id.label_pass);
         nomeUtente=(EditText)view.findViewById(R.id.nomeCompleto);
         nickname= (TextView) view.findViewById(R.id.nick);
         password=(EditText) view.findViewById(R.id.password);
@@ -169,6 +169,7 @@ public class FragmentUtente extends Fragment {
                 chooseImage();
             }
         });
+        label_pass.setVisibility(View.INVISIBLE);
 
         //-------------MODIFICA PROFILO--------------------------------------------------------------
         modificaProfilo.setOnClickListener(new View.OnClickListener() {
@@ -179,6 +180,7 @@ public class FragmentUtente extends Fragment {
                 if(modifica_abilitata==false) {
                     nuova_password.setText("");
                     vecchia_password.setText("");
+                    label_pass.setVisibility(View.VISIBLE);
                     modificaFoto.setVisibility(View.VISIBLE);
                     vecchia_password.setVisibility(View.VISIBLE);
                     nuova_password.setVisibility(View.VISIBLE);
@@ -269,6 +271,7 @@ public class FragmentUtente extends Fragment {
                     password.setVisibility(View.INVISIBLE);
                     nuova_password.setVisibility(View.INVISIBLE);
                     vecchia_password.setVisibility(View.INVISIBLE);
+                    label_pass.setVisibility(View.INVISIBLE);
                     modifica_abilitata=false;
                 }
             }

@@ -66,13 +66,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:backgroundTint="@color/common_google_signin_btn_tint"
+                    android:background="#32949191"
                     android:clickable="false"
                     android:gravity="center"
                     android:lineSpacingExtra="18sp"
                     android:text="TUTTE LE RICETTE"
                     android:textAlignment="center"
-                    android:textColor="@color/colorAccent"
+                    android:textColor="@color/common_google_signin_btn_text_dark_default"
                     android:textSize="30sp"
                     android:textStyle="bold" />
             </LinearLayout>

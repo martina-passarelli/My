@@ -33,10 +33,12 @@ import com.example.myapplication.R;
 import com.example.myapplication.UtilityImage;
 import com.example.myapplication.ui.fragment_ricetta.ListaRicette_Fragment;
 import com.example.myapplication.ui.fragment_ricetta.Ricetta;
+import com.example.myapplication.ui.fragment_utente.Utente;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -93,12 +95,12 @@ public class Fragment_CreaRicetta extends Fragment {
         });
 
         List<String> lista=new ArrayList<>();
-        lista.add("torte");
-        lista.add("ciamb");
-        lista.add("crostata");
-        lista.add("mousse");
-        lista.add("chess");
-        lista.add("biscotti");
+        lista.add("Torte");
+        lista.add("Ciambelloni");
+        lista.add("Crostate");
+        lista.add("Mousse");
+        lista.add("Cheesecake");
+        lista.add("Biscotti");
 
         Spinner sp=(Spinner) view.findViewById(R.id.spinner);
         ArrayAdapter adapter=new ArrayAdapter(this.getContext(),android.R.layout.simple_spinner_dropdown_item,lista);
@@ -125,9 +127,11 @@ public class Fragment_CreaRicetta extends Fragment {
                 String ingr=edit_ingr.getText().toString();
                 String nome=edit_nome.getText().toString();
                 if(ricetta!=null && descr!=null && ingr!=null && nome!=null) {
+
                     Ricetta r=new Ricetta(nome,ingr,id_cuoco,descr,nome+id_cuoco+".jpg",ricetta,categoria);
                     r.setRot(rotazioneImg);
-                    aggiungi_inFirestore(r);
+                    ottieni_nomeCuoco(r,id_cuoco);
+
                     aggiungi_immagine_storage(nome, id_cuoco);
                     ricaricaFrammento();
                 }
@@ -137,6 +141,19 @@ public class Fragment_CreaRicetta extends Fragment {
             }
         });
     }
+
+    public void ottieni_nomeCuoco(Ricetta r,String id_cuoco){
+        FirebaseFirestore.getInstance().collection("utenti2").document(""+id_cuoco).get().
+                addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                     @Override
+                     public void onSuccess(DocumentSnapshot documentSnapshot) {
+                         if(documentSnapshot.toObject(Utente.class)!=null)
+                            r.setNome_cuoco(documentSnapshot.getString("nome"));
+                     }
+                });
+        aggiungi_inFirestore(r);
+    }
+
     private void aggiungi_immagine_storage(String nome, String id_cuoco) {
         try {
 

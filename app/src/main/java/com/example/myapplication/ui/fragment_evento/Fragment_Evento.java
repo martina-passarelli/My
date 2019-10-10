@@ -143,8 +143,6 @@ public class Fragment_Evento extends Fragment {
 
     }
 
-
-
     private void apri_profilo(){
         Intent myIntent = new Intent(getActivity().getBaseContext(), ProfiloActivity.class);
         myIntent.putExtra("tipo", "commento");//Optional parameters
@@ -203,16 +201,14 @@ public class Fragment_Evento extends Fragment {
         nome_evento.setText(e.getNome());
         ora.setText(e.getOra());
         data.setText(e.getData());
-        luogo.setText(e.getLuogo());
+        luogo.setText(e.getCittà()+", "+e.getLuogo());
         set_cuoco(e.getId_cuoco());
         aggiungiFragmentDescr(e);
-
     }
 
     public void aggiungiFragmentDescr(Evento e){
         bundle.putString("descrizione", e.getDescrizione());
         bundle.putInt("num_max", e.getMax_partecipanti());
-        bundle.putInt("num_attuali",50);
         FragmentDescrEvento descrizioneFragment = new FragmentDescrEvento();
         descrizioneFragment.setArguments(bundle);
         getChildFragmentManager().beginTransaction().add(R.id.frame_home_ricetta,descrizioneFragment).addToBackStack(null).commit();
