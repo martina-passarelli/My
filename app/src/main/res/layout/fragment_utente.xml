@@ -104,6 +104,7 @@
                 android:id="@+id/imageMenu"
                 android:layout_width="181dp"
                 android:layout_height="181dp"
+                android:layout_marginTop="10dp"
                 android:clickable="false"
                 android:src="@drawable/cuoca"
                 android:translationX="0dp"
@@ -133,6 +134,7 @@
             android:id="@+id/layout_nome"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:layout_marginTop="20dp"
             android:clickable="false"
             android:overScrollMode="always"
@@ -142,6 +144,49 @@
             tools:ignore="MissingConstraints"
             tools:layout_editor_absoluteX="10dp">
 
+
+            <TextView
+                android:id="@+id/label_geoloc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:fontFamily="casual"
+                android:text="Vuoi ricevere notizie sugli eventi della città in cui ti trovi? Localizzati adesso."
+                android:textColor="@color/quantum_vanillared900"
+                android:textSize="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/button_seguiti" />
+
+            <TextView
+                android:id="@+id/text_loc"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_margin="5dp"
+                android:minWidth="200dp"
+                android:textColor="@color/common_google_signin_btn_text_dark_focused"
+                android:textSize="18dp"
+                app:layout_constraintStart_toEndOf="@id/button"
+                app:layout_constraintTop_toBottomOf="@id/label_geoloc" />
+
+            <ImageButton
+                android:id="@+id/button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="#2F000000"
+                android:elevation="5dp"
+                android:src="@android:drawable/ic_menu_mylocation"
+                android:theme="@style/Widget.MaterialComponents.BottomSheet.Modal"
+                android:tint="#F7000000"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/label_geoloc" />
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/common_google_signin_btn_text_dark_focused"
+                app:layout_constraintTop_toBottomOf="@id/text_loc"
+                tools:ignore="UnknownId" />
 
             <Button
                 android:id="@+id/button_seguiti"
@@ -156,6 +201,7 @@
                 android:id="@+id/nome"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:clickable="false"
                 android:gravity="bottom"
                 android:text="Nome:"
@@ -164,7 +210,7 @@
                 android:textStyle="normal|italic"
                 android:visibility="visible"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/button_seguiti" />
+                app:layout_constraintTop_toBottomOf="@id/text_loc" />
 
 
             <EditText
@@ -270,21 +316,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/mail" />
 
             <EditText
-                android:id="@+id/password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:autofillHints=""
-                android:clickable="false"
-                android:contentDescription="@string/prompt_password"
-                android:ems="10"
-                android:inputType="textPassword"
-                android:textAlignment="center"
-                android:textSize="14sp"
-                android:visibility="visible"
-                app:layout_constraintTop_toBottomOf="@+id/label_pass"
-                tools:targetApi="o" />
-
-            <EditText
                 android:id="@+id/vecchia_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -298,7 +329,7 @@
                 android:textAlignment="center"
                 android:textSize="14sp"
                 android:visibility="invisible"
-                app:layout_constraintTop_toBottomOf="@+id/password"
+                app:layout_constraintTop_toBottomOf="@id/label_pass"
                 tools:targetApi="o" />
 
             <EditText

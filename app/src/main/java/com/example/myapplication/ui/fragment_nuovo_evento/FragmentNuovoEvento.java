@@ -19,24 +19,29 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.myapplication.R;
 import com.example.myapplication.ui.fragment_cuoco.FragmentCuoco;
 import com.example.myapplication.ui.fragment_evento.Evento;
 import com.example.myapplication.ui.fragment_evento.Lista_Fragment_Evento;
 import com.example.myapplication.ui.fragment_ricetta.ListaRicette_Fragment;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
@@ -48,6 +53,7 @@ public class FragmentNuovoEvento extends Fragment {
     private View myView;
     //riferimento ad database
     private FirebaseFirestore mDatabase;
+    private String idAuth= FirebaseAuth.getInstance().getUid();
     //liste di supporto agli spinner
     private ArrayList<String> cittaList;
     private ArrayList<String> luoghiList;
@@ -76,8 +82,7 @@ public class FragmentNuovoEvento extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.frag_crea_evento, container, false);
         context=inflater.getContext();
         return myView;
@@ -109,6 +114,7 @@ public class FragmentNuovoEvento extends Fragment {
             @Override
             public void onClick(View view) {
                 aggiungiEvento();
+
             }
         });
 
@@ -197,22 +203,32 @@ public class FragmentNuovoEvento extends Fragment {
 
     private void aggiungiEvento() {
         String nome=editTextNome.getText().toString();
+
         int partecipanti;
+
         if(!editTextPartecipanti.getText().toString().equals(""))
             partecipanti= Integer.parseInt(editTextPartecipanti.getText().toString());
-        else partecipanti=0;
+        else
+            partecipanti=0;
+
         String descrizione= editTextDescrizione.getText().toString();
+
         int ora = oraPicker.getHour();
         int min = oraPicker.getMinute();
+
         String orario= ora+":"+min;
+
         int giorno = dataPicker.getDayOfMonth();
         int mese = dataPicker.getMonth()+1;
         int anno = dataPicker.getYear();
+
         String data = giorno+"/"+mese+"/"+anno;
+
         String luogo;
         if(spinnerLuoghi.getSelectedItem()!=null)
             luogo = spinnerLuoghi.getSelectedItem().toString();
         else luogo="";
+
         String citta;
         if(spinnerCitta.getSelectedItem()!=null)
             citta   =spinnerCitta.getSelectedItem().toString();
@@ -246,8 +262,8 @@ public class FragmentNuovoEvento extends Fragment {
                                         List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                                         for (DocumentSnapshot d : list) {
                                             Evento evento = d.toObject(Evento.class);
-                                            if(evento.getLuogo().equals(luogoF.getNome() )&&
-                                                    evento.getCittà().equals(citta) &&
+                                            if( evento!=null &&evento.getLuogo().equals(luogoF.getNome() )&&
+                                                    //evento.getCittà().equals(citta) &&
                                                     evento.getData().equals(data)  ) {
                                                 //mostro un avviso
                                                 showDialog();
@@ -258,6 +274,7 @@ public class FragmentNuovoEvento extends Fragment {
                                         if(aggiungi)
                                             aggiungiEventoFirebase(nome, partecipanti, descrizione, orario, data,
                                                     luogoF.getNome(), latitudine, longitudine, citta);
+
                                     }
                                 }
                             });
@@ -268,7 +285,62 @@ public class FragmentNuovoEvento extends Fragment {
                 }
             }
         });
-        ricaricaFrammentoListaEventi();
+        inviaNotifica(nome,citta);
+
+
+    }
+
+
+    public void inviaNotifica(String nome_evento, String città){
+        /*
+       La notifica viene inviata a coloro che seguono il cuoco e che ultimamente hanno partecipato
+       ad un evento nella città in cui si sta creando l'evento.
+       */
+        //INVIA SEGUACI
+        firestore.collection("utenti2").document(""+idAuth).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+               if(documentSnapshot!=null){
+                   ArrayList<String> seguaci=(ArrayList<String>)documentSnapshot.get("seguaci");
+                   if(seguaci!=null){
+                       //PRESA LA LISTA DEI SEGUACI, AD OGNUNO AGGIUNGIAMO LA NOTIFICA NELLA LISTA
+                       String mess= "Non perderti l'evento '"+nome_evento+"'!" ;
+                       HashMap<String,Object> notificationMessage= new HashMap<>();
+                       notificationMessage.put("message", mess);
+                       notificationMessage.put("from",idAuth);
+                       inserisci_notifica(seguaci, notificationMessage);
+                   }
+               }
+            }
+        });
+
+        //INVIA UTENTI CON LOCALIZZAZIONE LA STESSA CITTA'
+        firestore.collection("suggeriti").whereEqualTo("città_eventi", città).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    ArrayList <String> lista_utenti=new ArrayList<>();
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        lista_utenti.add(document.getId());
+
+                    }
+                    if(lista_utenti.size()!=0){
+                        String mess= "C'è un nuovo evento nella tua città, non perdertelo. Partecipa a '"+nome_evento+"'!" ;
+                        HashMap<String,Object> notificationMessage= new HashMap<>();
+                        notificationMessage.put("message", mess);
+                        notificationMessage.put("from",idAuth);
+                        inserisci_notifica(lista_utenti,notificationMessage);
+                    }
+                }
+            }
+        });
+
+    }
+
+    private void inserisci_notifica(ArrayList<String> seguaci, HashMap<String, Object> notificationMessage) {
+        for(String s: seguaci) {
+            firestore.collection("utenti2/"+s+"/Notifications").add(notificationMessage);
+        }
     }
 
     private void showDialog() {
@@ -295,13 +367,13 @@ public class FragmentNuovoEvento extends Fragment {
     private void ricaricaFrammentoListaEventi() {
         FragmentCuoco frag=(FragmentCuoco)getParentFragment();
         frag.changeVisibility();
+
         String currentId= FirebaseAuth.getInstance().getUid();
-        Bundle bundle= new Bundle();
-        bundle.putString("id",currentId);
-        bundle.putBoolean("doS",true);
         Lista_Fragment_Evento list_eventi=new Lista_Fragment_Evento();
+
         list_eventi.doSomething(currentId);
         getFragmentManager().beginTransaction().replace(R.id.frame_cuoco,list_eventi).commit();
+
     }
 
 
@@ -315,6 +387,7 @@ public class FragmentNuovoEvento extends Fragment {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "Evento inserito!");
+
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -338,6 +411,7 @@ public class FragmentNuovoEvento extends Fragment {
                         }
                     }
                 }
+                ricaricaFrammentoListaEventi();
             }
         });
     }

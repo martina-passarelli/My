@@ -12,6 +12,7 @@ import android.widget.Button;
 import com.example.myapplication.ui.fragment_cuoco.FragmentCuoco;
 import com.example.myapplication.ui.fragment_utente.FragmentUtente;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class ProfiloActivity extends AppCompatActivity {
     private String currentID;
@@ -23,6 +24,8 @@ public class ProfiloActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar_profilo);
         setSupportActionBar(toolbar);
 
+        FirebaseMessaging.getInstance().subscribeToTopic("pushNotifications");
+        FirebaseMessaging.getInstance().unsubscribeFromTopic("pushNotifications");
         Button button= (Button)findViewById(R.id.toolbar_home_button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

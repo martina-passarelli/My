@@ -178,9 +178,9 @@ public class Fragment_CreaRicetta extends Fragment {
         // DA VERIFICARE SE SI PUO' FARE DIVERSAMENTE
         FragmentCuoco frag=(FragmentCuoco)getParentFragment();
         frag.changeVisibility();
+
         Bundle bundle= new Bundle();
         bundle.putString("id",id_cuoco);
-
         ListaRicette_Fragment ricette_fragment=new ListaRicette_Fragment();
         ricette_fragment.setArguments(bundle);
         ricette_fragment.ottieni_lista(id_cuoco);

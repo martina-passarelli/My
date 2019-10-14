@@ -20,13 +20,17 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -116,6 +120,16 @@ public class LoginActivity extends AppCompatActivity {
                             //APRI USER PROFILE
                             Toast.makeText(getApplicationContext(), "Login avvenuto con successo", Toast.LENGTH_LONG).show();
                             user= FirebaseAuth.getInstance().getCurrentUser() ;
+                            //PER NOTIFICHE
+                            String token_id= FirebaseInstanceId.getInstance().getToken();
+                            String user_id= mAuth.getCurrentUser().getUid();
+
+                            Map<String, Object> mappa= new HashMap<>();
+                            mappa.put("token_id", token_id);
+                            firestore.collection("utenti2").document(""+user_id).update("token_id",token_id);
+
+
+                            //
                             DocumentReference docRef = firestore.collection("utenti2").document(""+user.getUid());
                             docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
@@ -149,6 +163,11 @@ public class LoginActivity extends AppCompatActivity {
                                                     nuovoCuoco.setNome(user.getEmail().substring(0,user.getEmail().indexOf("@")));
                                                     nuovoCuoco.setImageProf(user.getEmail()+".jpg");
                                                     utenti.document(""+mAuth.getUid()).set(nuovoCuoco);
+
+                                                    HashMap<String,Object> map=new HashMap<>();
+                                                    map.put("user_id", mAuth.getUid());
+                                                    map.put("token_id", FirebaseInstanceId.getInstance().getToken());
+                                                    utenti.document(""+mAuth.getUid()).update(map);
                                                     //-------vai al profilo del cuoco-------------------
                                                     vaiProfilo("cuoco");
                                                 }
@@ -161,11 +180,15 @@ public class LoginActivity extends AppCompatActivity {
                                                     nuovoUtente.setNick(user.getEmail().substring(0, user.getEmail().indexOf("@")));
                                                     nuovoUtente.setImageProf(user.getEmail() + ".jpg");
                                                     nuovoUtente.setBio("");
-
                                                     //la key dell'utente è quella del suo identificativo
                                                     //negli utenti loggati
                                                     utenti.document("" + mAuth.getUid()).set(nuovoUtente);
 
+                                                    // DA SISTEMARE
+                                                    HashMap<String,Object> map=new HashMap<>();
+                                                    map.put("user_id", mAuth.getUid());
+                                                    map.put("token_id", FirebaseInstanceId.getInstance().getToken());
+                                                    utenti.document(""+mAuth.getUid()).update(map);
                                                     //vai a USER PROFILE
                                                     vaiProfilo("utente");
                                                }

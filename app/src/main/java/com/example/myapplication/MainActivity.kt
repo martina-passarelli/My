@@ -28,6 +28,7 @@ import com.example.myapplication.ui.home_page.HomePage
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
@@ -61,6 +62,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+        FirebaseMessaging.getInstance().subscribeToTopic("pushNotifications");
+        FirebaseMessaging.getInstance().unsubscribeFromTopic("pushNotifications");
 
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance()
@@ -165,6 +168,7 @@ class MainActivity : AppCompatActivity() {
         //***esci
         if(id==R.id.esci && mAuth.currentUser!=null) {
             showDialogLogOut()
+
             return true
         }
         //***elimina
@@ -243,6 +247,7 @@ class MainActivity : AppCompatActivity() {
         builder.setButton(AlertDialog.BUTTON_POSITIVE, "SI",
             DialogInterface.OnClickListener {
                     dialog, which ->  FirebaseAuth.getInstance().signOut()
+                firestore.collection("utenti2").document("" +mAuth.currentUser).update("token_id","")
                 val i = Intent(this@MainActivity, HomePage::class.java)
                 startActivity(i)
                 Toast.makeText(

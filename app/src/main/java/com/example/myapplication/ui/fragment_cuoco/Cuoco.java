@@ -3,7 +3,10 @@ package com.example.myapplication.ui.fragment_cuoco;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class Cuoco {
+    private ArrayList<String> seguaci;
     private String nome,password;
     private String email;
     private String imageProf;
@@ -18,6 +21,7 @@ public class Cuoco {
         this.imageProf = imageProf;
         this.rot = rot;
         this.tipo = tipo;
+        seguaci=new ArrayList<>();
     }
 
     public Cuoco (String email, String password){
@@ -34,6 +38,14 @@ public class Cuoco {
         this.email = email;
         this.imageProf = imageProf;
         this.rot = rot;
+    }
+
+    public ArrayList<String> getSeguaci() {
+        return seguaci;
+    }
+
+    public void setSeguaci(ArrayList<String> seguaci) {
+        this.seguaci = seguaci;
     }
 
     public String getNome() {

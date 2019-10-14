@@ -38,8 +38,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -159,7 +161,11 @@ public class FragmentCuoco extends Fragment {
             @Override
             public void onClick(View v) {
                 if(sezione_eventi==true) {
-                    getChildFragmentManager().popBackStack("LISTA", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+                    getFragmentManager().popBackStackImmediate();
+                    getChildFragmentManager().popBackStack("LISTA_RICETTE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+                    //rimuoviamo il frammento precedente,tanto ogni volta viene rigenerato
                     ricette.setClickable(false);
                     ricette.setBackgroundTintList(click);
                     eventi.setClickable(true);
@@ -341,7 +347,7 @@ public class FragmentCuoco extends Fragment {
         Lista_Fragment_Evento fragment_evento= new Lista_Fragment_Evento();
         fragment_evento.setArguments(bundle);
         fragment_evento.doSomething(currentId);
-        getChildFragmentManager().beginTransaction().replace(R.id.frame_cuoco,fragment_evento).addToBackStack("LISTA").commit();
+        getChildFragmentManager().beginTransaction().replace(R.id.frame_cuoco,fragment_evento).addToBackStack("LISTA_RICETTE").commit();
     }
 
     public void aggiungi_ricetta(){
@@ -408,13 +414,15 @@ public class FragmentCuoco extends Fragment {
                     lista_cuochi=utente.getLista_cuochi();
                 }
                 if(lista_cuochi.contains(currentId)){
+
                     lista_cuochi.remove(currentId);
-                    aggiorna(lista_cuochi);
+                    aggiorna(lista_cuochi,false);
                     segui.setBackgroundColor( -3355444);
                     segui.setText("Segui");
+
                 }else {
                     lista_cuochi.add(currentId);
-                    aggiorna(lista_cuochi);
+                    aggiorna(lista_cuochi,true);
                     segui.setBackgroundColor(-7829368);
                     segui.setText("Non seguire più");
                 }
@@ -423,10 +431,16 @@ public class FragmentCuoco extends Fragment {
 
     }
 
-    private void aggiorna(ArrayList<String> lista_cuochi) {
-        FirebaseFirestore.getInstance().collection("utenti2").document(""+utente_corrente).update("lista_cuochi", lista_cuochi).addOnSuccessListener(new OnSuccessListener<Void>() {
+    private void aggiorna(ArrayList<String> lista_cuochi, boolean aggiungi) {
+        CollectionReference docRef = FirebaseFirestore.getInstance().collection("utenti2");
+        docRef.document(""+utente_corrente).update("lista_cuochi", lista_cuochi).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
-            public void onSuccess(Void aVoid) {}
+            public void onSuccess(Void aVoid) {
+                if(aggiungi)
+                    docRef.document(""+currentId).update("seguaci",  FieldValue.arrayUnion(utente_corrente));
+                else
+                    docRef.document(""+currentId).update("seguaci",  FieldValue.arrayRemove(utente_corrente));
+            }
         });
     }
 

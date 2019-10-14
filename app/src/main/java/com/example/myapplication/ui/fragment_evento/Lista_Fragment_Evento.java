@@ -38,15 +38,11 @@ import java.util.List;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
-
-
 public class Lista_Fragment_Evento extends Fragment {
     private ArrayList<Evento> list=new ArrayList<>();
     private RecyclerView recyclerView;
     private View myView;
-    private CollectionReference colR;
     private FirebaseFirestore ff= FirebaseFirestore.getInstance();
-    private Bundle savedInstanceState;
     private Adapter_Evento tutorAdapter;
 
     public String id_utente="null";
@@ -67,11 +63,14 @@ public class Lista_Fragment_Evento extends Fragment {
         //BISOGNA RICEVERE VIA BUNDLE
         Bundle bundle=this.getArguments();
         if(bundle!=null) {
-            id_utente = bundle.getString("id");
+            id_utente = bundle.getString("id"); //Serve per l'abilitazione di eliminazione eventi
             doS = bundle.getBoolean("do");
         }
 
-        if(id_utente.equals(FirebaseAuth.getInstance().getUid())){enableSwipeToDeleteAndUndo();}
+        if(id_utente.equals(FirebaseAuth.getInstance().getUid())){
+            enableSwipeToDeleteAndUndo();
+        }
+
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -113,7 +112,7 @@ recyclerview.setLayoutAnimation(animation);
     }
 
     public void doSomething(String id_cuoco){
-        //PRENDIAMO TUTTI GLI EVENTI COLLEGATI ALL'UTENTE CORRISPONDENTE
+        //PRENDIAMO TUTTI GLI EVENTI COLLEGATI ALL'UTENTE IN INPUT
         ff.collection("eventi").whereEqualTo("id_cuoco",id_cuoco).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -134,6 +133,7 @@ recyclerview.setLayoutAnimation(animation);
     }
 
     public void eventi_utente(){
+        //PRENDIAMO TUTTI GLI EVENTI A CUI PARTECIPERA' L'UTENTE CORRENTE
         ff.collection("utenti2").document(""+FirebaseAuth.getInstance().getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @SuppressLint("ResourceAsColor")
             @Override
@@ -141,19 +141,17 @@ recyclerview.setLayoutAnimation(animation);
                 ArrayList<String> lista_eventi =new ArrayList<>();
                 if(documentSnapshot.get("lista_eventi")!=null) {
                     lista_eventi = (ArrayList<String>) documentSnapshot.get("lista_eventi");
-                    lista_codici=new ArrayList<>();
                     list.clear();
 
                     for (String s : lista_eventi) {
                         add_evento(s);
                     }
-                    //if(list.size()!=lista_eventi.size())aggiorna_lista(lista_codici);
                 }
             }
         });
     }
 
-    private ArrayList<String> lista_codici;
+
     public void add_evento(String s){
         ff.collection("eventi").document(""+s).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @SuppressLint("ResourceAsColor")
@@ -162,29 +160,14 @@ recyclerview.setLayoutAnimation(animation);
                 Evento evento=documentSnapshot.toObject(Evento.class);
                 if(evento!=null) {
                     list.add(evento);
-                   // lista_codici.add(evento.getId());
+
                     tutorAdapter.notifyDataSetChanged();
                 }
             }
         });
     }
 
-    //NEL CASO IN CUI SONO STATI RIMOSSI EVENTI A CUI L'UTENTE PARTECIPA, LA LISTA VA AGGIORNATA
-    public void aggiorna_lista(ArrayList<String> lista){
 
-        ff.collection("utenti2").document(""+FirebaseAuth.getInstance().getUid()).update("lista_eventi",lista_codici).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "DocumentSnapshot successfully updated!");
-            }
-        })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error updating document", e);
-                    }
-                });
-    }
 
 
     public void eventiTotali(){

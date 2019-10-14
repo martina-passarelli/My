@@ -3,12 +3,17 @@ package com.example.myapplication.ui.fragment_utente;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.media.ExifInterface;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -17,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,11 +30,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.myapplication.ActivityMappa;
 import com.example.myapplication.R;
 import com.example.myapplication.ui.fragment_seguiti.ListSeguiti;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -45,6 +57,8 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -53,7 +67,7 @@ import static android.app.Activity.RESULT_OK;
 public class FragmentUtente extends Fragment {
     private String currentId;
     private static final int SELECT_PICTURE = 100;
-    private TextView nickname, label_pass;
+    private TextView nickname, label_pass, città;
     //campi del profilo
     private EditText nomeUtente;
     private EditText biografia;
@@ -61,8 +75,9 @@ public class FragmentUtente extends Fragment {
     private EditText nuova_password;
     private EditText vecchia_password;
     private EditText telefono;
-    private EditText password;
+
     private Button seguiti;
+    private ImageButton loc;
     //immagine del profilo
     private CircleImageView img;
     //bottoni
@@ -83,7 +98,6 @@ public class FragmentUtente extends Fragment {
     private StorageReference storage;
     private boolean modifica_abilitata=false;
 
-    private String id;
 
 
     @Override
@@ -106,8 +120,7 @@ public class FragmentUtente extends Fragment {
         label_pass=(TextView) view.findViewById(R.id.label_pass);
         nomeUtente=(EditText)view.findViewById(R.id.nomeCompleto);
         nickname= (TextView) view.findViewById(R.id.nick);
-        password=(EditText) view.findViewById(R.id.password);
-        password.setVisibility(view.INVISIBLE);
+
         telefono=(EditText) view.findViewById(R.id.telefono);
         vecchia_password=(EditText) view.findViewById(R.id.vecchia_password);
         nuova_password=(EditText) view.findViewById(R.id.nuova_password);
@@ -116,6 +129,32 @@ public class FragmentUtente extends Fragment {
         mail=(EditText) view.findViewById(R.id.mail);
         biografia=(EditText) view.findViewById(R.id.bio);
         img= (CircleImageView) view.findViewById(R.id.imageMenu);
+
+        //Button per la localizzazione
+        loc=(ImageButton) view.findViewById(R.id.button);
+        loc.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                getLocationPermission();
+            }
+        });
+
+        //Set di città nel caso in cui è presente già una localizzazione
+        città=(TextView) view.findViewById(R.id.text_loc);
+        FirebaseFirestore.getInstance().collection("suggeriti").document(""+FirebaseAuth.getInstance().getUid()).
+                get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if(documentSnapshot!=null){
+                        String s= documentSnapshot.getString("città_eventi");
+                        if(s!=null){
+                            città.setText(s);
+                        }
+                }
+            }
+                });
+
+
         CardView card=(CardView)view.findViewById(R.id.card_seguiti);
 
         ScrollView scrollView = (ScrollView) view.findViewById(R.id.scroll);
@@ -148,7 +187,20 @@ public class FragmentUtente extends Fragment {
         modificaFoto=(FloatingActionButton) view.findViewById(R.id.modificaFoto);
         modificaFoto.setVisibility(View.GONE);
         modificaProfilo= (FloatingActionButton) view.findViewById(R.id.modificaProfilo);
-        if(!currentId.equals(FirebaseAuth.getInstance().getUid())){ modificaProfilo.setVisibility(View.GONE);}
+        if(!currentId.equals(FirebaseAuth.getInstance().getUid())){
+
+            //NEL CASO IN CUI SONO SUL PROFILO DI UN UTENTE CHE NON SONO IO, BISOGNA DISABILITARE ALCUNE VISTE.
+            modificaProfilo.setVisibility(View.GONE);
+            loc.setVisibility(View.INVISIBLE);
+            loc.setClickable(false);
+            view.findViewById(R.id.text_loc).setEnabled(false);
+            view.findViewById(R.id.label_geoloc).setVisibility(View.INVISIBLE);
+            view.findViewById(R.id.view).setVisibility(View.INVISIBLE);
+            ConstraintSet constraintSet = new ConstraintSet();
+            constraintSet.clone((ConstraintLayout) view.findViewById(R.id.layout_nome));
+            constraintSet.connect(R.id.nome,ConstraintSet.TOP,R.id.button_seguiti,ConstraintSet.BOTTOM,0);
+            constraintSet.applyTo((ConstraintLayout) view.findViewById(R.id.layout_nome));
+        }
         //----------------------TROVA UTENTE----------------------------------------------------
         db= FirebaseFirestore.getInstance();
         DocumentReference docRef = db.collection("utenti2").document("" + currentId);
@@ -249,7 +301,7 @@ public class FragmentUtente extends Fragment {
                                                 }
                                             }
                                         });
-                                password.setText(nuova_pass);
+
                                 utente.setPassword(nuova_pass);
                             } else{
                                 CharSequence text = "Inserisci correttamente le password, ricorda che " +
@@ -268,7 +320,7 @@ public class FragmentUtente extends Fragment {
                     }catch (Exception e){
                         e.printStackTrace();
                     }
-                    password.setVisibility(View.INVISIBLE);
+
                     nuova_password.setVisibility(View.INVISIBLE);
                     vecchia_password.setVisibility(View.INVISIBLE);
                     label_pass.setVisibility(View.INVISIBLE);
@@ -311,7 +363,6 @@ public class FragmentUtente extends Fragment {
         //--------------SETTARE I DATI NELLA COMPONENTE GRAFICA-------------------------------------
 
         nomeUtente.setText(nome);
-        password.setText(pass);
         if(tel!=null) telefono.setText(tel);
         mail.setText(currentUsermail);
         if(bio!=null) biografia.setText(bio);
@@ -336,10 +387,10 @@ public class FragmentUtente extends Fragment {
         biografia.setEnabled(false);
         telefono.setEnabled(false);
         mail.setEnabled(false);
-        password.setEnabled(false);
+
     }
     private void cambiaPassword(String nuova_pass) {
-        password.setText(nuova_pass);
+
         utente.setPassword(nuova_pass);
     }
 
@@ -426,6 +477,76 @@ public class FragmentUtente extends Fragment {
 
         }
         return bm;
+    }
+
+
+
+    //PER LA GEOLOCALIZZAZIONE
+
+    private boolean mLocationPermissionsGranted=false;
+
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final String COURSE_LOCATION= Manifest.permission.ACCESS_COARSE_LOCATION;
+    private static  final int LOCATION_PERMISSION_REQUEST_CODE=1234;
+
+    private void getLocationPermission(){
+        String[] permission = {Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION};
+        if(ContextCompat.checkSelfPermission(this.getContext(), FINE_LOCATION )== PackageManager.PERMISSION_GRANTED){
+            if(ContextCompat.checkSelfPermission(this.getContext(), COURSE_LOCATION )== PackageManager.PERMISSION_GRANTED){
+                mLocationPermissionsGranted=true;
+                //init
+                getDeviceLocation();
+            }else {
+                ActivityCompat.requestPermissions(this.getActivity(),permission,LOCATION_PERMISSION_REQUEST_CODE);
+            }
+
+        }else {
+            ActivityCompat.requestPermissions(this.getActivity(),permission,LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+
+    private void getDeviceLocation(){
+        mFusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(this.getActivity());
+        try {
+            if(mLocationPermissionsGranted){
+                final Task location = mFusedLocationProviderClient.getLastLocation();
+                location.addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if(task.isSuccessful()){
+                            //Log.d(TAG, "onComplete: posizione trovata");
+                            Location currentLocation= (Location) task.getResult();
+                            double longitudine= currentLocation.getLongitude();
+                            double latitudine=currentLocation.getLatitude();
+                            Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+                            List<Address> addresses = null;
+                            try {
+                                //Preleva nome città
+                                addresses = geocoder.getFromLocation(latitudine, longitudine, 1);
+                                String cityName = addresses.get(0).getLocality();
+                                String city_view=addresses.get(0).getAddressLine(0);
+                                città.setText(city_view);
+                                //Posizioniamo il luogo scelto in firebase
+                                FirebaseFirestore.getInstance().collection("suggeriti").document(""+FirebaseAuth.getInstance().getUid()).update("città_eventi", cityName);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            //mMap.addMarker(new MarkerOptions().position(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude())).title("Tu sei qui")).showInfoWindow();
+
+                            //moveCamera(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude()),DEFAULT_ZOOM);
+                        }else{
+                            Toast.makeText(getActivity(), "impossibile accedere alla posizione", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+
+        }catch (SecurityException e){
+        }
     }
 
 }
