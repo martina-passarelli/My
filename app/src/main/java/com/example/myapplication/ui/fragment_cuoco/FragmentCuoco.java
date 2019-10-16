@@ -13,11 +13,13 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,9 +34,11 @@ import com.example.myapplication.ui.fragment_utente.Utente;
 import com.example.myapplication.ui.fragment_evento.Lista_Fragment_Evento;
 import com.example.myapplication.ui.fragment_ricetta.ListaRicette_Fragment;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.FirebaseError;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,6 +47,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -54,6 +60,7 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.app.Activity.RESULT_OK;
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class FragmentCuoco extends Fragment {
    private String currentId;
@@ -402,6 +409,15 @@ public class FragmentCuoco extends Fragment {
     }
 
 
+    /*
+
+    QUANDO INIZI A SEGUIRE/ NON SEGUIRE IL CUOCO, PUO' DARSI CHE QUALCUN ALTRO CONTEMPORANEAMENTE
+    DECIDA DI SEGUIRLO, QUINDI SI HA ACCESSO CONCORRENTE ALLA LISTA DEI SEGUACI NEL CUOCO. QUESTA
+    LISTA SERVE PER L'INVIO DELLE NOTIFICHE AI SEGUACI. PER EVITARE DEI DATI DANNEGGIATI FIREBASE
+    UTILIZZA LA TRANSAZIONE. QUESTA OPERAZIONE VIENE ESEGUITA NEL METODO aggiorna(String id_user)
+
+     */
+
     public void segui_cuoco(){
         FirebaseFirestore.getInstance().collection("utenti2").document(""+utente_corrente).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @SuppressLint("ResourceAsColor")
@@ -433,15 +449,30 @@ public class FragmentCuoco extends Fragment {
 
     private void aggiorna(ArrayList<String> lista_cuochi, boolean aggiungi) {
         CollectionReference docRef = FirebaseFirestore.getInstance().collection("utenti2");
+        DocumentReference ref=docRef.document(""+currentId);
         docRef.document(""+utente_corrente).update("lista_cuochi", lista_cuochi).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                if(aggiungi)
-                    docRef.document(""+currentId).update("seguaci",  FieldValue.arrayUnion(utente_corrente));
-                else
-                    docRef.document(""+currentId).update("seguaci",  FieldValue.arrayRemove(utente_corrente));
+                //DA VERIFICARE SE FUNZIONA
+                FirebaseFirestore.getInstance().runTransaction(new Transaction.Function<Void>() {
+                    @Override
+                    public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+                        DocumentSnapshot snapshot = transaction.get(ref);
+                        if(aggiungi) {
+                            transaction.update(ref,"follower",snapshot.getDouble("follower")+1);
+                            transaction.update(ref,"seguaci", FieldValue.arrayUnion(utente_corrente));
+                        }
+                        else {
+                            transaction.update(ref,"follower",snapshot.getDouble("follower")-1);
+                            transaction.update(ref,"seguaci", FieldValue.arrayRemove(utente_corrente));
+                        }
+                        return null;
+                    }
+                });
             }
         });
+
+
     }
 
     @Override

@@ -12,6 +12,7 @@ public class Cuoco {
     private String imageProf;
     private int rot;
     private double tipo=1;
+    private double follower=0;
 
 
     public Cuoco(String nome, String password, String email, String imageProf, int rot, double tipo) {
@@ -38,6 +39,14 @@ public class Cuoco {
         this.email = email;
         this.imageProf = imageProf;
         this.rot = rot;
+    }
+
+    public double getFollower() {
+        return follower;
+    }
+
+    public void setFollower(double follower) {
+        this.follower = follower;
     }
 
     public ArrayList<String> getSeguaci() {

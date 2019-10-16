@@ -68,13 +68,10 @@ public class ListSeguiti extends Fragment {
                 ArrayList<String> lista_provv= (ArrayList<String>) documentSnapshot.get("lista_cuochi");
                 if(lista_provv!=null){
                     list.addAll(lista_provv);
-                    //VERIFICARE SE COSI' AVVIENE, ALTRIMENTI ADD UNO PER VOLTA(????????????)
                     tutorAdapter.notifyDataSetChanged();
                 }
 
 
             }});
-
-
     }
 }

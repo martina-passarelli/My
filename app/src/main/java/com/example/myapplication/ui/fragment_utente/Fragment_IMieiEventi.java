@@ -34,14 +34,7 @@ public class Fragment_IMieiEventi extends Fragment {
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment,fragment_evento);
         fragmentTransaction.commit();
-
-
-
         return view;
-    }
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-
     }
 
 

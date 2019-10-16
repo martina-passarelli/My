@@ -31,7 +31,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
+//IL FRAMMENTO GESTISCE LA GRIGLIA  DI CUOCHI NELLA HOME PAGE
 public class Griglia_Cuochi extends Fragment {
     private ArrayList<String> list=new ArrayList<>();
     private Adapter_Griglia tutorAdapter;

@@ -17,18 +17,16 @@ import com.google.android.material.tabs.TabLayout;
 
 public class Fragment_Base extends Fragment {
 
-
-    private TabItem tab_ricette, tab_eventi, tab_chef;
+    private  TabLayout tabLayout;
     private ViewPager viewPager;
 
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState){
         View view= inflater.inflate(R.layout.fragment_base, parent, false);
-        TabLayout tabLayout=view.findViewById(R.id.tab_layout);
+        tabLayout=view.findViewById(R.id.tab_layout);
         viewPager=view.findViewById(R.id.view_pager);
         PagerAdapter pageAdapter = new PagerAdapter(getChildFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pageAdapter);
@@ -38,30 +36,20 @@ public class Fragment_Base extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        tab_ricette=(TabItem) view.findViewById(R.id.id_tab_ricette);
-        tab_eventi=(TabItem)view.findViewById(R.id.id_tab_eventi);
-        tab_chef=(TabItem)view.findViewById(R.id.id_tab_chef);
-
-      /*  tab_ricette.setOnClickListener(new View.OnClickListener() {
+        // IMPOSTAZIONE DI ON CLICK SU LabItem
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onClick(View view) {
-                viewPager.setCurrentItem(0);
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
             }
         });
-
-        tab_chef.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                viewPager.setCurrentItem(1);
-            }
-        });
-
-        tab_eventi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                viewPager.setCurrentItem(2);
-            }
-        });*/
     }
 
     @Override

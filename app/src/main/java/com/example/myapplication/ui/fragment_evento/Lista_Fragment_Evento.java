@@ -113,6 +113,7 @@ recyclerview.setLayoutAnimation(animation);
 
     public void doSomething(String id_cuoco){
         //PRENDIAMO TUTTI GLI EVENTI COLLEGATI ALL'UTENTE IN INPUT
+        System.out.println("ID CUOCO:: "+id_cuoco);
         ff.collection("eventi").whereEqualTo("id_cuoco",id_cuoco).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -178,8 +179,9 @@ recyclerview.setLayoutAnimation(animation);
                     List<DocumentSnapshot> lista = queryDocumentSnapshots.getDocuments();
                     for (DocumentSnapshot d : lista) {
                         Evento evento= d.toObject(Evento.class);
-                        list.add(evento);
-
+                        if(ActivityMappa.nonScaduto(evento.getData(), evento.getOra())){
+                            list.add(evento);
+                        }
                     }
                     tutorAdapter.notifyDataSetChanged();
                 }
