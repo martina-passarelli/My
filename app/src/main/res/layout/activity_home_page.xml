@@ -11,7 +11,7 @@
         android:id="@+id/logo"
         android:layout_width="match_parent"
         android:layout_height="184dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="20dp"
 
         android:adjustViewBounds="false"
         android:contentDescription="@string/accept"
@@ -31,8 +31,11 @@
         android:id="@+id/benvenuto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="casual"
         android:text="Benvenuto! "
+        android:textColor="#0C0C0C"
         android:textSize="30sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,25 +43,26 @@
 
     <TextView
         android:id="@+id/link"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="48dp"
-        android:layout_marginBottom="64dp"
 
+        android:layout_margin="20dp"
+        android:layout_marginTop="60dp"
         android:clickable="true"
         android:contextClickable="false"
         android:focusable="true"
+        android:fontFamily="casual"
+        android:gravity="center"
         android:text="@string/link"
+        android:textColor="#F8000000"
         android:textColorLink="#E91E63"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/benvenuto"
-        app:layout_constraintVertical_bias="0.164" />
+        app:layout_goneMarginTop="40dp" />
 
     <EditText
         android:id="@+id/codice"
@@ -76,43 +80,41 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/link"
+        app:layout_constraintTop_toBottomOf="@+id/linkUtente"
         tools:ignore="UnknownId"
         tools:targetApi="o" />
 
     <TextView
         android:id="@+id/linkUtente"
-        android:layout_width="285dp"
-        android:layout_height="34dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="48dp"
+        android:layout_margin="20dp"
+        android:layout_marginStart="20dp"
 
+        android:layout_marginEnd="20dp"
         android:clickable="true"
         android:contextClickable="false"
         android:focusable="true"
+        android:fontFamily="casual"
+        android:gravity="center"
         android:text="@string/linkUtente"
+        android:textColor="#0A0909"
         android:textColorLink="@color/common_google_signin_btn_text_dark_focused"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="18dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@id/link"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/codice"
-        app:layout_constraintVertical_bias="0.458" />
+        app:layout_constraintTop_toBottomOf="@+id/link" />
 
     <Button
         android:id="@+id/verifica"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="48dp"
-        android:layout_marginStart="220dp"
         android:layout_marginTop="8dp"
         android:text="Verifica"
-        app:layout_constraintBottom_toTopOf="@id/linkUtente"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/codice"
-        app:layout_constraintVertical_bias="0.81" />
+        app:layout_constraintTop_toBottomOf="@id/codice" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

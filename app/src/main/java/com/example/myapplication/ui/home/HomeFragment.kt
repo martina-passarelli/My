@@ -72,6 +72,7 @@ class HomeFragment : Fragment() {
             val testo = text_input.editText!!.text.toString().toLowerCase().trim { it <= ' ' }
             val i = Intent(this.activity, ListaActivity::class.java)
             i.putExtra("testo",testo)
+            i.putExtra("preferiti","no")
             startActivity(i)
 
         })

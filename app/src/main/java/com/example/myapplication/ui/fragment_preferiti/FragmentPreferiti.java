@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -13,10 +14,11 @@ import com.example.myapplication.R;
 import com.example.myapplication.ui.fragment_ricetta.ListaRicette_Fragment;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class FragmentPreferiti extends Fragment {
+public class FragmentPreferiti extends Fragment{
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
@@ -24,7 +26,7 @@ public class FragmentPreferiti extends Fragment {
         View view= inflater.inflate(R.layout.content_lista, parent, false);
         return view;
     }
-    @Override
+    //Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
 
         ListaRicette_Fragment fragment=new ListaRicette_Fragment();
@@ -35,13 +37,4 @@ public class FragmentPreferiti extends Fragment {
         fragmentTransaction.commit();
     }
 
-
-    @Override
-    public void onAttach(Context context){
-        super.onAttach(context);
-    }
-    @Override
-    public void onDetach(){
-        super.onDetach();
-    }
 }

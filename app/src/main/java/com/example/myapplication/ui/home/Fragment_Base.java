@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.myapplication.PagerAdapter;
@@ -22,7 +23,15 @@ public class Fragment_Base extends Fragment {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //SE SI E' SULLA HOME E SI CLICCA IL TASTO INDIETRO, SI ESCE DALL'APPLICAZIONE.
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        for(int i = 0; i < fm.getBackStackEntryCount(); ++i) {
+            fm.popBackStack();
+        }
     }
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState){
         View view= inflater.inflate(R.layout.fragment_base, parent, false);
@@ -52,6 +61,14 @@ public class Fragment_Base extends Fragment {
         });
     }
 
+
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
     @Override
     public void onPause() {
 
@@ -65,11 +82,5 @@ public class Fragment_Base extends Fragment {
     public void onDetach(){
         super.onDetach();
     }
-
-
-
-
-
-
 
 }

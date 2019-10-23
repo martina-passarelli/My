@@ -13,7 +13,7 @@
     <string name="menu_slideshow">Slideshow</string>
     <string name="menu_tools">Tools</string>
     <string name="menu_share">Share</string>
-    <string name="linkUtente"><a href="">Oppure clicca per accedere al tuo profilo!</a></string>
+    <string name="linkUtente">Oppure\n<a href="">clicca per accedere al tuo profilo!</a></string>
 
     <string name="menu_send">Send</string>
     <string name="title_activity_login">Sign in</string>

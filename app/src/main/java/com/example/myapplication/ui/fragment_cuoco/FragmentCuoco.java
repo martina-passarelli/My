@@ -56,15 +56,16 @@ import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.app.Activity.RESULT_OK;
-import static androidx.constraintlayout.widget.Constraints.TAG;
+
 
 public class FragmentCuoco extends Fragment {
-   private String currentId;
-    private TextView nomeCuoco,emailCuoco;
+    private String currentId;
+    private TextView nomeCuoco,emailCuoco,follower;
     private EditText password;
     private CircleImageView foto_cuoco;
     private Button ricette,eventi,segui;
@@ -72,11 +73,9 @@ public class FragmentCuoco extends Fragment {
     private String utente_corrente=FirebaseAuth.getInstance().getUid();
 
     //****per la modifica del profilo
-    private FloatingActionButton modificaProfilo;
-    private FloatingActionButton modificaFoto;
+    private FloatingActionButton modificaProfilo, modificaFoto;
     private boolean modificaAbilitata;
-    private EditText nuovaPassword;
-    private EditText vecchiaPassword;
+    private EditText nuovaPassword, vecchiaPassword;
     private Uri imageUri;
     private static final int SELECT_PICTURE = 100;
     private String id_utente_corrente=FirebaseAuth.getInstance().getUid();
@@ -88,19 +87,23 @@ public class FragmentCuoco extends Fragment {
     private Bundle bundle= new Bundle();
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {        super.onCreate(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //NEL MOMENTO IN CUI SI RITORNA AL FRAMMENTO, BISOGNA RIAPRIRE IL GIUSTO FRAMMENTO FIGLIO.
         if(!sezione_eventi) {
+            //SEZIONE RICETTE
             ListaRicette_Fragment ricette_fragment = new ListaRicette_Fragment();
             bundle.putString("id",currentId);
             ricette_fragment.setArguments(bundle);
             ricette_fragment.ottieni_lista(currentId);
             getChildFragmentManager().beginTransaction().replace(R.id.frame_cuoco, ricette_fragment).commit();
-        }else crea_lista_eventi(currentId);
+        }else
+            //SEZIONE EVENTI
+            crea_lista_eventi(currentId);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view= inflater.inflate(R.layout.fragment_cuoco, container, false);
         return view;
     }
@@ -115,7 +118,7 @@ public class FragmentCuoco extends Fragment {
         nuovaPassword=(EditText)view.findViewById(R.id.edit_pass_cuoco);
         foto_cuoco=(CircleImageView)view.findViewById(R.id.image_cuoco);
         ricette=(Button)view.findViewById(R.id.button_lista);
-
+        follower=(TextView)view.findViewById(R.id.numFollw);
         eventi=(Button)view.findViewById(R.id.button_eventi);
         add=(FloatingActionButton)view.findViewById(R.id.add_cuoco);
         segui=(Button)view.findViewById(R.id.button_segui);
@@ -135,17 +138,27 @@ public class FragmentCuoco extends Fragment {
             modificaProfilo.setClickable(false);
         }
 
-
         //PRELEVIAMO I DATI APPARTENENTI AL CUOCO E SETTIAMO LE LABEL
         ottieni_dati();
 
-        //VERIFICA SE L'UTENTE SEGUE IL CUOCO
-        sei_seguace();
+        if(!currentId.equals(FirebaseAuth.getInstance().getUid())){
+            //DISABILITA I TASTI DI MODIFICA PROFILO.
+            add.setVisibility(View.INVISIBLE);
+            add.setClickable(false);
+            /*
+            VERIFICA SE L'UTENTE SEGUE IL CUOCO NEL CASO IN CUI NON E' IL CUOCO STESSO AD ENTRARE
+            NEL PROFILO.
+             */
+            sei_seguace();
+        }
 
+        //PER MANTENERE I COLORI UGUALI DURANTE I CLICK, VENGONO SALVATI I COLORI.
         ColorStateList click= ricette.getBackgroundTintList();
         ColorStateList no_click= eventi.getBackgroundTintList();
 
-        //OTTENIAMO LA LISTA DI EVENTI A CUI PARTECIPA
+        /*-----------------------------------------------------------------------------------------
+             APRE LA SEZIONE EVENTI: ESSA CONTIENE GLI EVENTI DA LUI CREATI.
+         -----------------------------------------------------------------------------------------*/
         eventi.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -160,19 +173,24 @@ public class FragmentCuoco extends Fragment {
                 }
             }
         });
+        //------------------------------------------------------------------------------------------
 
-
-
+        /*-----------------------------------------------------------------------------------------
+             APRE LA SEZIONE RICETTE: ESSA CONTIENE LE RICETTE CREATE DAL CUOCO.
+         ----------------------------------------------------------------------------------------*/
         ricette.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v) {
                 if(sezione_eventi==true) {
-
+                    /*
+                    SICURAMENTE SE L'UTENTE NON SI TROVA NELLA SEZIONE RICETTE SARA' IN QUELLA EVENTI,
+                    MA PER ARRIVARCI, HA LASCIATO NELLO STACK IL FRAMMENTO DELLA SEZIONE RICETTE.
+                    INOLTRE, RIMUOVIAMO IL FRAMMENTO PRECEDENTE, TANTO OGNI VOLTA VIENE RIGENERATO.
+                     */
                     getFragmentManager().popBackStackImmediate();
                     getChildFragmentManager().popBackStack("LISTA_RICETTE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
-                    //rimuoviamo il frammento precedente,tanto ogni volta viene rigenerato
                     ricette.setClickable(false);
                     ricette.setBackgroundTintList(click);
                     eventi.setClickable(true);
@@ -181,12 +199,9 @@ public class FragmentCuoco extends Fragment {
                 }
             }
         });
+        //------------------------------------------------------------------------------------------
 
-        //SE NON E' IL CUOCO CORRENTE NON PUO' MODIFICARE IL PROPRIO PROFILO
-        if(!currentId.equals(FirebaseAuth.getInstance().getUid())){
-            add.setVisibility(View.INVISIBLE);
-            add.setClickable(false);
-        }
+
 
         add.setOnClickListener(new View.OnClickListener()
         {
@@ -225,7 +240,6 @@ public class FragmentCuoco extends Fragment {
         {
             @Override
             public void onClick(View v) {
-                //QUANDO SEGUI UN UTENTE LO DEVI INSERIRE NELLA SUA LISTA DI CUOCHI SEGUITI.
                 segui_cuoco();
             }
         });
@@ -333,6 +347,10 @@ public class FragmentCuoco extends Fragment {
 
 
 
+    /*
+    IL METODO sei_seguace() POVVEDE A VERIFICARE SE L'UTENTE DI RIFERIMENTO E' UN SEGUACE O NO DI UN
+    CUOCO. IN QUESTO MODO VIENE SETTATO IL TASTO SEGUI.
+     */
     private void sei_seguace() {
         FirebaseFirestore.getInstance().collection("utenti2").document(""+utente_corrente).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @SuppressLint("ResourceAsColor")
@@ -347,19 +365,25 @@ public class FragmentCuoco extends Fragment {
         });
     }
 
+    /*
+    crea_lista_eventi(String currentId) APRE LA LISTA DEGLI EVENTI DEL CUOCO CORRENTE.
+     */
     private void crea_lista_eventi(String currentId) {
         Bundle bundle= new Bundle();
         bundle.putString("id",currentId);
-        bundle.putBoolean("do",true);
         Lista_Fragment_Evento fragment_evento= new Lista_Fragment_Evento();
         fragment_evento.setArguments(bundle);
         fragment_evento.doSomething(currentId);
-        getChildFragmentManager().beginTransaction().replace(R.id.frame_cuoco,fragment_evento).addToBackStack("LISTA_RICETTE").commit();
+        getChildFragmentManager().beginTransaction().replace(R.id.frame_cuoco,fragment_evento).
+                addToBackStack("LISTA_RICETTE").commit();
     }
 
+    /*
+    aggiungi_ricetta() APRE IL FRAMMENTO PER LA CREAZIONE DI UNA NUOVA RICETTA.
+     */
     public void aggiungi_ricetta(){
         Fragment_CreaRicetta fragment_creaRicetta=new Fragment_CreaRicetta();
-        getChildFragmentManager().beginTransaction().replace(R.id.frame_cuoco,fragment_creaRicetta).commit();
+        getChildFragmentManager().beginTransaction().replace(R.id.frame_cuoco,fragment_creaRicetta).addToBackStack(null).commit();
     }
 
     @SuppressLint("RestrictedApi")
@@ -367,6 +391,9 @@ public class FragmentCuoco extends Fragment {
         add.setVisibility(View.VISIBLE);
     }
 
+    /*
+    ottieni_dati() PROVVEDE A PRELEVARE I DATI DEL CUOCO CORRENTE DAL FIREBASE.
+     */
     private void ottieni_dati() {
         db= FirebaseFirestore.getInstance();
         DocumentReference docRef = db.collection("utenti2").document("" + currentId);
@@ -378,6 +405,8 @@ public class FragmentCuoco extends Fragment {
                 cuoco = documentSnapshot.toObject(Cuoco.class);
                 nomeCuoco.setText(cuoco.getNome());
                 emailCuoco.setText(cuoco.getEmail());
+                int d= (int) cuoco.getFollower();
+                follower.setText(""+d);
 
                 if(currentId.equals(FirebaseAuth.getInstance().getUid())) {
                     //Il cuoco non può seguire se stesso
@@ -430,17 +459,22 @@ public class FragmentCuoco extends Fragment {
                     lista_cuochi=utente.getLista_cuochi();
                 }
                 if(lista_cuochi.contains(currentId)){
-
                     lista_cuochi.remove(currentId);
                     aggiorna(lista_cuochi,false);
                     segui.setBackgroundColor( -3355444);
                     segui.setText("Segui");
+                    int foll=Integer.parseInt(follower.getText().toString());
+                    foll=foll-1;
+                    follower.setText(""+foll);
 
                 }else {
                     lista_cuochi.add(currentId);
                     aggiorna(lista_cuochi,true);
                     segui.setBackgroundColor(-7829368);
                     segui.setText("Non seguire più");
+                    int foll=Integer.parseInt(follower.getText().toString());
+                    foll=foll+1;
+                    follower.setText(""+foll);
                 }
             }
         });
@@ -459,12 +493,23 @@ public class FragmentCuoco extends Fragment {
                     public Void apply(Transaction transaction) throws FirebaseFirestoreException {
                         DocumentSnapshot snapshot = transaction.get(ref);
                         if(aggiungi) {
-                            transaction.update(ref,"follower",snapshot.getDouble("follower")+1);
+                            int d=snapshot.getDouble("follower").intValue()+1;
+                            transaction.update(ref,"follower",d);
                             transaction.update(ref,"seguaci", FieldValue.arrayUnion(utente_corrente));
+                            //INVIO DELLA NOTIFICA AL CUOCO QUANDO SI COMINCIA A SEGUIRE.
+                            HashMap<String,Object> notificationMessage= new HashMap<>();
+                            notificationMessage.put("message", "Ha iniziato a seguirti!");
+                            notificationMessage.put("from",utente_corrente);
+                            notificationMessage.put("id",utente_corrente);
+                            notificationMessage.put("profilo",1);
+                            ref.collection("Notifications").add(notificationMessage);
+
                         }
                         else {
-                            transaction.update(ref,"follower",snapshot.getDouble("follower")-1);
+                            int d=snapshot.getDouble("follower").intValue()-1;
+                            transaction.update(ref,"follower",d);
                             transaction.update(ref,"seguaci", FieldValue.arrayRemove(utente_corrente));
+
                         }
                         return null;
                     }

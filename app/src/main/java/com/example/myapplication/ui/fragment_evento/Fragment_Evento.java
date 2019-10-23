@@ -29,7 +29,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+/*
 
+LA CLASSE SI OCCUPA DELLA VISTA DEL PROFILO DI UN EVENTO. SONO PRESENTI DUE SEZIONI, QUELLA RIFERITA
+ALLA DESCRIZIONE E QUELLA MOSTRANTE LA LISTA DEI PARTECIPANTI.
+
+ */
 public class Fragment_Evento extends Fragment {
     private Bundle bundle;
     private MapView mappa;
@@ -48,8 +53,10 @@ public class Fragment_Evento extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         View view= inflater.inflate(R.layout.fragment_home_evento, parent, false);
+        /*
+        INVIAMO LE INFO DELL'EVENTO SENZA ACCEDERE NUOVAMENTE AL FIREBASE
+         */
         bundle = this.getArguments();
-
         if(bundle != null){
             id_evento=bundle.getString("id_evento");
             id_cuoco=bundle.getString("id_cuoco");
@@ -68,7 +75,7 @@ public class Fragment_Evento extends Fragment {
         data=(TextView)view.findViewById(R.id.home_data);
         luogo=(TextView)view.findViewById(R.id.home_luogo);
 
-        //CLICK SUL NOME DEL CUOCO, APPRE IL PROFILO
+        //CLICK SUL NOME DEL CUOCO, APRE IL PROFILO
         cuoco=(TextView)view.findViewById(R.id.cuoco_home);
         cuoco.setOnClickListener(new View.OnClickListener()
         {
@@ -80,15 +87,22 @@ public class Fragment_Evento extends Fragment {
 
         Button descrizione= (Button)view.findViewById(R.id.button_descr_evento);
         descrizione.setClickable(false);//Si apre direttamente nella sezione descrizione
+
         Button partecipanti=(Button)view.findViewById(R.id.button_partec);
 
+        //PRELEVO I COLORI DEI BUTTON IN MODO DA SETTARLI CORRETTAMENTE DI VOLTA IN VOLTA
         ColorStateList click= descrizione.getBackgroundTintList();
         ColorStateList no_click=partecipanti.getBackgroundTintList();
 
         descrizione.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               getChildFragmentManager().popBackStack("DESCRIZIONE",FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                /*
+                RIPRENDIAMO LA SEZIONE DESCRIZIONE: SE SI E' ANDATI IN PARTECIPANTI, SIAMO SICURI
+                CHE ESSA CI SIA, IN QUANTO E' IL PRIMO FRAMMENTO FIGLIO A CREARSI APPENA SI APRE
+                L'EVENTO.
+                 */
+               getChildFragmentManager().popBackStack("DESCRIZIONE_EVENTO",FragmentManager.POP_BACK_STACK_INCLUSIVE);
                descrizione.setClickable(false);
                descrizione.setBackgroundTintList(click);
                partecipanti.setClickable(true);
@@ -97,20 +111,20 @@ public class Fragment_Evento extends Fragment {
         });
 
 
-
         partecipanti.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Fragment_ListaPartecipanti fragment = new Fragment_ListaPartecipanti();
+                //CREAZIONE DELLA LISTA PARTECIPATI A QELL'EVENTO
+                Fragment_ListaPartecipanti fragment_partecipanti = new Fragment_ListaPartecipanti();
+
                 Bundle b=new Bundle();
                 b.putString("id",id_evento);
-                fragment.setArguments(b);
-                fragment.doSomething(id_evento);
-                FragmentManager manager = getChildFragmentManager();
-                FragmentTransaction transaction = manager.beginTransaction();
-                transaction.replace(R.id.frame_home_ricetta, fragment);
-                transaction.addToBackStack("DESCRIZIONE");
-                transaction.commit();
+                fragment_partecipanti.setArguments(b);
+                fragment_partecipanti.doSomething(id_evento);
+
+                getChildFragmentManager().beginTransaction().replace(R.id.frame_home_ricetta, fragment_partecipanti)
+                .addToBackStack("DESCRIZIONE_EVENTO").commit();
+
                 descrizione.setClickable(true);
                 descrizione.setBackgroundTintList(no_click);
                 partecipanti.setClickable(false);
@@ -119,7 +133,8 @@ public class Fragment_Evento extends Fragment {
         });
 
         //**********visualizzazione mappa con bandierina
-        mappa=((MapView)view.findViewById(R.id.mapView));
+ //SBALLA LA VISTA----PERCHE'?
+        mappa=(MapView)view.findViewById(R.id.mapView);
         mappa.onCreate(savedInstanceState);
         mappa.getMapAsync(new OnMapReadyCallback() {
             @Override
@@ -131,8 +146,7 @@ public class Fragment_Evento extends Fragment {
 
     private void inserisciBandierina(GoogleMap googleMap) {
         gmap = googleMap;
-        gmap.addMarker(new MarkerOptions().position(new LatLng(latitudine,
-                longitudine))).showInfoWindow();
+        gmap.addMarker(new MarkerOptions().position(new LatLng(latitudine, longitudine))).showInfoWindow();
         gmap.getUiSettings().setMapToolbarEnabled(false);
         gmap.getUiSettings().setScrollGesturesEnabled(false);
         moveCamera(new LatLng(latitudine,longitudine),17f);
@@ -140,7 +154,6 @@ public class Fragment_Evento extends Fragment {
     }
     private void moveCamera(LatLng latLng, float zoom){
         gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
-
     }
 
     private void apri_profilo(){
@@ -168,19 +181,7 @@ public class Fragment_Evento extends Fragment {
     }
 
 
-    private Context context;
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        context = context;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        context = null;
-    }
 
     private void preleva_evento(String id_evento) {
         FirebaseFirestore ff= FirebaseFirestore.getInstance();
@@ -214,10 +215,19 @@ public class Fragment_Evento extends Fragment {
         getChildFragmentManager().beginTransaction().add(R.id.frame_home_ricetta,descrizioneFragment).addToBackStack(null).commit();
     }
 
+
+    private Context context;
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        context = context;
+    }
+
+
     @Override
     public void onResume() {
-        mappa.onResume();
         super.onResume();
+        mappa.onResume();
     }
 
     @Override
@@ -230,6 +240,7 @@ public class Fragment_Evento extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         mappa.onDestroy();
+        context=null;
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.example.myapplication.ui.fragment_ricetta.ListaRicette_Fragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -29,6 +30,7 @@ public class ListaActivity extends AppCompatActivity {
 
         Intent intent= getIntent();
         String categoria=intent.getStringExtra("categoria");
+        String not_pref=intent.getStringExtra("preferiti");
         if(categoria!=null) {
             ListaRicette_Fragment fragment = new ListaRicette_Fragment();
             fragment.doSomething(categoria);
@@ -36,13 +38,20 @@ public class ListaActivity extends AppCompatActivity {
             fragmentTransaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
             fragmentTransaction.replace(R.id.fragment, fragment);
             fragmentTransaction.commit();
-        }else{
+        }else if(not_pref!=null){
             String testo=intent.getStringExtra("testo");
             ListaRicette_Fragment fragment = new ListaRicette_Fragment();
             fragment.search(testo);
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
             fragmentTransaction.replace(R.id.fragment, fragment);
+            fragmentTransaction.commit();
+        }else{
+            ListaRicette_Fragment fragment=new ListaRicette_Fragment();
+            fragment.trovaPreferiti(FirebaseAuth.getInstance().getUid());
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.fragment,fragment);
+            fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
         }
 

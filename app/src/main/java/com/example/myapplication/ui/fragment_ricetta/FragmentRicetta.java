@@ -3,12 +3,8 @@ package com.example.myapplication.ui.fragment_ricetta;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +17,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.myapplication.R;
-import com.example.myapplication.ui.fragment_commenti.ItemCommentoFragment;
+import com.example.myapplication.ui.fragment_commenti.ListaCommenti_Fragment;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -95,7 +91,7 @@ public class FragmentRicetta extends Fragment {
                     descrizione_button.setBackgroundTintList(no_click);
                     commenti.setBackgroundTintList(click);
                     //ENTRA IN GIOCO IL FRAMMENTO DEI COMMENTI
-                    ItemCommentoFragment fragment_commenti = new ItemCommentoFragment();
+                    ListaCommenti_Fragment fragment_commenti = new ListaCommenti_Fragment();
                     //IL METODO doSomething(String value) E' USATO PER PRENDERE SOLO I COMMENTI
                     // DI QUELLA RICETTA
                     fragment_commenti.doSomething(id);

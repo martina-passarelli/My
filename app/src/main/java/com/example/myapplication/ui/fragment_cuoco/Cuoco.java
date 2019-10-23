@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class Cuoco {
+
     private ArrayList<String> seguaci;
     private String nome,password;
     private String email;

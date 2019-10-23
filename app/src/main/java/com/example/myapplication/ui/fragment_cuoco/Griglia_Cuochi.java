@@ -94,6 +94,7 @@ public class Griglia_Cuochi extends Fragment {
 
     }
 
+    //CERCA I CUOCHI INDICATI.
     public void search(String testo){
         Client client = new Client("348522f0fb1c5e16852ff83238805714", "fc1c214d14331aa60c3b706f5f725ee5");
         Index index = client.getIndex("utenti2");
@@ -127,7 +128,7 @@ public class Griglia_Cuochi extends Fragment {
         context=context;
     }
     @Override
-    public void onDetach(){
+    public void onDetach() {
         super.onDetach();
     }
     @Override

@@ -11,17 +11,16 @@
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_base" />
 
-    <fragment
+    <activity
         android:id="@+id/nav_gallery"
-        android:name="com.example.myapplication.ui.fragment_preferiti.FragmentPreferiti"
+        android:name="com.example.myapplication.ListaActivity"
         android:label="Preferiti"
-        tools:layout="@layout/content_lista" />
+        tools:layout="@layout/activity_lista" />
 
-    <fragment
+    <activity
         android:id="@+id/nav_slideshow"
         android:name="com.example.myapplication.ui.fragment_utente.Fragment_IMieiEventi"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:label="I tuoi eventi" />
 
     <activity
         android:id="@+id/nav_tools"
@@ -30,12 +29,10 @@
 
     <fragment
         android:id="@+id/nav_share"
-        android:name="com.example.myapplication.ui.share.ShareFragment"
-        android:label="@string/menu_share" />
+        android:name="com.example.myapplication.ui.share.ShareFragment" />
 
-    <fragment
+    <activity
         android:id="@+id/nav_send"
-        android:name="com.example.myapplication.ui.send.SendFragment"
-        android:label="@string/menu_send"
-        tools:layout="@layout/fragment_send" />
+        android:name="com.example.myapplication.ActivityNotifiche"
+        android:label="Notifiche" />
 </navigation>

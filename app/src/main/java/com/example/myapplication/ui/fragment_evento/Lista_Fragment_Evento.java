@@ -44,9 +44,8 @@ public class Lista_Fragment_Evento extends Fragment {
     private View myView;
     private FirebaseFirestore ff= FirebaseFirestore.getInstance();
     private Adapter_Evento tutorAdapter;
-
     public String id_utente="null";
-    public boolean doS=false;//SERVE PER INDICARE LA PROVENIENZA DELLA RICHIESTA
+
 
 
     @Override
@@ -64,7 +63,6 @@ public class Lista_Fragment_Evento extends Fragment {
         Bundle bundle=this.getArguments();
         if(bundle!=null) {
             id_utente = bundle.getString("id"); //Serve per l'abilitazione di eliminazione eventi
-            doS = bundle.getBoolean("do");
         }
 
         if(id_utente.equals(FirebaseAuth.getInstance().getUid())){

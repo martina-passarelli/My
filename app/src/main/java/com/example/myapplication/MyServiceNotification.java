@@ -31,11 +31,14 @@ public class MyServiceNotification extends FirebaseMessagingService {
         String notificationTitle = null, notificationBody = null;
         String dataTitle = null, dataMessage = null;
 
+        String click_action=null;
+
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData().get("body"));
             dataTitle = remoteMessage.getData().get("title");
             dataMessage = remoteMessage.getData().get("body");
+
         }
 
         // Check if message contains a notification payload.
@@ -43,18 +46,20 @@ public class MyServiceNotification extends FirebaseMessagingService {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
             notificationTitle = remoteMessage.getNotification().getTitle();
             notificationBody = remoteMessage.getNotification().getBody();
+            click_action=remoteMessage.getNotification().getClickAction();
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
-        sendNotification(notificationTitle, notificationBody, dataTitle, dataMessage);
+        sendNotification(notificationTitle, notificationBody, dataTitle, dataMessage,click_action);
     }
 
     /**
      //     * Create and show a simple notification containing the received FCM message.
      //     */
-    private void sendNotification(String notificationTitle, String notificationBody, String dataTitle, String dataMessage) {
-        Intent intent = new Intent(this, MainActivity.class);
+    private void sendNotification(String notificationTitle, String notificationBody, String dataTitle, String dataMessage, String click_action) {
+
+        Intent intent = new Intent(click_action);
         intent.putExtra("title", dataTitle);
         intent.putExtra("body", dataMessage);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -63,7 +68,6 @@ public class MyServiceNotification extends FirebaseMessagingService {
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_stat_name)
                 .setContentTitle(notificationTitle)
                 .setContentText(notificationBody)
                 .setAutoCancel(true)

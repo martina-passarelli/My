@@ -84,7 +84,6 @@ public class FragmentNuovoEvento extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.frag_crea_evento, container, false);
-        context=inflater.getContext();
         return myView;
     }
 
@@ -285,13 +284,13 @@ public class FragmentNuovoEvento extends Fragment {
                 }
             }
         });
-        inviaNotifica(nome,citta);
+
 
 
     }
 
 
-    public void inviaNotifica(String nome_evento, String città){
+    public void inviaNotifica(String nome_evento, String città,String id_evento){
         /*
        La notifica viene inviata a coloro che seguono il cuoco e che ultimamente hanno partecipato
        ad un evento nella città in cui si sta creando l'evento.
@@ -308,6 +307,8 @@ public class FragmentNuovoEvento extends Fragment {
                        HashMap<String,Object> notificationMessage= new HashMap<>();
                        notificationMessage.put("message", mess);
                        notificationMessage.put("from",idAuth);
+                       notificationMessage.put("id",id_evento);
+                       notificationMessage.put("profilo",0);
                        inserisci_notifica(seguaci, notificationMessage);
                    }
                }
@@ -329,6 +330,8 @@ public class FragmentNuovoEvento extends Fragment {
                         HashMap<String,Object> notificationMessage= new HashMap<>();
                         notificationMessage.put("message", mess);
                         notificationMessage.put("from",idAuth);
+                        notificationMessage.put("id",id_evento);
+                        notificationMessage.put("profilo",0);
                         inserisci_notifica(lista_utenti,notificationMessage);
                     }
                 }
@@ -370,7 +373,6 @@ public class FragmentNuovoEvento extends Fragment {
 
         String currentId= FirebaseAuth.getInstance().getUid();
         Lista_Fragment_Evento list_eventi=new Lista_Fragment_Evento();
-
         list_eventi.doSomething(currentId);
         getFragmentManager().beginTransaction().replace(R.id.frame_cuoco,list_eventi).commit();
 
@@ -408,6 +410,7 @@ public class FragmentNuovoEvento extends Fragment {
                            Evento e= d.toObject(Evento.class);
                            e.setId(d.getId());
                            riferimento.document(d.getId()).set(e);
+                           inviaNotifica(nome,e.getCittà(),e.getId());
                         }
                     }
                 }
@@ -427,5 +430,21 @@ public class FragmentNuovoEvento extends Fragment {
                 }
             });
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        context = context;
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        context=null;
     }
 }

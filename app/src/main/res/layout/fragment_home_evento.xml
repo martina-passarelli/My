@@ -4,14 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/sfondo_bianco"
+    android:background="@drawable/sfondo_grigio"
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/id_layout_home"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:minHeight="720dp">
+        android:layout_margin="20dp"
+        android:background="#4BFFFFFF"
+        android:minHeight="650dp">
 
         <com.google.android.gms.maps.MapView
             android:id="@+id/mapView"
@@ -68,6 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:fontFamily="casual"
+            android:textColor="#020202"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/label_cuoco" />
@@ -78,6 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:fontFamily="casual"
+            android:textColor="#020202"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/mapView" />
@@ -88,7 +92,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:fontFamily="casual"
-            android:textSize="20sp"
+            android:textColor="#020202"
+            android:textSize="18dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/home_data" />
 

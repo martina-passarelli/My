@@ -44,14 +44,12 @@ public class Adapter_Partecipanti extends RecyclerView.Adapter <Adapter_Partecip
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        if(getItemCount()!=0){
-            String id_utente=partList.get(position);
-            holder.pos.setText(position+1+".");
-            crea_item(holder,id_utente);
+        if(getItemCount()!=0) {
+            String id_utente = partList.get(position);
+            holder.pos.setText(position + 1 + ".");
+            crea_item(holder, id_utente);
         }
     }
-
-
 
     public void crea_item(ViewHolder holder, String id_utente){
         FirebaseFirestore db= FirebaseFirestore.getInstance();
@@ -62,19 +60,22 @@ public class Adapter_Partecipanti extends RecyclerView.Adapter <Adapter_Partecip
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Utente utente = documentSnapshot.toObject(Utente.class);
                 //SETTA NOME UTENTE
-                holder.nome_utente.setText(utente.getNome());
-                // SETTA IMMAGINE DELL'UTENTE
-                if(utente.getImageProf() !=null){
-                    try {
-                        storage.child(utente.getEmail()+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                activity = (AppCompatActivity) holder.mView.getContext();
-                               Picasso.with(activity).load(uri).rotate(utente.getRot()).fit().centerCrop().into(holder.foto_utente);
-                            }
-                        });
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                if(utente!=null) {
+                    holder.nome_utente.setText(utente.getNome());
+
+                    // SETTA IMMAGINE DELL'UTENTE
+                    if (utente.getImageProf() != null) {
+                        try {
+                            storage.child(utente.getEmail() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    activity = (AppCompatActivity) holder.mView.getContext();
+                                    Picasso.with(activity).load(uri).rotate(utente.getRot()).fit().centerCrop().into(holder.foto_utente);
+                                }
+                            });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }

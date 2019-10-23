@@ -73,12 +73,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 transiction.setCustomAnimations(R.anim.nav_default_enter_anim,R.anim.nav_default_exit_anim);
                 transiction.replace(R.id.fragment, ricettaFragment).addToBackStack(null).commit();
             });
-
         }
-
-
-
-
     }
 
     public MyAdapter(ArrayList<Ricetta> myDataset) {

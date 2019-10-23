@@ -17,8 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.ProfiloActivity;
 import com.example.myapplication.R;
-import com.example.myapplication.ui.fragment_utente.Utente;
-import com.example.myapplication.ui.fragment_cuoco.Cuoco;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,8 +27,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -38,14 +34,14 @@ import java.util.Locale;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
-public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapter<MyItemAdapterCommentoRecyclerViewAdapter.ViewHolder> {
+public class MyItemAdapterCommento extends RecyclerView.Adapter<MyItemAdapterCommento.ViewHolder> {
 
     private final List<Commento> mValues;
     private FirebaseFirestore ff= FirebaseFirestore.getInstance();
     private CollectionReference colR=ff.collection("commenti");
     private FirebaseStorage storage=FirebaseStorage.getInstance();
 
-    public MyItemAdapterCommentoRecyclerViewAdapter(List<Commento> items){
+    public MyItemAdapterCommento(List<Commento> items){
         mValues = items;
     }
 
@@ -74,15 +70,24 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
                     if(documentSnapshot.toObject(Object.class)!=null) {
                         double ob =documentSnapshot.getDouble("tipo");
                         ottieni_dati(holder,documentSnapshot);
-                        if (ob==0) {// SE UTENTE
+                        //IL TIPO SERVE PER APRIRE IL CORRETTO TIPO DI PROFILO
+                        if (ob==0) {
+                            // SE UTENTE
                             holder.tipo="utente";
-                        } else {// SE CUOCO
+                        } else {
+                            // SE CUOCO
                             holder.icon.setVisibility(View.VISIBLE);
                             holder.tipo="cuoco";
                         }
-                        //-----------------------------------------------------------------------------------------------------------------------
-                        //---------------CLICK SU PROFILO UTENTE---------------------------------------------------------------------------------
-                        // E' possibile cliccare sul profilo utente solo se esso è presente nel db.
+                        //--------------------------------------------------------------------------
+                        //---------------CLICK SU PROFILO UTENTE------------------------------------
+                        /*
+                        E' POSSIBILE CLICCARE SUL PROFILO DELL'UTENTE SOLO SE ESSO E' PRESENTE NEL DB.
+                        QUESTA OPZIONE E' DOVUTA ALLA SCELTA, NEL CASO IN CUI UN UTENTE DECIDA DI
+                        ELIMINARE IL PROPRIO PROFILO, DI NON RIMUOVERE I SUOI COMMENTI. NEL CASO
+                        APPENA SPECIFICATO, IL NOME DELL'UTENTE SARA' SETTATO COME "ACCOUNT ELIMINATO".
+                         */
+                        //--------------------------------------------------------------------------
                         holder.profilo.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -92,14 +97,17 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
                         });
 
                     }
-                    else holder.utente.setText("Account Eliminato");
+                    else holder.utente.setText("ACCOUNT ELIMINATO");
                 });
             }
 
-
-
-            //-----------------------------------------------------------------------------------------------------------------------
-            //-----------------------RIMOZIONE COMMENTO----------------------------------------------------------------------------------------
+            //--------------------------------------------------------------------------------------
+            //-----------------------RIMOZIONE COMMENTO---------------------------------------------
+            /*
+            SOLO L'UTENTE CHE HA SCRITTO IL COMMENTO PUO' DECIDERE DI ELIMINARLO. FACCIAMO COMPARIRE
+            UNO SHOW DIALOG PER ULTERIORE CONFERMA.
+            DA INSERIRE QUANDO MARTY TRADUCE CODICE?????????????????????????????????????????
+             */
             if(holder.id_utente.equals( FirebaseAuth.getInstance().getUid())){
                 holder.rimuovi.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -108,21 +116,31 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
                     }
                 });
             }else holder.rimuovi.setVisibility(View.INVISIBLE);
-
+            //--------------------------------------------------------------------------------------
         }
     }
 
+    /*
+    IL METODO vai_profilo(ViewHolder holder, Context context) APRE IL PROFILO DELL'UTENTE/CUOCO CORRETTO.
+     */
     public void vai_profilo(ViewHolder holder, Context context){
         Intent myIntent = new Intent(context, ProfiloActivity.class);
-        myIntent.putExtra("tipo", "commento");//Optional parameters
+        myIntent.putExtra("tipo", "commento");
         myIntent.putExtra("utente", holder.id_utente);
         myIntent.putExtra("tipo_utente",holder.tipo);
         context.startActivity(myIntent);
     }
 
 
+    /*
+    IL METODO ottieni_dati(ViewHolder holder, DocumentSnapshot documentSnapshot) SERVE AD OTTENERE
+    I DATI DELL'UTENTE, DI MODO DA POTER SETTARE SIA L'IMMAGINE DEL PROFILO, SIA IL SUO NOME NELLA
+    VISTA DEL COMMENTO.
+     */
+
     public void ottieni_dati(ViewHolder holder, DocumentSnapshot documentSnapshot){
-        //A PARTIRE DAL DOCUMENT SNAPSHOT RICAVIAMO I DATI: I CAMPI CHE SI VOGLIONO OTTENERE SONO COMUNI SIA AL CUOCO CHE ALL'UTENTE.
+        //A PARTIRE DAL DOCUMENT SNAPSHOT RICAVIAMO I DATI:
+        // I CAMPI CHE SI VOGLIONO OTTENERE SONO COMUNI SIA AL CUOCO CHE ALL'UTENTE.
         holder.email =documentSnapshot.getString("email");
         if (documentSnapshot.getString("imageProf")!= null) {
             try {
@@ -139,7 +157,6 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
         //----------------------------------------------------------------------------------------------------------------
         holder.nome_utente = documentSnapshot.getString("nome");
         holder.utente.setText(holder.nome_utente);
-
     }
 
 
@@ -150,7 +167,6 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
                     @Override
                     public void onSuccess(Void aVoid) {
                         removeAt(holder.getAdapterPosition());
-
                         Log.d(TAG, "Commento rimosso!");
                     }
                 })
@@ -167,15 +183,12 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
         notifyItemRemoved(position);
     }
 
-
-
-
     @Override
     public int getItemCount() {
         return mValues.size();
     }
 
-//-------------------------------CONTENUTO DI UN ITEMSET------------------------------------------------------------------------------
+//-------------------------------CONTENUTO DI UN ITEMSET--------------------------------------------
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView utente,data;
@@ -204,11 +217,6 @@ public class MyItemAdapterCommentoRecyclerViewAdapter extends RecyclerView.Adapt
             id_utente=""; //Contiene l'id dell'utente
             email="";
             tipo="";
-        }
-
-        @Override
-        public String toString() {
-            return super.toString() + " '" + commento.getText() + "'";
         }
     }
 }

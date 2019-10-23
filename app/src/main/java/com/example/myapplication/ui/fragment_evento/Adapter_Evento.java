@@ -84,12 +84,6 @@ public class Adapter_Evento extends RecyclerView.Adapter <Adapter_Evento.ViewHol
                         removeAt(position);
                         Log.d(TAG, "Evento rimosso!");
                     }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error deleting document", e);
-                    }
                 });
     }
 
@@ -100,13 +94,7 @@ public class Adapter_Evento extends RecyclerView.Adapter <Adapter_Evento.ViewHol
                 restoreAt(evento,position);
                 Log.d(TAG, "Evento ripristinato!");
             }
-        })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                    }
-                });
+        });
     }
 
 

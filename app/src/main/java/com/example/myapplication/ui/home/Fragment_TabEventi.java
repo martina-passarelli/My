@@ -1,8 +1,8 @@
 package com.example.myapplication.ui.home;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +32,12 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-import static androidx.constraintlayout.widget.Constraints.TAG;
+/*
+  LA CLASSE E' CORRELATA CON LA PAGE EVENTI NELLA HOME. QUESTA SERVE A MOSTRARE TUTTI GLI EVENTI
+  DISPONIBILI ED A SUGGERIRE ALL'UTENTE QUALI SONO GLI EVENTI CHE AVVENGONO NELLA SUA CITTA' O, IN
+  CASO DI ASSENZA DI QUESTA INFORMAZIONE, QUALI SONO GLI EVENTI DEI CUOCHI PIU' POPOLARI.
+
+ */
 
 public class Fragment_TabEventi extends Fragment {
     private RecyclerView recyclerView;
@@ -48,11 +53,14 @@ public class Fragment_TabEventi extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.tab_eventi, parent, false);
+
+        //SI OTTENGONO GLI EVENTI TOTALI
         Lista_Fragment_Evento fragment_lista = new Lista_Fragment_Evento();
         fragment_lista.eventiTotali();
         getChildFragmentManager().beginTransaction().replace(R.id.frame_lista_eventi,fragment_lista).commit();
-        recyclerView=view.findViewById(R.id.lista_eventi_suggeriti);
 
+        //recycleView SI OCCUPA DEGLI EVENTI SUGGERITI
+        recyclerView=view.findViewById(R.id.lista_eventi_suggeriti);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(tutorAdapter);
@@ -61,6 +69,7 @@ public class Fragment_TabEventi extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+
         FirebaseFirestore.getInstance().collection("suggeriti").document(""+FirebaseAuth.getInstance().getUid()).
                 get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @SuppressLint("ResourceAsColor")
@@ -74,10 +83,12 @@ public class Fragment_TabEventi extends Fragment {
                 }
             }
                 }).addOnFailureListener(new OnFailureListener() {
+                    //IN suggeriti NON E' PRESENTE ALCUN RIFERIMENTO ALL'UTENTE
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     trova_eventi();
                 }
+
             });
     }
 
@@ -98,10 +109,7 @@ public class Fragment_TabEventi extends Fragment {
                            List<DocumentSnapshot> lista= task.getResult().getDocuments();
                                 for(int i=0; i<lista.size() && i<3; i++){
                                     preleva_evento(lista.get(i).getId());
-                                    System.out.println("CUOCO"+lista.get(i).getId());
                                 }
-
-
                             }
                     }
                 });
@@ -112,40 +120,67 @@ public class Fragment_TabEventi extends Fragment {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    DocumentSnapshot documentSnapshot= task.getResult().getDocuments().get(0);
-                    Evento evento=documentSnapshot.toObject(Evento.class);
-                    eventi_consigliati.add(evento);
-                    tutorAdapter.notifyDataSetChanged();
-                    System.out.println("EVENTIII"+eventi_consigliati.toString());
+                    for(DocumentSnapshot documentSnapshot: task.getResult()) {
+                        Evento evento = documentSnapshot.toObject(Evento.class);
+                        if (ActivityMappa.nonScaduto(evento.getData(), evento.getOra())) {
+                            eventi_consigliati.add(evento);
+                            tutorAdapter.notifyDataSetChanged();
+                            break;
+                        }
+                    }
 
                 }
             }
         });
     }
 
-    //EVENTI CONSIGLIATI SECONDO IL LUOGO DI INTERESSE
+    //EVENTI CONSIGLIATI SECONDO IL LUOGO DI INTERESSE: VENGONO SELEZIONATI AL PIU' 3 EVENTI
     private void trova_eventi(String luogo_interesse) {
        firebaseFirestore.collection("eventi").whereEqualTo("città", luogo_interesse).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
+                if (task.isSuccessful()  && !task.getResult().isEmpty() ){
+
                     int i=0;
                     eventi_consigliati.clear();
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        if(i<=3) {
+                        if(i<3) {
                             Evento evento = document.toObject(Evento.class);
                             if (ActivityMappa.nonScaduto(evento.getData(), evento.getOra())) {
                                 eventi_consigliati.add(evento);
+                                i++;
                             }
-                            i++;
                         }else break;
                     }
                     tutorAdapter.notifyDataSetChanged();
                 } else {
-                    Log.d(TAG, "Error getting documents: ", task.getException());
+                    /*
+                     NON E' PRESENTE ALCUN EVENTO NELLA CITTA' INDICATA, QUINDI SI SUGGERISCONO GLI
+                     EVENTI DEGLI CHEF PIU' POPOLARI.
+                     */
+                   trova_eventi();
                 }
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+
+        super.onPause();
+    }
+    @Override
+    public void onAttach(Context context){
+        super.onAttach(context);
+    }
+    @Override
+    public void onDetach(){
+        super.onDetach();
     }
 
 }

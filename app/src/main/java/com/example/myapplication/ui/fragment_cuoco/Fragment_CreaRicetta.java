@@ -50,7 +50,10 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 import static androidx.constraintlayout.widget.Constraints.TAG;
-
+/*
+    UN CUOCO PUO' PROVVEDERE ALLA CREAZIONE DI UNA RICETTA: NEL SEGUENTE CASO SI APRE UN NUOVO FRAMMENTO
+    IL QUALE PROVVEDE AL SET DI TUTTI I CAMPI RIGUARDANTI LA RICETTA.
+ */
 public class Fragment_CreaRicetta extends Fragment {
     private String id_cuoco,categoria;
     private EditText edit_nome, edit_descr, edit_ingr, edit_ricetta;
@@ -58,16 +61,12 @@ public class Fragment_CreaRicetta extends Fragment {
     private final int SELECT_PICTURE = 100;
     private int rotazioneImg;
     private StorageReference storage;
-
     private ImageView image_foto;
     private Uri imageUri;
-
-
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState){
@@ -86,6 +85,7 @@ public class Fragment_CreaRicetta extends Fragment {
         fatto=(FloatingActionButton)view.findViewById(R.id.fatto);
 
         image_foto=(ImageView)view.findViewById(R.id.foto_ricetta);
+        //PRELEVARE LA FOTO DELLA RICETTA DALLA GALLERIA DELLE IMMAGINI
         image_foto.setOnClickListener((view1) -> {
             ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
             Intent intent = new Intent();
@@ -94,6 +94,10 @@ public class Fragment_CreaRicetta extends Fragment {
             startActivityForResult(intent, SELECT_PICTURE);
         });
 
+        /*
+        LISTA DELLE POSSIBILI CATEGORIE DELLA RICETTA: E' PRESENTE UNO SPINNER CHE SI OCCUPERA' DI
+        QUESTA SCELTA.
+         */
         List<String> lista=new ArrayList<>();
         lista.add("Torte");
         lista.add("Ciambelloni");
@@ -101,11 +105,9 @@ public class Fragment_CreaRicetta extends Fragment {
         lista.add("Mousse");
         lista.add("Cheesecake");
         lista.add("Biscotti");
-
         Spinner sp=(Spinner) view.findViewById(R.id.spinner);
         ArrayAdapter adapter=new ArrayAdapter(this.getContext(),android.R.layout.simple_spinner_dropdown_item,lista);
         sp.setAdapter(adapter);
-
         sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             @Override
@@ -115,9 +117,12 @@ public class Fragment_CreaRicetta extends Fragment {
             }
             @Override
             public void onNothingSelected(AdapterView<?> arg0)
-            { }
+            {   //DEFAULT: categoria torte
+                categoria=(String)sp.getItemAtPosition(0);
+            }
         });
 
+        // TERMINA LA CREAZIONE DELLA RICETTA, SI PROVVEDE AL CARICAMENTO DEL FRAMMENTO PRECEDENTE.
         fatto.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -127,11 +132,9 @@ public class Fragment_CreaRicetta extends Fragment {
                 String ingr=edit_ingr.getText().toString();
                 String nome=edit_nome.getText().toString();
                 if(ricetta!=null && descr!=null && ingr!=null && nome!=null) {
-
                     Ricetta r=new Ricetta(nome,ingr,id_cuoco,descr,nome+id_cuoco+".jpg",ricetta,categoria);
                     r.setRot(rotazioneImg);
                     ottieni_nomeCuoco(r,id_cuoco);
-
                     aggiungi_immagine_storage(nome, id_cuoco);
                     ricaricaFrammento();
                 }
@@ -156,7 +159,6 @@ public class Fragment_CreaRicetta extends Fragment {
 
     private void aggiungi_immagine_storage(String nome, String id_cuoco) {
         try {
-
             //se ha scelto un'immagine
             if (imageUri != null) {
                 //riferimento allo storage
@@ -166,7 +168,7 @@ public class Fragment_CreaRicetta extends Fragment {
                         .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                //Toast.makeText(getContext(), "File Uploaded ", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), "File Uploaded ", Toast.LENGTH_LONG).show();
                             }
                         });
             }
@@ -174,11 +176,13 @@ public class Fragment_CreaRicetta extends Fragment {
 
     }
 
+    /*
+    ricaricaFrammento() PROVVEDE A RICARICARE LA VISTA DEL FRAMMENTO GENITORE CON LA NUOVA.
+     */
     public void ricaricaFrammento(){
-        // DA VERIFICARE SE SI PUO' FARE DIVERSAMENTE
         FragmentCuoco frag=(FragmentCuoco)getParentFragment();
+        //BISOGNA SETTARE LA VISIBILITA' DI UN TASTO PRESENTE NEL FRAMMENTO PADRE.
         frag.changeVisibility();
-
         Bundle bundle= new Bundle();
         bundle.putString("id",id_cuoco);
         ListaRicette_Fragment ricette_fragment=new ListaRicette_Fragment();
@@ -188,20 +192,11 @@ public class Fragment_CreaRicetta extends Fragment {
     }
 
 
+    /*
+    LA RICETTA VIENE CARICATA ALL'INTERNO DEL FIRESTORE.
+     */
     public void aggiungi_inFirestore(Ricetta r){
-        FirebaseFirestore.getInstance().collection("ricette").document().set(r)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Ricetta condivisa!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Errore condivisione fallita", e);
-                    }
-                });
+        FirebaseFirestore.getInstance().collection("ricette").document().set(r);
     }
 
 

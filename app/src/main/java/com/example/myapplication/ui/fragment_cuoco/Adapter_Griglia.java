@@ -25,8 +25,11 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+/*
+    IL SEGUENTE ADAPTER, SI OCCUPA DI GESTIRE LA VISTA DEGLI ITEMS DELLA GRIGLIA DEI CUOCHI PRESENTE
+    NELLA HOME PAGE.
+ */
 public class Adapter_Griglia extends RecyclerView.Adapter <Adapter_Griglia.ViewHolder> {
-
     private ArrayList<String> lista_cuochi;
     private   FirebaseStorage storage=FirebaseStorage.getInstance();
     private AppCompatActivity activity;
@@ -47,7 +50,6 @@ public class Adapter_Griglia extends RecyclerView.Adapter <Adapter_Griglia.ViewH
             if(getItemCount()!=0){
                 String id_utente=lista_cuochi.get(position);
                 crea_item(holder,id_utente);
-
                 holder.card.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -59,7 +61,13 @@ public class Adapter_Griglia extends RecyclerView.Adapter <Adapter_Griglia.ViewH
     }
 
 
+    /*
+    IL METODO crea_item(ViewHolder holder, String id_utente) PROVVEDE A SETTARE LA VISTA DELLA CARD
+    DELL'ITEM CORRENTE. QUINDI, PRELEVA I DATI DEL CUOCO PER INSERIRE SIA L'IMMAGINE DEL PROFILO CHE
+    IL SUO NOME.
+     */
     public void crea_item(ViewHolder holder, String id_utente){
+
         FirebaseFirestore db= FirebaseFirestore.getInstance();
         DocumentReference docRef = db.collection("utenti2").document("" + id_utente);
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -91,7 +99,7 @@ public class Adapter_Griglia extends RecyclerView.Adapter <Adapter_Griglia.ViewH
 
     }
 
-    //----------VA AL PROFILO DEL CUOCO-------------------------------------------------------------
+    //------ VA AL PROFILO DEL CUOCO-------------------------------------------------------------
     public void vai_profilo(String id_utente, Context context){
         Intent myIntent = new Intent(context, ProfiloActivity.class);
         myIntent.putExtra("tipo", "commento");//Optional parameters

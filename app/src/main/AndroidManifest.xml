@@ -8,25 +8,26 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.apps.photos.permission.GOOGLE_PHOTOS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:name="androidx.multidex.MultiDexApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="false"
-        android:largeHeap="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+
         <service
             android:name=".MyServiceNotification"
             android:exported="false">
@@ -38,25 +39,42 @@
         <activity
             android:name=".ProfiloActivity"
             android:label="Profilo"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar">
 
+        </activity>
         <activity
             android:name=".ListaActivity"
-            android:label="Lista Ricette"
+            android:label="Home"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.myapplication.MainActivity" />
+            <meta-data
+                android:name="preloaded_fonts"
+                android:resource="@array/preloaded_fonts" />
         </activity>
 
         <activity
+            android:name=".ActivityNotifiche"
+            android:label="Home"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.myapplication.MainActivity" />
+            <intent-filter>
+                <action android:name="ACTIVITY_NOTIFICHE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login" />
-
         <activity android:name=".ui.home_page.HomePage">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -68,15 +86,23 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyA1rz16DQrCrva8voT07CEXCQIGJec_SAs" />
 
-        <activity android:name=".ActivityMappa"
-            android:label="Eventi intorno a te"/>
+        <activity
+            android:name=".ActivityMappa"
+            android:label="Eventi intorno a te" />
+        <activity
+            android:name=".ui.fragment_utente.Fragment_IMieiEventi"
+            android:label="Home"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="com.example.myapplication.MainActivity" />
+        </activity>
 
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <meta-data
             android:name="preloaded_fonts"

@@ -1,69 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-
-
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_commenti"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/view_commenti"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/view_commenti"
+            android:layout_width="match_parent"
+            android:layout_height="320dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/item_commento">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <Button
+            android:id="@+id/button_commenta"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Commenta"
+            app:layout_constraintBottom_toBottomOf="@id/input_commento"
+            app:layout_constraintEnd_toEndOf="@id/input_commento" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_commento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@color/quantum_grey200"
+            android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
+            android:minHeight="80dp"
+            app:layout_constraintTop_toBottomOf="@id/view_commenti"
+            app:layout_goneMarginBottom="20dp"
+            app:layout_goneMarginTop="20dp"
+            tools:layout_editor_absoluteX="10dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/id_scrivi_commento"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                app:fastScrollVerticalThumbDrawable="@android:drawable/screen_background_dark"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:stackFromEnd="true"
-                tools:listitem="@layout/item_commento">
+                android:layout_height="match_parent"
+                android:hint="Scrivi un commento..." />
 
-            </androidx.recyclerview.widget.RecyclerView>
+        </com.google.android.material.textfield.TextInputLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_marginVertical="10dp"
-                android:background="#FFFFFF"
-                android:orientation="horizontal"
-                android:overScrollMode="ifContentScrolls"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/view_commenti">
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/input_commento"
-                    android:layout_width="250dp"
-                    android:layout_height="wrap_content"
-                    android:background="#EBFFFFFF"
-                    android:minHeight="80dp"
-                    app:boxBackgroundColor="@color/colorAccent">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/id_scrivi_commento"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:hint="Scrivi un commento..." />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <Button
-                    android:id="@+id/button_commenta"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="Commenta" />
-
-            </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

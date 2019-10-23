@@ -19,11 +19,15 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.NonNull
 import androidx.appcompat.app.AlertDialog
 import com.google.firebase.auth.FirebaseAuth
 
 import com.example.myapplication.ui.fragment_cuoco.Cuoco
+import com.example.myapplication.ui.fragment_preferiti.FragmentPreferiti
+import com.example.myapplication.ui.fragment_utente.Fragment_IMieiEventi
 import com.example.myapplication.ui.fragment_utente.Utente
+import com.example.myapplication.ui.home.Fragment_Base
 import com.example.myapplication.ui.home_page.HomePage
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.EmailAuthProvider
@@ -127,6 +131,7 @@ class MainActivity : AppCompatActivity() {
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
+
         val navController = findNavController(R.id.fragment)
 
 
@@ -136,8 +141,11 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_tools, R.id.nav_share, R.id.nav_send
             ), drawerLayout
         )
-        setupActionBarWithNavController(navController, appBarConfiguration)
+
+       setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+
     }
 
 

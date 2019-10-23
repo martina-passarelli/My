@@ -108,14 +108,12 @@ public class Fragment_ListaPartecipanti extends Fragment {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Evento evento=documentSnapshot.toObject(Evento.class);
                 ArrayList<String> lista_p= new ArrayList<>();
-                if(evento.getLista_part()!=null)lista_p=(ArrayList<String>) evento.getLista_part();
+                if(evento.getLista_part()!=null)
+                    lista_p=(ArrayList<String>) evento.getLista_part();
                 int num=evento.getMax_partecipanti();
                 label_part.setText(lista_p.size()+"/"+num);
-
-                for(String s:lista_p) {
-                    list.add(s);
-                    tutorAdapter.notifyDataSetChanged();
-                }
+                list.addAll(lista_p);
+                tutorAdapter.notifyDataSetChanged();
 
                 //SETTIAMO IL BOTTONE DI ISCRIZIONE
                 if (list.contains(utente_corrente))
@@ -151,7 +149,6 @@ public class Fragment_ListaPartecipanti extends Fragment {
 
 
     public void add_partecipante(ArrayList<String> list_p, int num){
-
         list.clear();
         list.addAll(list_p);
         list.add(list.size(),utente_corrente);
