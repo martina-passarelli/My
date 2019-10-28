@@ -2,6 +2,7 @@ package com.example.myapplication.ui.fragment_cuoco;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -50,6 +51,8 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 import static androidx.constraintlayout.widget.Constraints.TAG;
+import static androidx.core.content.ContextCompat.checkSelfPermission;
+
 /*
     UN CUOCO PUO' PROVVEDERE ALLA CREAZIONE DI UNA RICETTA: NEL SEGUENTE CASO SI APRE UN NUOVO FRAMMENTO
     IL QUALE PROVVEDE AL SET DI TUTTI I CAMPI RIGUARDANTI LA RICETTA.
@@ -87,11 +90,7 @@ public class Fragment_CreaRicetta extends Fragment {
         image_foto=(ImageView)view.findViewById(R.id.foto_ricetta);
         //PRELEVARE LA FOTO DELLA RICETTA DALLA GALLERIA DELLE IMMAGINI
         image_foto.setOnClickListener((view1) -> {
-            ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
-            Intent intent = new Intent();
-            intent.setType("image/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(intent, SELECT_PICTURE);
+            chooseImage();
         });
 
         /*
@@ -136,7 +135,7 @@ public class Fragment_CreaRicetta extends Fragment {
                     r.setRot(rotazioneImg);
                     ottieni_nomeCuoco(r,id_cuoco);
                     aggiungi_immagine_storage(nome, id_cuoco);
-                    ricaricaFrammento();
+
                 }
                 else{
                     Toast.makeText(v.getContext(), "Inserisci tutti i campi!", Toast.LENGTH_LONG).show();
@@ -168,12 +167,11 @@ public class Fragment_CreaRicetta extends Fragment {
                         .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                Toast.makeText(getContext(), "File Uploaded ", Toast.LENGTH_LONG).show();
+                                ricaricaFrammento();
                             }
                         });
             }
         } catch (Exception e) { }
-
     }
 
     /*
@@ -200,25 +198,55 @@ public class Fragment_CreaRicetta extends Fragment {
     }
 
 
-
-
-
     //---------------------------------------METODI PER CATTURARE L'IMMAGINE------------------------------------------------------
+
+
+    private static int RESULT_LOAD_IMAGE = 1;
+    //metodo per scegliere l'immagine dalla galleria
+    private void chooseImage() {
+        if (checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            // ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+            //       Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+
+        }
+        // ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
+        else {
+            Intent i = new Intent(
+                    Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(i, RESULT_LOAD_IMAGE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode,permissions,grantResults);
+        System.out.println("entro");
+        if (checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            System.out.println("entro2");
+            Intent i = new Intent(
+                    Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(i, RESULT_LOAD_IMAGE);
+        }
+    }
 
 
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK
-                && data != null && data.getData() != null)
-            imageUri = data.getData();
+
+        if(requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK
+                && data != null && data.getData() != null )
+
+        imageUri = data.getData();
 
         if (imageUri != null) {
             try {
                 String imagePath;
                 if (data.toString().contains("content:")) {
-                    imagePath = getRealPathFromURI(imageUri);
+                    imagePath = UtilityImage.getRealPathFromURI(imageUri,getActivity());
                 } else if (data.toString().contains("file:")) {
                     imagePath = imageUri.getPath();
                 } else {
@@ -227,11 +255,11 @@ public class Fragment_CreaRicetta extends Fragment {
 
                 ExifInterface exifInterface = new ExifInterface(imagePath);
                 int rotation = Integer.parseInt(exifInterface.getAttribute(ExifInterface.TAG_ORIENTATION));
-                int rotationInDegrees = exifToDegrees(rotation);
+                int rotationInDegrees = UtilityImage.exifToDegrees(rotation);
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
                 //se l'immagine ha un'orientamento la giro
                 rotazioneImg= rotationInDegrees;
-                bitmap = rotate(bitmap, rotationInDegrees);
+                bitmap = UtilityImage.rotate(bitmap, rotationInDegrees);
                 image_foto.setImageBitmap(bitmap);
 
             } catch (IOException e) {
@@ -240,47 +268,6 @@ public class Fragment_CreaRicetta extends Fragment {
         }
     }
 
-    private Bitmap rotate(Bitmap bm, int rotation) {
-        if (rotation != 0) {
-            Matrix matrix = new Matrix();
-            matrix.postRotate(rotation);
-            try {
-                Bitmap bmOut = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
-                return bmOut;
-            }catch (Exception e){}
 
-
-        }
-        return bm;
-    }
-
-
-
-    private static int exifToDegrees(int exifOrientation) {
-        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
-            return 90;
-        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
-            return 180;
-        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
-            return 270;
-        }
-        return 0;
-    }
-    public String getRealPathFromURI(Uri contentUri) {
-        Cursor cursor = null;
-        try {
-            String[] proj = {MediaStore.Images.Media.DATA};
-            cursor = getActivity().getContentResolver().query(contentUri, proj, null, null,
-                    null);
-            int column_index = cursor
-                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            return cursor.getString(column_index);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
 }
 

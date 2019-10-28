@@ -14,7 +14,8 @@
     <string name="menu_tools">Tools</string>
     <string name="menu_share">Share</string>
     <string name="linkUtente">Oppure\n<a href="">clicca per accedere al tuo profilo!</a></string>
-
+    <string name="facebook_app_id">2557729181125574</string>
+    <string name="fb_login_protocol_scheme">fb2557729181125574</string>
     <string name="menu_send">Send</string>
     <string name="title_activity_login">Sign in</string>
     <string name="prompt_email">Email</string>

@@ -9,7 +9,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/browser_actions_bg_grey">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/id_contenitore_dati"
@@ -86,13 +87,13 @@
                 android:layout_height="20dp"
                 android:layout_margin="20dp"
                 android:background="#D2FFFFFF"
-                android:fontFamily="casual"
                 android:ems="10"
+                android:fontFamily="casual"
                 android:hint="Inserisci la nuova password"
 
+                android:inputType="textPassword"
                 android:textColor="@color/common_google_signin_btn_text_dark_focused"
                 android:textColorHint="@color/common_google_signin_btn_text_dark_focused"
-                android:inputType="textPassword"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/vecchiaPass" />
@@ -196,6 +197,19 @@
             app:layout_constraintStart_toEndOf="@id/button_lista"
             app:layout_constraintTop_toBottomOf="@id/id_contenitore_dati" />
 
+        <Button
+            android:id="@+id/elimina_profilo_cuoco"
+            android:layout_width="126dp"
+            android:layout_height="17dp"
+            android:background="@android:color/transparent"
+            android:text="Elimina profilo"
+            android:textSize="10sp"
+            android:textStyle="bold|italic"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/frame_cuoco"
+            tools:ignore="MissingConstraints" />
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/add_cuoco"
             android:layout_width="wrap_content"
@@ -207,11 +221,6 @@
             app:layout_constraintEnd_toEndOf="@id/frame_cuoco"
             app:maxImageSize="30dp"
             app:srcCompat="@android:drawable/ic_menu_add" />
-
-
-
-
-
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

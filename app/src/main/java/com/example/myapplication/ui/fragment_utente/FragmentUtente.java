@@ -2,6 +2,7 @@ package com.example.myapplication.ui.fragment_utente;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -37,6 +38,8 @@ import androidx.fragment.app.Fragment;
 
 import com.example.myapplication.ActivityMappa;
 import com.example.myapplication.R;
+import com.example.myapplication.UtilitaEliminaAccount;
+import com.example.myapplication.UtilityImage;
 import com.example.myapplication.ui.fragment_seguiti.ListSeguiti;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -54,6 +57,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -63,6 +68,7 @@ import java.util.Locale;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.app.Activity.RESULT_OK;
+import static androidx.core.content.ContextCompat.checkSelfPermission;
 
 public class FragmentUtente extends Fragment {
     private String currentId;
@@ -76,7 +82,8 @@ public class FragmentUtente extends Fragment {
     private EditText vecchia_password;
     private EditText telefono;
 
-    private Button seguiti;
+    private Context context;
+    private Button seguiti, eliminaProfilo;
     private ImageButton loc;
     //immagine del profilo
     private CircleImageView img;
@@ -187,8 +194,19 @@ public class FragmentUtente extends Fragment {
         modificaFoto=(FloatingActionButton) view.findViewById(R.id.modificaFoto);
         modificaFoto.setVisibility(View.GONE);
         modificaProfilo= (FloatingActionButton) view.findViewById(R.id.modificaProfilo);
-        if(!currentId.equals(FirebaseAuth.getInstance().getUid())){
 
+        mAuth= FirebaseAuth.getInstance();
+        eliminaProfilo= view.findViewById(R.id.elimina_account);
+        eliminaProfilo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if( mAuth.getCurrentUser()!=null) {
+                    //***** uso questo metodo anche in profilo cuoco che avrà tipo = 1
+                    UtilitaEliminaAccount.showDialog(context,mAuth.getUid(),0);
+                }
+            }
+        });
+        if(!currentId.equals(FirebaseAuth.getInstance().getUid())){
             //NEL CASO IN CUI SONO SUL PROFILO DI UN UTENTE CHE NON SONO IO, BISOGNA DISABILITARE ALCUNE VISTE.
             modificaProfilo.setVisibility(View.GONE);
             loc.setVisibility(View.INVISIBLE);
@@ -374,7 +392,22 @@ public class FragmentUtente extends Fragment {
                 storage.child(currentUsermail+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        Picasso.with(getActivity()).load(uri).rotate(utente.getRot()).fit().centerCrop().into(img);
+                        Picasso.with(getActivity()).load(uri).
+                                networkPolicy(NetworkPolicy.OFFLINE).
+                                rotate(utente.getRot()).fit()
+                                .centerCrop().into(img,new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+                            @Override
+                            public void onError() {
+                                System.out.println("on error");
+                                Picasso.with(getActivity()).load(uri)
+                                        .rotate(utente.getRot())
+                                        .fit().centerCrop().into(img);
+                            }
+                        });
                     }
                 });
             } catch (Exception e) {
@@ -394,13 +427,31 @@ public class FragmentUtente extends Fragment {
         utente.setPassword(nuova_pass);
     }
 
+
+    //PER IMMAGINE DEL PROFILO
+    private static int RESULT_LOAD_IMAGE = 1;
     //metodo per scegliere l'immagine dalla galleria
     private void chooseImage() {
-        ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, SELECT_PICTURE);
+        if (checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        }
+        else {
+            Intent i = new Intent(
+                    Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(i, RESULT_LOAD_IMAGE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode,permissions,grantResults);
+
+        if (checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            Intent i = new Intent(
+                    Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(i, RESULT_LOAD_IMAGE);
+        }
     }
 
     @Override
@@ -414,7 +465,7 @@ public class FragmentUtente extends Fragment {
             try {
                 String imagePath;
                 if (data.toString().contains("content:")) {
-                    imagePath = getRealPathFromURI(imageUri);
+                    imagePath = UtilityImage.getRealPathFromURI(imageUri,getActivity());
                 } else if (data.toString().contains("file:")) {
                     imagePath = imageUri.getPath();
                 } else {
@@ -423,11 +474,11 @@ public class FragmentUtente extends Fragment {
 
                 ExifInterface exifInterface = new ExifInterface(imagePath);
                 int rotation = Integer.parseInt(exifInterface.getAttribute(ExifInterface.TAG_ORIENTATION));
-                int rotationInDegrees = exifToDegrees(rotation);
+                int rotationInDegrees = UtilityImage.exifToDegrees(rotation);
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
                 //se l'immagine ha un'orientazione la giro
                 utente.setRot(rotationInDegrees);
-                bitmap=rotate(bitmap,rotationInDegrees);
+                bitmap= UtilityImage.rotate(bitmap,rotationInDegrees);
                 img.setImageBitmap(bitmap);
 
             } catch (IOException e) {
@@ -436,48 +487,8 @@ public class FragmentUtente extends Fragment {
         }
     }
 
-    public String getRealPathFromURI(Uri contentUri) {
-        Cursor cursor = null;
-        try {
-            String[] proj = {MediaStore.Images.Media.DATA};
-            cursor = getActivity().getContentResolver().query(contentUri, proj, null, null,
-                    null);
-            int column_index = cursor
-                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            return cursor.getString(column_index);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
-
-    private static int exifToDegrees(int exifOrientation) {
-        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
-            return 90;
-        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
-            System.out.println("rota");
-            return 180;
-        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
-            return 270;
-        }
-        return 0;
-    }
-
-    private Bitmap rotate(Bitmap bm, int rotation) {
-        if (rotation != 0) {
-            Matrix matrix = new Matrix();
-            matrix.postRotate(rotation);
-            try {
-                Bitmap bmOut = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
-                return bmOut;
-            }catch (Exception e){}
 
 
-        }
-        return bm;
-    }
 
 
 
@@ -493,8 +504,8 @@ public class FragmentUtente extends Fragment {
     private void getLocationPermission(){
         String[] permission = {Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION};
-        if(ContextCompat.checkSelfPermission(this.getContext(), FINE_LOCATION )== PackageManager.PERMISSION_GRANTED){
-            if(ContextCompat.checkSelfPermission(this.getContext(), COURSE_LOCATION )== PackageManager.PERMISSION_GRANTED){
+        if(checkSelfPermission(this.getContext(), FINE_LOCATION )== PackageManager.PERMISSION_GRANTED){
+            if(checkSelfPermission(this.getContext(), COURSE_LOCATION )== PackageManager.PERMISSION_GRANTED){
                 mLocationPermissionsGranted=true;
                 //init
                 getDeviceLocation();
@@ -547,6 +558,20 @@ public class FragmentUtente extends Fragment {
 
         }catch (SecurityException e){
         }
+    }
+
+
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        context = context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        context = null;
     }
 
 }

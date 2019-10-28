@@ -1,9 +1,15 @@
 package com.example.myapplication;
 
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.media.ExifInterface;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.widget.ImageView;
+
+import androidx.fragment.app.FragmentActivity;
 
 import com.example.myapplication.ui.fragment_utente.Utente;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -66,6 +72,46 @@ public class UtilityImage {
             return true;
         }
         return false;
+    }
+
+    public static Bitmap rotate(Bitmap bm, int rotation) {
+        if (rotation != 0) {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(rotation);
+            try {
+                Bitmap bmOut = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
+                return bmOut;
+            }catch (Exception e){}
+        }
+        return bm;
+    }
+
+    public static int exifToDegrees(int exifOrientation) {
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
+            return 90;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
+            return 180;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            return 270;
+        }
+        return 0;
+    }
+
+    public static String getRealPathFromURI(Uri contentUri, FragmentActivity activity) {
+        Cursor cursor = null;
+        try {
+            String[] proj = {MediaStore.Images.Media.DATA};
+            cursor = activity.getContentResolver().query(contentUri, proj, null, null,
+                    null);
+            int column_index = cursor
+                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 }
 

@@ -1,14 +1,20 @@
 package com.example.myapplication;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -58,6 +64,8 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
     //*************************************************************************************
     //riferimento ad database
     private FirebaseFirestore mDatabase;
+    //***per ricaricare la mappa
+    private Button reloadMap;
 
 
     @Override
@@ -65,6 +73,14 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_mappa);
         mDatabase = FirebaseFirestore.getInstance();
+        reloadMap = findViewById(R.id.reloadMap);
+        reloadMap.setEnabled(false);
+        reloadMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(ActivityMappa.this, ActivityMappa.class));
+            }
+        });
 
 
 
@@ -73,38 +89,59 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
         }
         PlacesClient placesClient = Places.createClient(this);
         mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
-        //***********
-        /*FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.hide(getSupportFragmentManager().findFragmentById(R.id.sost));*/
+
         getLocationPermission();
+    }
+
+    public void isGPSEnable(){
+        LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
+        boolean enabled = service
+                .isProviderEnabled(LocationManager.GPS_PROVIDER);
+        if (!enabled) {
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(intent);
+        }
 
     }
 
 
 
     private void getLocationPermission(){
-        String[] permission = {Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION};
-        if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                FINE_LOCATION )== PackageManager.PERMISSION_GRANTED){
-            if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                    COURSE_LOCATION )== PackageManager.PERMISSION_GRANTED){
-                mLocationPermissionsGranted=true;
-                //init
-                getDeviceLocation();
-                mapFragment.getMapAsync( ActivityMappa.this);
-            }else {
-                ActivityCompat.requestPermissions(this,permission,LOCATION_PERMISSION_REQUEST_CODE);
-            }
+        //****************
+        //se il gps è acceso
+        LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
+        boolean enabled = service
+                .isProviderEnabled(LocationManager.GPS_PROVIDER);
+        if(enabled) {
+            String[] permission = {Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION};
+            if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                    FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                        COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    mLocationPermissionsGranted = true;
+                    //init
+                    getDeviceLocation();
+                    mapFragment.getMapAsync(ActivityMappa.this);
+                } else {
+                    ActivityCompat.requestPermissions(this, permission, LOCATION_PERMISSION_REQUEST_CODE);
+                }
 
-        }else {
-            ActivityCompat.requestPermissions(this,permission,LOCATION_PERMISSION_REQUEST_CODE);
+            } else {
+                ActivityCompat.requestPermissions(this, permission, LOCATION_PERMISSION_REQUEST_CODE);
+            }
+        } else {
+            reloadMap.setEnabled(true);
+            reloadMap.setVisibility(View.VISIBLE);
+
+            Toast.makeText(this,"Accendi il GPS per usufruire del servizio!",Toast.LENGTH_LONG).show();
+
         }
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Toast.makeText(this,"La mappa Ã¨ pronta",Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this,"La mappa Ã¨ pronta",Toast.LENGTH_SHORT).show();
         mMap=googleMap;
         if(mLocationPermissionsGranted){
             getDeviceLocation();
@@ -114,8 +151,6 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
                 return;
             }
             mMap.setMyLocationEnabled(true);
-            //toglie il bottone per riposizionare
-
             mMap.getUiSettings().setMapToolbarEnabled(false);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
@@ -137,13 +172,22 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
                     @Override
                     public void onComplete(@NonNull Task task) {
                         if(task.isSuccessful()){
-                            //Log.d(TAG, "onComplete: posizione trovata");
-                            Location currentLocation= (Location) task.getResult();
+                            try {
+                                System.out.println("TRY");
+                                Location currentLocation= (Location) task.getResult();
+                                mMap.addMarker(new MarkerOptions().position(new LatLng(currentLocation.getLatitude(),
+                                        currentLocation.getLongitude())).title("Tu sei qui")).showInfoWindow();
 
-                            mMap.addMarker(new MarkerOptions().position(new LatLng(currentLocation.getLatitude(),
-                                    currentLocation.getLongitude())).title("Tu sei qui")).showInfoWindow();
+                                moveCamera(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude()),DEFAULT_ZOOM);
+                            }catch (Exception e){
+                                System.out.println("CATCH");
+                                Location currentLocation= (Location) task.getResult();
+                                mMap.addMarker(new MarkerOptions().position(new LatLng(currentLocation.getLatitude(),
+                                        currentLocation.getLongitude())).title("Tu sei qui")).showInfoWindow();
 
-                            moveCamera(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude()),DEFAULT_ZOOM);
+                                moveCamera(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude()),DEFAULT_ZOOM);
+                            }
+
                         }else{
                             Toast.makeText(ActivityMappa.this, "impossibile accedere alla posizione", Toast.LENGTH_SHORT).show();
                         }
@@ -194,6 +238,9 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
             }
         });
     }
+
+
+
 
     public static boolean nonScaduto(String dataEvento, String ora){
         Date dataOggi = new Date();
@@ -283,11 +330,9 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
                     for(int i = 0; i < grantResults.length; i++){
                         if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
                             mLocationPermissionsGranted = false;
-
                             return;
                         }
                     }
-
                     mLocationPermissionsGranted = true;
                     //initialize our map
                     getDeviceLocation();

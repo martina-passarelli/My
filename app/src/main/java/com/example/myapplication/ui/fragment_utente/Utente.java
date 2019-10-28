@@ -10,6 +10,7 @@ public class Utente {
     private String nome,nick, bio, tel,password;
     private String email;
     private String imageProf;
+    private String token_id="";
     private ArrayList<String> lista_preferiti;
     private ArrayList<String> lista_eventi;
     private ArrayList<String> lista_cuochi;
@@ -132,5 +133,13 @@ public class Utente {
 
     public void setLista_cuochi(ArrayList<String> lista_cuochi) {
         this.lista_cuochi = lista_cuochi;
+    }
+
+    public String getToken() {
+        return token_id;
+    }
+
+    public void setToken(String token_id) {
+        this.token_id = token_id;
     }
 }

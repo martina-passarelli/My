@@ -25,6 +25,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -147,7 +148,23 @@ public class MyItemAdapterCommento extends RecyclerView.Adapter<MyItemAdapterCom
                 storage.getReference().child(holder.email + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {//DA SISTEMARE ROTAZIONE IMMAGINE
-                        Picasso.with(holder.image_utente.getContext()).load(uri).rotate(documentSnapshot.getDouble("rot").intValue()).fit().centerCrop().into(holder.image_utente);
+
+                        Picasso.with(holder.image_utente.getContext())
+                                .load(uri).rotate(documentSnapshot.getDouble("rot")
+                                .intValue()).fit().centerCrop().into(holder.image_utente, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+                            @Override
+                            public void onError() {
+                                System.out.println("on error");
+                                Picasso.with(holder.image_utente.getContext()).load(uri)
+                                        .rotate(documentSnapshot.getDouble("rot")
+                                                .intValue())
+                                        .fit().centerCrop().into(holder.image_utente);
+                            }
+                        });
                     }
                 });
             } catch (Exception e) {

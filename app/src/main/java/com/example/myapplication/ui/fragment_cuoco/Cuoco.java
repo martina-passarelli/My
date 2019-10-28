@@ -7,9 +7,10 @@ import java.util.ArrayList;
 
 public class Cuoco {
 
-    private ArrayList<String> seguaci;
+    private ArrayList<String> seguaci=new ArrayList<>();
     private String nome,password;
     private String email;
+    private String token_id="";
     private String imageProf;
     private int rot;
     private double tipo=1;
@@ -23,7 +24,6 @@ public class Cuoco {
         this.imageProf = imageProf;
         this.rot = rot;
         this.tipo = tipo;
-        seguaci=new ArrayList<>();
     }
 
     public Cuoco (String email, String password){
@@ -33,6 +33,13 @@ public class Cuoco {
 
     public Cuoco(){}
 
+    public void setToken(String token){
+        this.token_id=token;
+    }
+
+    public String getToken(){
+        return token_id;
+    }
 
     public Cuoco(String nome, String password, String email, String imageProf, int rot) {
         this.nome = nome;
@@ -109,7 +116,6 @@ public class Cuoco {
         jo.put("nome", nome);
         jo.put("email", email);
         jo.put("imageProf",imageProf);
-
         jo.put("password",password);
         jo.put("rot",rot);
         jo.put("tipo",tipo);

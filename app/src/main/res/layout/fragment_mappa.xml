@@ -10,4 +10,13 @@ android:layout_height="match_parent">
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.mappa.FragmentMappa" />
+
+    <Button
+        android:id="@+id/reloadMap"
+        android:layout_width="63dp"
+        android:layout_height="61dp"
+        android:layout_alignLeft="@id/map"
+        android:layout_alignEnd="@id/map"
+        android:background="@drawable/geolocation_refresh"
+        android:visibility="invisible" />
 </RelativeLayout>

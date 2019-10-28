@@ -119,6 +119,22 @@
             app:layout_constraintLeft_toRightOf="@id/button_descr"
             app:layout_constraintTop_toBottomOf="@id/card_view_top" />
 
+
+        <Button
+            android:id="@+id/share_btn"
+            android:layout_width="90dp"
+            android:layout_height="37dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="27dp"
+            android:background="@drawable/condividi"
+            android:clickable="true"
+            android:textColor="#751231"
+            android:textColorHint="#2B2B2B"
+            android:textColorLink="@color/com_facebook_send_button_text_color"
+            android:textSize="8sp"
+            app:layout_constraintStart_toEndOf="@id/button_commenti"
+            app:layout_constraintTop_toBottomOf="@id/card_view_top" />
+
         <FrameLayout
             android:id="@+id/id_frame_layout"
             android:layout_width="match_parent"

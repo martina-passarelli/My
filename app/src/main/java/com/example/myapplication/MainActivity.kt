@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.app.PendingIntent.getActivity
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
@@ -27,14 +28,15 @@ import com.example.myapplication.ui.fragment_cuoco.Cuoco
 import com.example.myapplication.ui.fragment_preferiti.FragmentPreferiti
 import com.example.myapplication.ui.fragment_utente.Fragment_IMieiEventi
 import com.example.myapplication.ui.fragment_utente.Utente
-import com.example.myapplication.ui.home.Fragment_Base
-import com.example.myapplication.ui.home_page.HomePage
+import com.example.myapplication.ui.home_page.ActivityHomePage
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.squareup.picasso.Callback
+import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -66,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+
         FirebaseMessaging.getInstance().subscribeToTopic("pushNotifications");
         FirebaseMessaging.getInstance().unsubscribeFromTopic("pushNotifications");
 
@@ -89,9 +92,23 @@ class MainActivity : AppCompatActivity() {
                     if (utente!!.imageProf != null) {
                         storage.child(utente!!.email + ".jpg").getDownloadUrl()
                             .addOnSuccessListener(OnSuccessListener<Uri> { uri ->
-                                Picasso.with(this@MainActivity).load(uri)
+                                Picasso.with(this@MainActivity).load(uri).
+                                    networkPolicy(NetworkPolicy.OFFLINE)
                                     .rotate(utente!!.rot.toFloat()).fit().centerCrop()
-                                    .into(imageMenu)
+                                    .into(imageMenu, object : Callback {
+                                        override fun onSuccess() {
+
+                                        }
+
+                                        override fun onError() {
+                                            println("on error")
+                                            Picasso.with(this@MainActivity).load(uri)
+                                                .rotate(utente!!.rot.toFloat())
+                                                .fit().centerCrop().into(imageMenu)
+                                        }
+                                    });
+
+
                             })
                     }
                     mailMenu.setText(utente!!.email)
@@ -102,9 +119,23 @@ class MainActivity : AppCompatActivity() {
                     if (cuoco!!.imageProf != null) {
                         storage.child(cuoco!!.email + ".jpg").getDownloadUrl()
                             .addOnSuccessListener(OnSuccessListener<Uri> { uri ->
-                                Picasso.with(this@MainActivity).load(uri)
+
+
+                                Picasso.with(this@MainActivity).load(uri).
+                                    networkPolicy(NetworkPolicy.OFFLINE)
                                     .rotate(cuoco!!.rot.toFloat()).fit().centerCrop()
-                                    .into(imageMenu)
+                                    .into(imageMenu, object : Callback {
+                                        override fun onSuccess() {
+
+                                        }
+
+                                        override fun onError() {
+                                            println("on error")
+                                            Picasso.with(this@MainActivity).load(uri)
+                                                .rotate(cuoco!!.rot.toFloat())
+                                                .fit().centerCrop().into(imageMenu)
+                                        }
+                                    });
                             })
                     }
                     mailMenu.setText(cuoco!!.email)
@@ -179,44 +210,9 @@ class MainActivity : AppCompatActivity() {
 
             return true
         }
-        //***elimina
-        if(id==R.id.elimina_account && mAuth.currentUser!=null) {
-            showDialogElimina()
-            return true
-        }
         return super.onOptionsItemSelected(item);
     }
 
-    private fun showDialogElimina() {
-        val builder = AlertDialog.Builder(this).create()
-        builder.setTitle("")
-        builder.setMessage("Vuoi veramente eliminare l'account?")
-        builder.setButton(AlertDialog.BUTTON_POSITIVE, "SI",
-            DialogInterface.OnClickListener {
-                    dialog, which ->
-                val id : String? = mAuth.uid
-                operazioniDiEliminazione()
-
-                UtilitaEliminaAccount.eliminaCommenti(id)
-                UtilitaEliminaAccount.eliminaEventiePartecipanti(id)
-                if(cuoco!=null) UtilitaEliminaAccount.eliminaRicette(id)
-            })
-        builder.setButton(AlertDialog.BUTTON_NEGATIVE, "NO",
-            DialogInterface.OnClickListener {
-                    dialog, which ->
-            })
-
-        builder.setOnShowListener(DialogInterface.OnShowListener {
-            builder.getButton(
-                AlertDialog.BUTTON_NEGATIVE
-            ).setTextColor(Color.BLACK)
-            builder.getButton(
-                AlertDialog.BUTTON_POSITIVE
-            ).setTextColor(Color.BLACK)
-
-        })
-        builder.show()
-    }
 
     private fun operazioniDiEliminazione(){
         val pass :String = if(cuoco!=null) cuoco!!.password
@@ -235,7 +231,13 @@ class MainActivity : AppCompatActivity() {
                         if (task.isSuccessful) {
                             val docRef = firestore.collection("utenti2").document(""+uid)
                                 .delete().addOnCompleteListener {
-                                    val i = Intent(this@MainActivity, HomePage::class.java)
+                                    val i = Intent(this@MainActivity, ActivityHomePage::class.java)
+
+                                    val fm = this!!.getSupportFragmentManager()
+                                    for (i in 0 until fm.getBackStackEntryCount()) {
+                                        fm.popBackStack()
+                                    }
+
                                     startActivity(i)
                                     Toast.makeText(
                                         applicationContext, "Eliminazione avvenuta", Toast.LENGTH_LONG).show()
@@ -256,7 +258,12 @@ class MainActivity : AppCompatActivity() {
             DialogInterface.OnClickListener {
                     dialog, which ->  FirebaseAuth.getInstance().signOut()
                 firestore.collection("utenti2").document("" +mAuth.currentUser).update("token_id","")
-                val i = Intent(this@MainActivity, HomePage::class.java)
+                val i = Intent(this@MainActivity, ActivityHomePage::class.java)
+                val fm = this!!.getSupportFragmentManager()
+                //Svuotiamo stack
+                for (i in 0 until fm.getBackStackEntryCount()) {
+                    fm.popBackStack()
+                }
                 startActivity(i)
                 Toast.makeText(
                     applicationContext, "Logout avvenuto con successo", Toast.LENGTH_LONG).show()

@@ -20,6 +20,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
@@ -89,8 +91,24 @@ public class Adapter_Griglia extends RecyclerView.Adapter <Adapter_Griglia.ViewH
             storage.getReference().child(email+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
+
                     activity = (AppCompatActivity) holder.mView.getContext();
-                    Picasso.with(activity).load(uri).rotate(rot).fit().centerCrop().into(holder.image);
+                    Picasso.with(activity).load(uri)
+                            .networkPolicy(NetworkPolicy.OFFLINE)
+                            .rotate(rot).fit().centerCrop().into(holder.image,new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+                        @Override
+                        public void onError() {
+                            System.out.println("on error");
+                            Picasso.with(activity).load(uri)
+                                    .rotate(rot)
+                                    .fit().centerCrop().into(holder.image);
+                        }
+                    });
+
                 }
             });
         } catch (Exception e) {

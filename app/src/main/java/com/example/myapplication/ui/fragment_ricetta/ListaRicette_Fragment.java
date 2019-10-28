@@ -61,6 +61,8 @@ public class ListaRicette_Fragment extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        container.removeAllViews();
+
         myView = inflater.inflate(R.layout.fragment_item_list, container, false);
         recyclerView = myView.findViewById(R.id.list_ricetta);
         Bundle bundle=getArguments();
@@ -218,7 +220,7 @@ public class ListaRicette_Fragment extends Fragment{
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
                 final int position = viewHolder.getAdapterPosition();
                 final Ricetta item = tutorAdapter.getData().get(position);
-                tutorAdapter.removeItem(item.getId_ricetta(),position);
+                tutorAdapter.removeItem(item.getId_ricetta(),position,item.getFoto());
                 ConstraintLayout lin= myView.findViewById(R.id.lin_con);
                 Snackbar snackbar = Snackbar.make(lin, "Ricetta rimossa.", Snackbar.LENGTH_LONG);
                 snackbar.setAction("UNDO", new View.OnClickListener() {

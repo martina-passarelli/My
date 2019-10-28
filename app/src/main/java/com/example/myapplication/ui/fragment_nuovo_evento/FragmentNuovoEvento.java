@@ -375,7 +375,6 @@ public class FragmentNuovoEvento extends Fragment {
         Lista_Fragment_Evento list_eventi=new Lista_Fragment_Evento();
         list_eventi.doSomething(currentId);
         getFragmentManager().beginTransaction().replace(R.id.frame_cuoco,list_eventi).commit();
-
     }
 
 

@@ -1,16 +1,22 @@
 package com.example.myapplication.ui.fragment_ricetta;
 
+import android.accounts.Account;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -18,10 +24,25 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.myapplication.R;
 import com.example.myapplication.ui.fragment_commenti.ListaCommenti_Fragment;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.share.Sharer;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.model.SharePhotoContent;
+import com.facebook.share.widget.ShareDialog;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 public class FragmentRicetta extends Fragment {
     private String id,nome,ricetta,descr,foto,info,id_cuoco;
@@ -30,14 +51,44 @@ public class FragmentRicetta extends Fragment {
     private int rot;
     private boolean sezione_commenti=false;
 
+    //PER FACEBOOK
+    private Uri uriCondiv;
+    private CallbackManager callbackManager;
+    private Button share;
+    private ShareDialog shareDialog;
+    Target target = new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            if (ShareDialog.canShow(SharePhotoContent.class)) {
+                ShareLinkContent linkContent = new ShareLinkContent.Builder().setContentUrl(uriCondiv)
+                        .setContentDescription(descr).setQuote(descr)
+                        .build();
+                shareDialog.show(linkContent);
+            }
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+        }
+    };
+
+    //-----------------------------------------------
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        // Defines the xml file for the fragment
         View view= inflater.inflate(R.layout.fragment_home_ricetta, parent, false);
         Bundle bundle = this.getArguments();
         if(bundle != null){
@@ -58,6 +109,11 @@ public class FragmentRicetta extends Fragment {
         FragmentDescrizione descrizioneFragment = new FragmentDescrizione();
         descrizioneFragment.setArguments(bundle);
         getChildFragmentManager().beginTransaction().replace(R.id.id_frame_layout,descrizioneFragment).addToBackStack(null).commit();
+        //-----------------PER INIZIALIZZARE FACEBOOK-----------------------------------------------
+        FacebookSdk.sdkInitialize(inflater.getContext());
+        share = view.findViewById(R.id.share_btn);
+        callbackManager=CallbackManager.Factory.create();
+        shareDialog= new ShareDialog(this);
 
         return view;
     }
@@ -123,6 +179,53 @@ public class FragmentRicetta extends Fragment {
                 }
             }
         });
+
+        share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //creare call back
+
+                shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
+                    @Override
+                    public void onSuccess(Sharer.Result result) {
+                        Toast.makeText(getContext(),"OK",Toast.LENGTH_SHORT);
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Toast.makeText(getContext(),"NO",Toast.LENGTH_SHORT);
+
+                    }
+
+                    @Override
+                    public void onError(FacebookException error) {
+                        Toast.makeText(getContext(),error.getMessage(),Toast.LENGTH_SHORT);
+
+                    }
+                });
+                StorageReference storage= FirebaseStorage.getInstance().getReference();
+                if(foto !=null){
+                    try {
+                        storage.child(foto).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                //la foto prelevata dallo storage viene inserita in un oggetto Target
+                                //questo oggetto, avvenuto il caricamento, richiama il metodo onBitmapLoaded
+                                //che si preoccupa di creare il post di facebook
+                                Picasso.with(getActivity()).load(uri).rotate(rot).into(target);
+
+                                uriCondiv=uri;
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+
     }
 
 
@@ -133,7 +236,23 @@ public class FragmentRicetta extends Fragment {
                 storage.child(foto).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        Picasso.with(getActivity()).load(uri).rotate(rot).fit().centerCrop().into(img);
+
+                        Picasso.with(getActivity()).load(uri).networkPolicy(NetworkPolicy.OFFLINE).
+                                rotate(rot).fit().centerCrop().into(img, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+                                Picasso.with(getActivity()).load(uri).
+                                        rotate(rot).fit().centerCrop().into(img);
+                            }
+                        });
+                        uriCondiv=uri;
+
+
                     }
                 });
             } catch (Exception e) {
@@ -141,6 +260,17 @@ public class FragmentRicetta extends Fragment {
             }
         }
     }
+
+    /*
+     * metodo di risposta alla condivisione del post su facebook
+     */
+    @Override
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

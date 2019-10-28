@@ -4,22 +4,18 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,16 +25,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
+import com.example.myapplication.UtilitaEliminaAccount;
+import com.example.myapplication.UtilityImage;
 import com.example.myapplication.ui.fragment_nuovo_evento.FragmentNuovoEvento;
 import com.example.myapplication.ui.fragment_utente.Utente;
 import com.example.myapplication.ui.fragment_evento.Lista_Fragment_Evento;
 import com.example.myapplication.ui.fragment_ricetta.ListaRicette_Fragment;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.FirebaseError;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -61,9 +57,14 @@ import java.util.HashMap;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.app.Activity.RESULT_OK;
+import static androidx.core.content.ContextCompat.checkSelfPermission;
 
 
 public class FragmentCuoco extends Fragment {
+    //*****eliminaProfilo
+    private Button eliminaProfilo;
+    private FirebaseAuth mAuth;
+    private Context context;
     private String currentId;
     private TextView nomeCuoco,emailCuoco,follower;
     private EditText password;
@@ -214,6 +215,7 @@ public class FragmentCuoco extends Fragment {
                 }else {
                     aggiungi_ricetta();
                     modificaProfilo.setVisibility(View.GONE);
+                    //view.findViewById(R.id.add_cuoco).setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -243,15 +245,19 @@ public class FragmentCuoco extends Fragment {
                 segui_cuoco();
             }
         });
+
+        mAuth = FirebaseAuth.getInstance();
+        eliminaProfilo=view.findViewById(R.id.elimina_profilo_cuoco);
+        eliminaProfilo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+
+                UtilitaEliminaAccount.showDialog(context,mAuth.getUid(),1);
+
+            }
+        });
     }
 
-    private void chooseImage() {
-            ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
-            Intent intent = new Intent();
-            intent.setType("image/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(intent, SELECT_PICTURE);
-    }
 
     @SuppressLint("RestrictedApi")
     private void abilitaModifica() {
@@ -534,18 +540,54 @@ public class FragmentCuoco extends Fragment {
         this.currentId=currentID;
     }
 
+
+    /*
+    METODI PER MODIFICAARE L'IMMAGINE DEL PROFILO DEL CUOCO.
+     */
+
+    private static int RESULT_LOAD_IMAGE = 1;
+
+
+    private void chooseImage() {
+        if (checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            // ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+            //       Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+
+        }
+        // ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
+        else {
+            Intent i = new Intent(
+                    Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(i, RESULT_LOAD_IMAGE);
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode,permissions,grantResults);
+        System.out.println("entro");
+        if (checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            System.out.println("entro2");
+            Intent i = new Intent(
+                    Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(i, RESULT_LOAD_IMAGE);
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == SELECT_PICTURE && resultCode == RESULT_OK
-                && data != null && data.getData() != null )
+
+        if(requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data != null && data.getData() != null )
             imageUri = data.getData();
+
         cuoco.setImageProf(cuoco.getEmail()+".jpg");
         if (imageUri != null) {
             try {
                 String imagePath;
                 if (data.toString().contains("content:")) {
-                    imagePath = getRealPathFromURI(imageUri);
+                    imagePath = UtilityImage.getRealPathFromURI(imageUri,getActivity());
                 } else if (data.toString().contains("file:")) {
                     imagePath = imageUri.getPath();
                 } else {
@@ -554,11 +596,11 @@ public class FragmentCuoco extends Fragment {
 
                 ExifInterface exifInterface = new ExifInterface(imagePath);
                 int rotation = Integer.parseInt(exifInterface.getAttribute(ExifInterface.TAG_ORIENTATION));
-                int rotationInDegrees = exifToDegrees(rotation);
+                int rotationInDegrees = UtilityImage.exifToDegrees(rotation);
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
                 //se l'immagine ha un'orientazione la giro
                 cuoco.setRot(rotationInDegrees);
-                bitmap=rotate(bitmap,rotationInDegrees);
+                bitmap= UtilityImage.rotate(bitmap,rotationInDegrees);
                 foto_cuoco.setImageBitmap(bitmap);
 
             } catch (IOException e) {
@@ -567,47 +609,7 @@ public class FragmentCuoco extends Fragment {
         }
     }
 
-    public String getRealPathFromURI(Uri contentUri) {
-        Cursor cursor = null;
-        try {
-            String[] proj = {MediaStore.Images.Media.DATA};
-            cursor = getActivity().getContentResolver().query(contentUri, proj, null, null,
-                    null);
-            int column_index = cursor
-                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            return cursor.getString(column_index);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
-
-    private static int exifToDegrees(int exifOrientation) {
-        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
-            return 90;
-        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
-            System.out.println("rota");
-            return 180;
-        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
-            return 270;
-        }
-        return 0;
-    }
-
-    private Bitmap rotate(Bitmap bm, int rotation) {
-        if (rotation != 0) {
-            Matrix matrix = new Matrix();
-            matrix.postRotate(rotation);
-            try {
-                Bitmap bmOut = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
-                return bmOut;
-            }catch (Exception e){}
 
 
-        }
-        return bm;
-    }
 
 }

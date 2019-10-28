@@ -26,6 +26,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -142,12 +144,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         notifyItemInserted(position);
     }
 
-    public void removeItem(String id,int position){
+    public void removeItem(String id,int position,String foto){
         ff.collection("ricette").document(""+id).delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         removeAt(position);
+                        rimuoviImgDaStorage(foto);
                         Log.d(TAG, "Evento rimosso!");
                     }
                 })
@@ -164,6 +167,25 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         notifyItemRemoved(position);
     }
 
+    /*
+        Questo metodo serve per eliminare l'immagine della ricetta dal
+        firestore.
+     */
+    private void rimuoviImgDaStorage(String foto) {
+        StorageReference storage= FirebaseStorage.getInstance().getReference();
+        if(foto !=null) {
+            try {
+                storage.child(foto).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                    }
+                });
+            } catch (Exception e) {
+
+            }
+        }
+    }
     private void caricaImg(String foto,int rot,ViewHolder holder){
         StorageReference storage= FirebaseStorage.getInstance().getReference();
         if(foto !=null){
@@ -171,7 +193,22 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 storage.child(foto).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        Picasso.with(holder.activity).load(uri).rotate(rot).fit().centerCrop().into(holder.image);
+
+                        Picasso.with(holder.activity).load(uri).networkPolicy(NetworkPolicy.OFFLINE)
+                                .rotate(rot).fit().centerCrop().into(holder.image, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+                                System.out.println("on error");
+                                Picasso.with(holder.activity).load(uri).
+                                        rotate(rot).fit().centerCrop().into(holder.image);
+                            }
+                        });
+
                     }
                 });
             } catch (Exception e) {

@@ -59,6 +59,7 @@ public class Lista_Fragment_Evento extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.fragment_evento, container, false);
         recyclerView = myView.findViewById(R.id.lista_eventi);
+
         //BISOGNA RICEVERE VIA BUNDLE
         Bundle bundle=this.getArguments();
         if(bundle!=null) {
@@ -111,7 +112,6 @@ recyclerview.setLayoutAnimation(animation);
 
     public void doSomething(String id_cuoco){
         //PRENDIAMO TUTTI GLI EVENTI COLLEGATI ALL'UTENTE IN INPUT
-        System.out.println("ID CUOCO:: "+id_cuoco);
         ff.collection("eventi").whereEqualTo("id_cuoco",id_cuoco).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -159,7 +159,6 @@ recyclerview.setLayoutAnimation(animation);
                 Evento evento=documentSnapshot.toObject(Evento.class);
                 if(evento!=null) {
                     list.add(evento);
-
                     tutorAdapter.notifyDataSetChanged();
                 }
             }

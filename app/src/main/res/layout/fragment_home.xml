@@ -42,6 +42,44 @@
                 android:hint="Cerca..." />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <LinearLayout
+            android:id="@+id/linearSugg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@id/id_card_tutti"
+            app:layout_constraintTop_toBottomOf="@id/input_ricerca">
+
+            <TextView
+                android:id="@+id/testoSugg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:text="In base alle tue ricerche ti proponiamo....."
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textStyle="bold|italic"
+                android:visibility="invisible" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/horizontal_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contextClickable="false"
+                android:isScrollContainer="false"
+                android:scrollbarAlwaysDrawHorizontalTrack="true"
+
+                android:scrollbarSize="10dp"
+                android:scrollbarStyle="outsideInset"
+                android:scrollbarThumbVertical="@color/browser_actions_divider_color"
+                android:scrollbars="horizontal"
+                android:verticalScrollbarPosition="right"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/testoSugg" />
+        </LinearLayout>
+
+
         <androidx.cardview.widget.CardView
             android:id="@+id/id_card_tutti"
             android:layout_width="match_parent"
@@ -54,7 +92,7 @@
             app:cardElevation="16dp"
             app:contentPadding="4dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/input_ricerca">
+            app:layout_constraintTop_toBottomOf="@id/linearSugg">
 
             <LinearLayout
                 android:layout_width="match_parent"

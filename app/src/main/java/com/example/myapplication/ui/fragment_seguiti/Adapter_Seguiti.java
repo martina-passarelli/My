@@ -23,6 +23,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -90,7 +92,24 @@ public class Adapter_Seguiti extends RecyclerView.Adapter <Adapter_Seguiti.ViewH
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     activity = (AppCompatActivity) holder.mView.getContext();
-                                    Picasso.with(activity).load(uri).rotate(utente.getRot()).fit().centerCrop().into(holder.foto_cuoco);
+                                    Picasso.with(activity).load(uri).
+                                            networkPolicy(NetworkPolicy.OFFLINE)
+                                            .rotate(utente.getRot())
+                                            .fit().centerCrop()
+                                            .into(holder.foto_cuoco,new Callback() {
+                                                @Override
+                                                public void onSuccess() {
+
+                                                }
+                                                @Override
+                                                public void onError() {
+                                                    System.out.println("on error");
+                                                    Picasso.with(activity).load(uri)
+                                                            .rotate(utente.getRot())
+                                                            .fit().centerCrop().into(holder.foto_cuoco);
+                                                }
+                                            });
+
                                 }
                             });
                         } catch (Exception e) {
