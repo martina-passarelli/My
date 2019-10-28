@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.send;
+package com.example.myapplication.ui.notifiche;
 
 public class Notifica {
     private String from, message,id;

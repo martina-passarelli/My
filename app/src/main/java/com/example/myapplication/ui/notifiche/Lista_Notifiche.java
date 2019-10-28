@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.send;
+package com.example.myapplication.ui.notifiche;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

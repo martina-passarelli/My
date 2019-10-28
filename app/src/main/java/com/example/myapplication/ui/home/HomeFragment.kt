@@ -24,7 +24,6 @@ import com.google.android.material.textfield.TextInputLayout
 
 class HomeFragment : Fragment() {
 
-    private lateinit var homeViewModel: HomeViewModel
     private lateinit var horizontalList : RecyclerView
 
     private lateinit var myAdapter: MyAdapter
@@ -45,8 +44,6 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
 
     ): View? {
-        homeViewModel =
-            ViewModelProviders.of(this).get(HomeViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
 
         val cardView_tutteCateg= root.findViewById(R.id.id_card_tutti) as CardView

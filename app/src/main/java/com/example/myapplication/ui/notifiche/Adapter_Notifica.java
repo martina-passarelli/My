@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.send;
+package com.example.myapplication.ui.notifiche;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,17 +10,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.ProfiloActivity;
 import com.example.myapplication.R;
-import com.example.myapplication.ui.fragment_evento.Adapter_Evento;
 import com.example.myapplication.ui.fragment_evento.Evento;
 import com.example.myapplication.ui.fragment_evento.Fragment_Evento;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -112,15 +110,13 @@ public class Adapter_Notifica extends RecyclerView.Adapter <Adapter_Notifica.Vie
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView nome, notifica;
-        private CardView card_notifica;
+        private ConstraintLayout card_notifica;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             nome=(TextView)itemView.findViewById(R.id.mittente_notif);
             notifica=(TextView)itemView.findViewById(R.id.testo_notifica);
-            card_notifica=(CardView)itemView.findViewById(R.id.card_notification);
-
-
+            card_notifica=(ConstraintLayout) itemView.findViewById(R.id.card_notification);
 
         }
     }

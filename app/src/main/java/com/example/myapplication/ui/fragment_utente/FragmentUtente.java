@@ -437,8 +437,7 @@ public class FragmentUtente extends Fragment {
                     Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
         else {
-            Intent i = new Intent(
-                    Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(i, RESULT_LOAD_IMAGE);
         }
     }
@@ -448,8 +447,7 @@ public class FragmentUtente extends Fragment {
         super.onRequestPermissionsResult(requestCode,permissions,grantResults);
 
         if (checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            Intent i = new Intent(
-                    Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(i, RESULT_LOAD_IMAGE);
         }
     }
@@ -461,6 +459,7 @@ public class FragmentUtente extends Fragment {
                 && data != null && data.getData() != null )
             imageUri = data.getData();
         utente.setImageProf(currentUsermail+".jpg");
+        System.out.println("PRINTA IMG " + imageUri);
         if (imageUri != null) {
             try {
                 String imagePath;
@@ -480,6 +479,7 @@ public class FragmentUtente extends Fragment {
                 utente.setRot(rotationInDegrees);
                 bitmap= UtilityImage.rotate(bitmap,rotationInDegrees);
                 img.setImageBitmap(bitmap);
+                System.out.println("STAMPA BITMAP "+ bitmap);
 
             } catch (IOException e) {
                 e.printStackTrace();
