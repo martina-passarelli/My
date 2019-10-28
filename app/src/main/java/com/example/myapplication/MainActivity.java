@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
 
         appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow,
-                R.id.nav_tools, R.id.nav_share, R.id.nav_send)
+                R.id.nav_tools, R.id.nav_send)
                 .setDrawerLayout(drawerLayout)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.fragment);
@@ -246,9 +246,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialogInterface, int i) {
                FirebaseAuth.getInstance().signOut();
                firestore.collection("utenti2").document("" +mAuth.getCurrentUser()).update("token_id","");
-               Intent intent= new Intent(MainActivity.this, ActivityHomePage.class);
-               startActivity(intent);
-                Toast.makeText(MainActivity.this, "Logout avveuto con successo", Toast.LENGTH_SHORT).show();
+              try{
+                  Intent intent= new Intent(MainActivity.this, ActivityHomePage.class);
+                  startActivity(intent);
+                  Toast.makeText(MainActivity.this, "Logout avveuto con successo", Toast.LENGTH_SHORT).show();
+              }finally {
+                  finish();
+              }
+
 
             }
         });

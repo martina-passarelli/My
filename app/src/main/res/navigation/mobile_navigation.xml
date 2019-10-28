@@ -25,11 +25,8 @@
     <activity
         android:id="@+id/nav_tools"
         android:name="com.example.myapplication.ActivityMappa"
-        android:label="@string/menu_tools" />
-
-    <fragment
-        android:id="@+id/nav_share"
-        android:name="com.example.myapplication.ui.share.ShareFragment" />
+        android:label="@string/menu_tools"
+        tools:layout="@layout/fragment_mappa" />
 
     <activity
         android:id="@+id/nav_send"

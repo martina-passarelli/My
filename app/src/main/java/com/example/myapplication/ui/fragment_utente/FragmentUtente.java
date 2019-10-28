@@ -116,6 +116,7 @@ public class FragmentUtente extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         // Defines the xml file for the fragment
+        context=inflater.getContext();
         return inflater.inflate(R.layout.fragment_utente, parent, false);
 
     }
@@ -254,6 +255,7 @@ public class FragmentUtente extends Fragment {
                     modificaFoto.setVisibility(View.VISIBLE);
                     vecchia_password.setVisibility(View.VISIBLE);
                     nuova_password.setVisibility(View.VISIBLE);
+                    eliminaProfilo.setVisibility(View.VISIBLE);
                     modificaProfilo.setImageResource(R.drawable.modifica_abilitata);
                     nomeUtente.setEnabled(true);
                     biografia.setEnabled(true);
@@ -342,6 +344,7 @@ public class FragmentUtente extends Fragment {
                     nuova_password.setVisibility(View.INVISIBLE);
                     vecchia_password.setVisibility(View.INVISIBLE);
                     label_pass.setVisibility(View.INVISIBLE);
+                    eliminaProfilo.setVisibility(View.INVISIBLE);
                     modifica_abilitata=false;
                 }
             }
@@ -455,7 +458,7 @@ public class FragmentUtente extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == SELECT_PICTURE && resultCode == RESULT_OK
+        if(requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK
                 && data != null && data.getData() != null )
             imageUri = data.getData();
         utente.setImageProf(currentUsermail+".jpg");

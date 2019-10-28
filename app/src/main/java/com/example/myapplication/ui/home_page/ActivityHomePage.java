@@ -29,8 +29,12 @@ public class ActivityHomePage extends AppCompatActivity {
         //direttamente la main activity
 
         if (mAuth.getCurrentUser() != null &&  mAuth.getCurrentUser().isEmailVerified() ) {
-            Intent i = new Intent(ActivityHomePage.this, MainActivity.class);
-            startActivity(i);
+            try {
+                Intent i = new Intent(ActivityHomePage.this, MainActivity.class);
+                startActivity(i);
+            }finally {
+                finish();
+            }
         }
         //se invece non c'è nessun utente loggato, verra aperta la schermata principale dove
         //l'utente potrà fare l accesso o iscriversi

@@ -3,8 +3,10 @@ import android.accounts.Account;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,6 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -59,22 +62,19 @@ import java.util.Date;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import android.os.AsyncTask;
+import android.widget.Toast;
+
 public class Fragment_ListaPartecipanti extends Fragment {
     private ArrayList<String> list=new ArrayList<>();
     private RecyclerView recyclerView;
     private View myView;
-    private CollectionReference colR;
     private FirebaseFirestore ff= FirebaseFirestore.getInstance();
-    private View view;
-    private Bundle savedInstanceState;
     private Adapter_Partecipanti tutorAdapter;
 
     private TextView label_part;
     private Button iscriviti;
     private String id_evento;
     private String utente_corrente=FirebaseAuth.getInstance().getUid();
-
-
 
     private GoogleSignInClient mGoogleSignInClient;
     private Account mAccount;
@@ -156,25 +156,21 @@ public class Fragment_ListaPartecipanti extends Fragment {
                 }
             }
         });
-
-
-
   }
 
   @RequiresApi(api = Build.VERSION_CODES.O)
   public void inserisci_inCalendar(Evento evento){
       GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this.getActivity());
+      Date formatter = null;
+      try {
+          formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(evento.getData() + " " + evento.getOra());
+      } catch (ParseException e) {
+          e.printStackTrace();
+      }
+      DateTime dataTime = new DateTime(formatter);
+      DateTime dataTimeEnd = new DateTime(formatter);
+
       if (GoogleSignIn.hasPermissions(account, new Scope(CALENDAR_SCOPE))) {
-          Date formatter = null;
-          try {
-              formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(evento.getData() + " " + evento.getOra());
-          } catch (ParseException e) {
-              e.printStackTrace();
-          }
-          DateTime dataTime = new DateTime(formatter);
-          DateTime dataTimeEnd = new DateTime(formatter);
-
-
           try {
               insertEvent(evento.getNome(), evento.getLuogo(), evento.getDescrizione(), dataTime, dataTimeEnd, account);
           } catch (IOException e) {
@@ -182,8 +178,10 @@ public class Fragment_ListaPartecipanti extends Fragment {
           } catch (GeneralSecurityException e) {
               e.printStackTrace();
           }
-      }else
-          signIn();
+      }else{
+          Toast.makeText(getActivity(), "Ops! Permesso negato!", Toast.LENGTH_SHORT).show();
+
+      }
   }
 
 
@@ -280,7 +278,7 @@ public class Fragment_ListaPartecipanti extends Fragment {
         tutorAdapter.notifyItemInserted(list.size()-1);
         recyclerView.scrollToPosition(tutorAdapter.getItemCount()-1);
         label_part.setText(list.size()+"/"+num);
-
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this.getActivity());
         ff.collection("eventi").document(""+id_evento).update("lista_part", list).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -290,8 +288,11 @@ public class Fragment_ListaPartecipanti extends Fragment {
                             @SuppressLint("ResourceAsColor")
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                if (documentSnapshot != null)
-                                    inserisci_inCalendar(documentSnapshot.toObject(Evento.class));
+                                if (documentSnapshot != null){
+                                    if (!GoogleSignIn.hasPermissions(account, new Scope(CALENDAR_SCOPE)))
+                                        signIn();
+                                    showDialogCalendar(documentSnapshot.toObject(Evento.class));
+                                    }
                             }}
                             ));
 
@@ -345,14 +346,10 @@ public class Fragment_ListaPartecipanti extends Fragment {
                 .build();
 
         event = new Event().setSummary(summary).setLocation(location).setDescription(des);
-        EventDateTime start = new EventDateTime()
-                .setDateTime(startDate)
-                .setTimeZone("Europe/London");
+        EventDateTime start = new EventDateTime().setDateTime(startDate).setTimeZone("Europe/London");
         event.setStart(start);
 
-        EventDateTime end = new EventDateTime()
-                .setDateTime(endDate)
-                .setTimeZone("Europe/London");
+        EventDateTime end = new EventDateTime().setDateTime(endDate).setTimeZone("Europe/London");
         event.setEnd(end);
 
         String[] recurrence = new String[] {"RRULE:FREQ=DAILY;COUNT=1"};
@@ -368,6 +365,36 @@ public class Fragment_ListaPartecipanti extends Fragment {
     event.setReminders(reminders);
     task.execute();
 
+    }
+
+    private void showDialogCalendar(Evento evento) {
+        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+        alertDialog.setTitle("");
+        alertDialog.setMessage("Vuoi inserire l'evento nel tuo calendario?");
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "SI", new DialogInterface.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                inserisci_inCalendar(evento);
+                Toast.makeText(getActivity(), "Evento inserito con successo", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "NO",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK);
+                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK);
+            }
+        });
+        alertDialog.show();
     }
 
     AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
@@ -388,6 +415,7 @@ public class Fragment_ListaPartecipanti extends Fragment {
         }
 
     };
+
 
 
 }

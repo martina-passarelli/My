@@ -105,6 +105,7 @@ public class FragmentCuoco extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        context=inflater.getContext();
         View view= inflater.inflate(R.layout.fragment_cuoco, container, false);
         return view;
     }
@@ -115,6 +116,7 @@ public class FragmentCuoco extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         nomeCuoco=(TextView)view.findViewById(R.id.nome_cuoco);
+        nomeCuoco.setClickable(false);
         emailCuoco=(TextView)view.findViewById(R.id.email_cuoco);
         nuovaPassword=(EditText)view.findViewById(R.id.edit_pass_cuoco);
         foto_cuoco=(CircleImageView)view.findViewById(R.id.image_cuoco);
@@ -261,6 +263,7 @@ public class FragmentCuoco extends Fragment {
 
     @SuppressLint("RestrictedApi")
     private void abilitaModifica() {
+        nomeCuoco.setClickable(true);
         modificaFoto.setVisibility(View.VISIBLE);
         ricette.setVisibility(View.GONE);
         eventi.setVisibility(View.GONE);
@@ -271,6 +274,7 @@ public class FragmentCuoco extends Fragment {
         vecchiaPassword.setEnabled(true);
         nuovaPassword.setVisibility(View.VISIBLE);
         vecchiaPassword.setVisibility(View.VISIBLE);
+        eliminaProfilo.setVisibility(View.VISIBLE);
         modificaAbilitata=true;
 
     }
@@ -283,8 +287,10 @@ public class FragmentCuoco extends Fragment {
         pass2=nuovaPassword.getText().toString();
         modificaProfilo.setImageResource(R.drawable.modifica);
         nomeCuoco.setEnabled(false);
+        nomeCuoco.setClickable(false);
         nuovaPassword.setEnabled(false);
         vecchiaPassword.setEnabled(false);
+        eliminaProfilo.setVisibility(View.INVISIBLE);
         modificaFoto.setVisibility(View.GONE);
         nuovaPassword.setVisibility(View.GONE);
         vecchiaPassword.setVisibility(View.GONE);

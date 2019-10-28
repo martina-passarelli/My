@@ -268,11 +268,15 @@ public class FragmentLogin extends Fragment {
      */
 
     public void vaiProfilo(String tipo_utente){
-        Intent intent = new Intent(context, ProfiloActivity.class);
-        intent.putExtra("tipo","login");
-        intent.putExtra("utente","");
-        intent.putExtra("tipo_utente",tipo_utente);
-        startActivity(intent);
+        try {
+            Intent intent = new Intent(context, ProfiloActivity.class);
+            intent.putExtra("tipo", "login");
+            intent.putExtra("utente", "");
+            intent.putExtra("tipo_utente", tipo_utente);
+            startActivity(intent);
+        }finally {
+            getActivity().finish();
+        }
     }
 
     /*
