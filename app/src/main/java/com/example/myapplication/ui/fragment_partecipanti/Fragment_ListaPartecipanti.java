@@ -152,18 +152,18 @@ public class Fragment_ListaPartecipanti extends Fragment {
                 Evento e= documentSnapshot.toObject(Evento.class);
                 int num=e.getMax_partecipanti();
                 ArrayList<String> lista_p=new ArrayList<>();
-                if(e.getLista_part()!=null){
+                if(e.getLista_part()!=null)
                     lista_p=(ArrayList<String>) e.getLista_part();
-                    if(!lista_p.contains(utente_corrente) && lista_p.size()<num) {
-                        add_partecipante(lista_p,num);
-                        iscriviti.setText("Esci");
-                    }
-                    else {
-                    remove_partecipante(lista_p,num);
+                if(!lista_p.contains(utente_corrente) && lista_p.size()<num) {
+                    add_partecipante(lista_p,num);
+                    iscriviti.setText("Esci");
+                }
+                else {
+                     remove_partecipante(lista_p,num);
                     iscriviti.setText("Iscriviti");
-                    }
                 }
             }
+
         });
   }
 
