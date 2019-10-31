@@ -81,6 +81,10 @@ public class Fragment_ListaPartecipanti extends Fragment {
     private Account mAccount;
     private String KEY_ACCOUNT="861844783919-jasqne4771rcfkau3hrbh0r9jrelbpra.apps.googleusercontent.com";
     private static final String CALENDAR_SCOPE ="https://www.googleapis.com/auth/calendar.events";
+    private static final int RC_SIGN_IN = 9001;
+    private Calendar service;
+    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+    private static final HttpTransport HTTP_TRANSPORT = AndroidHttp.newCompatibleTransport();
 
     //----------------------------------------------------------------------------------------------
 
@@ -140,6 +144,36 @@ public class Fragment_ListaPartecipanti extends Fragment {
 
     }
 
+    /*
+    IL METODO doSomething VIENE UTILIZZATO PER INIZIALIZZARE LA PAGINA DELL'EVENTO CORRENTE
+     */
+
+    public void doSomething(String id_evento){
+        ff.collection("eventi").document(""+id_evento).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @SuppressLint("ResourceAsColor")
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Evento evento=documentSnapshot.toObject(Evento.class);
+                ArrayList<String> lista_p= new ArrayList<>();
+
+                if(evento.getLista_part()!=null)
+                    lista_p=(ArrayList<String>) evento.getLista_part();
+                int num=evento.getMax_partecipanti();
+                label_part.setText(lista_p.size()+"/"+num);
+                list.addAll(lista_p);
+
+                tutorAdapter.notifyDataSetChanged();
+
+                //SETTIAMO IL BOTTONE DI ISCRIZIONE
+                if (list.contains(utente_corrente))
+                    iscriviti.setText("Esci");
+                else if(list.size()==num){
+                    iscriviti.setClickable(false);
+                    iscriviti.setBackgroundColor(R.color.common_google_signin_btn_text_light_disabled);
+                }
+            }
+        });
+    }
 
     /*
     IL METODO SI OCCUPA DI SETTARE IL BOTTONO "ISCRIVITI" ED IN CASO DI CLICK, ELIMINARE O INSERIRE
@@ -180,55 +214,84 @@ public class Fragment_ListaPartecipanti extends Fragment {
         ff.collection("eventi").document(""+id_evento).update("lista_part", FieldValue.arrayUnion(utente_corrente)).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
+                modifica_inUtente(true);
                 if (!GoogleSignIn.hasPermissions(account, new Scope(CALENDAR_SCOPE)))
                     signIn();
                 showDialogCalendar(id_evento);
             }
         });
 
-        //I DATI DEVONO ESSERE MODIFICATI ANCHE NELL'UTENTE CHE COMINCIA A PARTECIPARE ALL'EVENTO
-        modifica_inUtente(true);
+    }
+
+    public void remove_partecipante(ArrayList<String> list_p, int num){
+        list.remove(utente_corrente);
+        recyclerView.scrollToPosition(tutorAdapter.getItemCount());
+        tutorAdapter.notifyDataSetChanged();
+        label_part.setText(list.size()+"/"+num);
+
+        ff.collection("eventi").document(""+id_evento).update("lista_part", FieldValue.arrayRemove(utente_corrente)).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                modifica_inUtente(false);
+            }
+        });
+
     }
 
 
-  @RequiresApi(api = Build.VERSION_CODES.O)
-  public void inserisci_inCalendar(Evento evento){
-      Date formatter = null;
-      try {
-          formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(evento.getData() + " " + evento.getOra());
-      } catch (ParseException e) {
-          e.printStackTrace();
-      }
-      DateTime dataTime = new DateTime(formatter);
-      DateTime dataTimeEnd = new DateTime(formatter);
+    /*
+    IL METODO SERVE PER AGGIORNARE ANCHE NEI DATI DELL'UTENTE L'AZIONE DI PARTECIPAZIONE O MENO
+    ALL'EVENTO.
+    - aggiungi=TRUE -> L'UTENTE HA DECISO DI PARTECIPARE.
+    - aggiungi=FALSE -> L'UTENTE HA DECISO DI NON PARTECIPARE PIU'.
+     */
+    public void modifica_inUtente(boolean aggiungi){
+        DocumentReference doc= ff.collection("utenti2").document(""+utente_corrente);
+        doc.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @SuppressLint("ResourceAsColor")
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-      if (GoogleSignIn.hasPermissions(account, new Scope(CALENDAR_SCOPE))) {
-          try {
-              insertEvent(evento.getNome(), evento.getLuogo(), evento.getDescrizione(), dataTime, dataTimeEnd, account);
-          } catch (IOException e) {
-              e.printStackTrace();
-          } catch (GeneralSecurityException e) {
-              e.printStackTrace();
-          }
-      }else{
-          Toast.makeText(getActivity(), "Ops! Permesso negato!", Toast.LENGTH_SHORT).show();
-      }
-  }
+                if(aggiungi)doc.update("lista_eventi", FieldValue.arrayUnion(id_evento));
+                else doc.update("lista_eventi", FieldValue.arrayRemove(id_evento));
+
+            }
+        });
+    }
 
 
 
+    //--------------------------GOOGLE CALENDAR----------------------------------------------------
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void inserisci_inCalendar(Evento evento){
+        Date formatter = null;
+        try {
+            formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(evento.getData() + " " + evento.getOra());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        DateTime dataTime = new DateTime(formatter);
+        DateTime dataTimeEnd = new DateTime(formatter);
+
+        if (GoogleSignIn.hasPermissions(account, new Scope(CALENDAR_SCOPE))) {
+            try {
+                insertEvent(evento.getNome(), evento.getLuogo(), evento.getDescrizione(), dataTime, dataTimeEnd, account);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (GeneralSecurityException e) {
+                e.printStackTrace();
+            }
+        }else{
+            Toast.makeText(getActivity(), "Ops! Permesso negato!", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
-    private static final int RC_SIGN_IN = 9001;
-
-    private Calendar service;
-    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private static final HttpTransport HTTP_TRANSPORT = AndroidHttp.newCompatibleTransport();
-
-
-
-
-
+    //--------------------------PER ACCEDERE A GOOGLE-----------------------------------------------
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
@@ -248,74 +311,6 @@ public class Fragment_ListaPartecipanti extends Fragment {
     }
 
 
-
-    public void doSomething(String id_evento){
-        ff.collection("eventi").document(""+id_evento).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @SuppressLint("ResourceAsColor")
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Evento evento=documentSnapshot.toObject(Evento.class);
-                ArrayList<String> lista_p= new ArrayList<>();
-                if(evento.getLista_part()!=null)
-                    lista_p=(ArrayList<String>) evento.getLista_part();
-                int num=evento.getMax_partecipanti();
-                label_part.setText(lista_p.size()+"/"+num);
-                list.addAll(lista_p);
-                tutorAdapter.notifyDataSetChanged();
-
-                //SETTIAMO IL BOTTONE DI ISCRIZIONE
-                if (list.contains(utente_corrente))
-                    iscriviti.setText("Esci");
-                else if(list.size()==num){
-                    iscriviti.setClickable(false);
-                    iscriviti.setBackgroundColor(R.color.common_google_signin_btn_text_light_disabled);
-                }
-            }
-        });
-    }
-
-
-    private void signIn() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-
-    public void remove_partecipante(ArrayList<String> list_p, int num){
-        list.clear();
-        list.addAll(list_p);
-        list.remove(utente_corrente);
-        recyclerView.scrollToPosition(tutorAdapter.getItemCount());
-        tutorAdapter.notifyDataSetChanged();
-        label_part.setText(list.size()+"/"+num);
-
-        ff.collection("eventi").document(""+id_evento).update("lista_part", list).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-
-            }
-        });
-        modifica_inUtente(false);
-    }
-
-
-
-
-
-
-    public void modifica_inUtente(boolean aggiungi){
-        DocumentReference doc= ff.collection("utenti2").document(""+utente_corrente);
-            doc.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @SuppressLint("ResourceAsColor")
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                if(aggiungi)doc.update("lista_eventi", FieldValue.arrayUnion(id_evento));
-                else doc.update("lista_eventi", FieldValue.arrayRemove(id_evento));
-
-            }
-        });
-    }
 
     private Context mContext;
     @Override
