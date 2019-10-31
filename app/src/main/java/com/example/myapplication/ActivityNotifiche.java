@@ -8,6 +8,10 @@ import androidx.appcompat.widget.Toolbar;
 import com.example.myapplication.ui.notifiche.Lista_Notifiche;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+/*
+
+    L'ATTIVITA' SI OCCUPA DELLE NOTIFICHE D UN UTENTE.
+ */
 public class ActivityNotifiche extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

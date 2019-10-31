@@ -43,6 +43,12 @@ import java.util.List;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
+/*
+IL FRAMMENTO SI OCCUPA DELLA LISTA DI RICETTE IN DIVERSI CASI:
+1. A PARTIRE DAL Fragment_Home CON LA SCELTA DI UNA CATEGORIA INDICATA.
+2. SCELTA DELLE RICETTE CREATE DA UN CUOCO SPECIFICO: VIENE RICHIAMATO DA Fragment_Cuoco.
+3. LISTA DI RICETTE PREFERITE PER UN UTENTE.
+ */
 public class ListaRicette_Fragment extends Fragment{
     private MyAdapter tutorAdapter;
     private RecyclerView recyclerView;
@@ -118,6 +124,7 @@ public class ListaRicette_Fragment extends Fragment{
             colR.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    text_etichettaView.setText("Tutte le ricette!");
                     if (!queryDocumentSnapshots.isEmpty()) {
                         List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                         for (DocumentSnapshot d : list) {
@@ -137,15 +144,20 @@ public class ListaRicette_Fragment extends Fragment{
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            String id = document.getId();
-                            Ricetta ricetta = document.toObject(Ricetta.class);
-                            if(ricetta!=null) {
-                                ricetta.setId_ricetta(id);
-                                ricettaList.add(ricetta);
+                        if(task.getResult().size()!=0) {
+                            text_etichettaView.setText("Lista di " + parms);
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String id = document.getId();
+                                Ricetta ricetta = document.toObject(Ricetta.class);
+                                if (ricetta != null) {
+                                    ricetta.setId_ricetta(id);
+                                    ricettaList.add(ricetta);
+                                }
                             }
+                            tutorAdapter.notifyDataSetChanged();
                         }
-                    tutorAdapter.notifyDataSetChanged();
+                        else
+                            text_etichettaView.setText("La lista di " + parms+"è vuota!");
                     } else {
                         Log.d(TAG, "Error getting documents: ", task.getException());
                     }

@@ -122,16 +122,22 @@ public class Fragment_ListaPartecipanti extends Fragment {
 
         Bundle bundle=this.getArguments();
         id_evento=bundle.getString("id");
+        String id_cuoco=bundle.getString("id_cuoco");
 
         label_part=(TextView) view.findViewById(R.id.text_part);
 
         iscriviti=(Button) view.findViewById(R.id.button_iscrizione);
-        iscriviti.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                set_button(); // SET A SECONDA SE SEI GIA' ISCRITTO O NO ALL'EVENTO
-            }
-        });
+        //IL CUOCO CHE HA CREATO L'EVENTO NON PUO' ISCRIVERSI.
+        if(id_cuoco!=null && !id_cuoco.equals(FirebaseAuth.getInstance().getUid())){
+            iscriviti.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    set_button(); // SET A SECONDA SE SEI GIA' ISCRITTO O NO ALL'EVENTO
+                }
+            });
+        }else
+            iscriviti.setVisibility(View.INVISIBLE);
+
 
 
         // Configure sign-in to request the user's ID, email address, basic profile,
@@ -197,7 +203,6 @@ public class Fragment_ListaPartecipanti extends Fragment {
                     iscriviti.setText("Iscriviti");
                 }
             }
-
         });
   }
 
@@ -220,7 +225,6 @@ public class Fragment_ListaPartecipanti extends Fragment {
                 showDialogCalendar(id_evento);
             }
         });
-
     }
 
     public void remove_partecipante(ArrayList<String> list_p, int num){
@@ -327,7 +331,7 @@ public class Fragment_ListaPartecipanti extends Fragment {
 
 
 
-    //------------------------------------UTILI?----------------------------------------------------
+    //------------------------------------CALENDARIO------------------------------------------------
 
     private  Event event;
     public void insertEvent(String summary, String location, String des, DateTime startDate, DateTime endDate, GoogleSignInAccount account)throws IOException, GeneralSecurityException {
@@ -350,12 +354,11 @@ public class Fragment_ListaPartecipanti extends Fragment {
         String[] recurrence = new String[] {"RRULE:FREQ=DAILY;COUNT=1"};
         event.setRecurrence(Arrays.asList());
         event.setAttendees(Arrays.asList());
-    Event.Reminders reminders = new Event.Reminders()
+        Event.Reminders reminders = new Event.Reminders()
             .setUseDefault(false)
             .setOverrides(Arrays.asList());
-    event.setReminders(reminders);
-    task.execute();
-
+        event.setReminders(reminders);
+        task.execute();
     }
 
     private void showDialogCalendar(String id_evento) {
@@ -406,7 +409,6 @@ public class Fragment_ListaPartecipanti extends Fragment {
             String calendarId = "primary";
             try {
                 service.events().insert(calendarId, event).setSendNotifications(true).execute();
-                //Toast.makeText(getActivity(), "Evento inserito con successo", Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 e.printStackTrace();
             }

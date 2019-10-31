@@ -14,10 +14,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="?attr/actionBarSize"
+        android:background="#92D3D3D3"
         android:fontFamily="cursive"
         android:gravity="center"
         android:textColor="#FC030303"
-        android:textSize="26sp" />
+        android:textSize="30sp" />
+
+    <View
+        android:id="@+id/view2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/common_google_signin_btn_text_dark_focused"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/home_ora"
+        tools:ignore="UnknownId" />
 
     <FrameLayout
         android:id="@+id/fragment"

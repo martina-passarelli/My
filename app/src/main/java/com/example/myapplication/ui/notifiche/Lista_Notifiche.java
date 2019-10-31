@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -27,6 +29,7 @@ public class Lista_Notifiche extends Fragment {
     private Adapter_Notifica tutorAdapter;
     private View myView;
     private RecyclerView recyclerView;
+    private TextView etichetta_vista;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,10 +49,12 @@ public class Lista_Notifiche extends Fragment {
         recyclerView.addItemDecoration(itemDecoration);
         recyclerView.setAdapter(tutorAdapter);
         ottieni_notifiche();
+      etichetta_vista= getActivity().findViewById(R.id.etichetta_vista);
         return myView;
     }
 
     public void ottieni_notifiche(){
+
         String currentID= FirebaseAuth.getInstance().getUid();
 
         FirebaseFirestore.getInstance().collection("utenti2").document(""+currentID).collection("Notifications").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -57,15 +62,20 @@ public class Lista_Notifiche extends Fragment {
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 if (!queryDocumentSnapshots.isEmpty()) {
                     List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                    for (DocumentSnapshot d : list) {
-                        String id = d.getId();
-                        Notifica notifica= d.toObject(Notifica.class);
-                        if(notifica!=null) {
-                            lista_notifiche.add(notifica);
+                    if(list.size()!=0){
+                        etichetta_vista.setText("Le tue notifiche");
+                        for (DocumentSnapshot d : list) {
+                            String id = d.getId();
+                            Notifica notifica= d.toObject(Notifica.class);
+                            if(notifica!=null) {
+                                lista_notifiche.add(notifica);
+                            }
                         }
+                        tutorAdapter.notifyDataSetChanged();
                     }
+                    else
+                        etichetta_vista.setText("Non sono presenti notifiche per te!");
                 }
-                tutorAdapter.notifyDataSetChanged();
             }
         });
 

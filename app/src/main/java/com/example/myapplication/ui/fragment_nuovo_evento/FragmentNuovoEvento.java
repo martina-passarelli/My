@@ -383,8 +383,9 @@ public class FragmentNuovoEvento extends Fragment {
     private void ricaricaFrammentoListaEventi() {
         FragmentCuoco frag=(FragmentCuoco)getParentFragment();
         frag.changeVisibility();
-
+        Bundle bundle= new Bundle();
         String currentId= FirebaseAuth.getInstance().getUid();
+        bundle.putString("id",currentId);
         Lista_Fragment_Evento list_eventi=new Lista_Fragment_Evento();
         list_eventi.doSomething(currentId);
         getFragmentManager().beginTransaction().replace(R.id.frame_cuoco,list_eventi).commit();

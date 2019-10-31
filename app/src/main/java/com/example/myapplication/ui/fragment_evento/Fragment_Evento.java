@@ -119,6 +119,7 @@ public class Fragment_Evento extends Fragment {
 
                 Bundle b=new Bundle();
                 b.putString("id",id_evento);
+                b.putString("id_cuoco",id_cuoco);
                 fragment_partecipanti.setArguments(b);
                 fragment_partecipanti.doSomething(id_evento);
 
