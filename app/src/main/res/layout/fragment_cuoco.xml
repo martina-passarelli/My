@@ -25,7 +25,6 @@
                 android:layout_width="139dp"
                 android:layout_height="153dp"
                 android:layout_marginStart="20dp"
-                android:elevation="@dimen/place_autocomplete_prediction_secondary_text"
                 android:src="@drawable/chef"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
