@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,7 +37,14 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.view.View.getDefaultSize;
 import static androidx.constraintlayout.widget.Constraints.TAG;
+/*
+LA CLASSE SI OCCUPA DI GESTIRE IL FRAMMENTO CONTENENTE LA LISTA DI EVENTI NEI DIVERSI CASI POSSIBILI:
+1. LISTA DEGLI EVENTI A CUI PARTECIPA UN UTENTE;
+2. LISTA DEGLI EVENTI TOTALI.
+3. LISTA DEGLI EVENTI DI UN CUOCO.
+ */
 
 public class Lista_Fragment_Evento extends Fragment {
     private ArrayList<Evento> list=new ArrayList<>();
@@ -45,7 +53,7 @@ public class Lista_Fragment_Evento extends Fragment {
     private FirebaseFirestore ff= FirebaseFirestore.getInstance();
     private Adapter_Evento tutorAdapter;
     public String id_utente="null";
-
+    private TextView text_etichettaVista;
 
 
     @Override
@@ -59,6 +67,7 @@ public class Lista_Fragment_Evento extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.fragment_evento, container, false);
         recyclerView = myView.findViewById(R.id.lista_eventi);
+        text_etichettaVista=getActivity().findViewById(R.id.etichetta_vista);
 
         //BISOGNA RICEVERE VIA BUNDLE
         Bundle bundle=this.getArguments();
@@ -73,18 +82,15 @@ public class Lista_Fragment_Evento extends Fragment {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        /*
-
-int resId = R.anim.layout_animation_fall_down;
-LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(ctx, resId);
-recyclerview.setLayoutAnimation(animation);
-         */
         recyclerView.setAdapter(tutorAdapter);
         return myView;
     }
 
 
 
+    /*
+    IL METODO SERVE AD ATTIVARE LA SCROLL PER ELIMINARE GLI EVENTI
+     */
     private void enableSwipeToDeleteAndUndo() {
         SwipeToDeleteCallback swipeToDeleteCallback = new SwipeToDeleteCallback(this.getContext()) {
             @Override
@@ -110,13 +116,19 @@ recyclerview.setLayoutAnimation(animation);
         itemTouchhelper.attachToRecyclerView(recyclerView);
     }
 
+/*------------------------IN Fragment_Cuoco---------------------------------------------------------
+IL METODOO doSomething(String id_cuoco) VIENE RICHIAMATO NEL PROFILO DI UN CUOCO, QUANDO SI DESIDERA
+VISUALIZZARE GLI EVENTI DA ESSO CREATI. POICHE' ALL'INTERNO DI OGNI EVENTO NEL FIREBASE E' PRESENTE
+L'ID DEL CUOCO, BASTA EFFETUARE UNA QUERY SU ESSO PER PRELEVARE GLI EVENTI DI INTERESSE.
+ */
+
     public void doSomething(String id_cuoco){
         //PRENDIAMO TUTTI GLI EVENTI COLLEGATI ALL'UTENTE IN INPUT
         ff.collection("eventi").whereEqualTo("id_cuoco",id_cuoco).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
+                     for (QueryDocumentSnapshot document : task.getResult()) {
                         Evento evento = document.toObject(Evento.class);
                         if(ActivityMappa.nonScaduto(evento.getData(), evento.getOra())){
                             list.add(evento);
@@ -130,20 +142,34 @@ recyclerview.setLayoutAnimation(animation);
             }
         });
     }
+    //----------------------------------------------------------------------------------------------
+    /*---------------------IN I miei eventi---------------------------------------------------------
+    ALL'INTERNO DEL FIRESTORE, NELLA SEZIONE UTENTE, E' PRESENTE UNA LISTA DI STRINGHE CORRISPONDENTI
+     AGLI ID DEGLI EVENTI A CUI ESSO PARTECIPA.
+     PER PRELEVARE QUESTA LISTA VIENE USATO IL METODO eventi_utente(), MENTRE PER PRELEVARE I DATI
+     DELL'EVENTO E SISTEMARE LA VISTA, VIENE USATO add_evento(String s). RICORDIAMO CHE E' POSSIBILE
+     VISUALIZZARE SOLO GLI EVENTI NON SCADUTI.
 
+     */
     public void eventi_utente(){
         //PRENDIAMO TUTTI GLI EVENTI A CUI PARTECIPERA' L'UTENTE CORRENTE
+
         ff.collection("utenti2").document(""+FirebaseAuth.getInstance().getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @SuppressLint("ResourceAsColor")
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 ArrayList<String> lista_eventi =new ArrayList<>();
+                text_etichettaVista.setText("Non sei iscritto a nessun evento!\nInizia a guardarti intorno!");
                 if(documentSnapshot.get("lista_eventi")!=null) {
                     lista_eventi = (ArrayList<String>) documentSnapshot.get("lista_eventi");
                     list.clear();
+                    if(lista_eventi.size()!=0) {
+                        text_etichettaVista.setText("I tuoi eventi");
 
-                    for (String s : lista_eventi) {
-                        add_evento(s);
+                        for (String s : lista_eventi) {
+                            add_evento(s);
+                        }
+
                     }
                 }
             }
@@ -166,7 +192,11 @@ recyclerview.setLayoutAnimation(animation);
     }
 
 
-
+    //----------------------------------------------------------------------------------------------
+    /*----------------NELLA PAGE DELL'HOME: EVENTI--------------------------------------------------
+    IL METODO eventi_Totali() VIENE RICHIAMATO PER PRELEVARE TUTTI GLI EVENTI PRESENTI NEL FIREBASE
+    CHE NON SONO SCADUTI.
+     */
 
     public void eventiTotali(){
         ff.collection("eventi").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {

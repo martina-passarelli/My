@@ -355,6 +355,9 @@ public class FragmentUtente extends Fragment {
 
     private void load_seguiti() {
         ListSeguiti lista = new ListSeguiti();
+        Bundle bundle=new Bundle();
+        bundle.putString("id",currentId);
+        lista.setArguments(bundle);
         getChildFragmentManager().beginTransaction().replace(R.id.fragment,lista).commit();
 
     }
@@ -496,9 +499,7 @@ public class FragmentUtente extends Fragment {
 
 
     //PER LA GEOLOCALIZZAZIONE
-
     private boolean mLocationPermissionsGranted=false;
-
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COURSE_LOCATION= Manifest.permission.ACCESS_COARSE_LOCATION;
@@ -532,12 +533,13 @@ public class FragmentUtente extends Fragment {
                     public void onComplete(@NonNull Task task) {
                         if(task.isSuccessful()){
                             //Log.d(TAG, "onComplete: posizione trovata");
-                            Location currentLocation= (Location) task.getResult();
-                            double longitudine= currentLocation.getLongitude();
-                            double latitudine=currentLocation.getLatitude();
-                            Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
-                            List<Address> addresses = null;
                             try {
+                                Location currentLocation= (Location) task.getResult();
+                                double longitudine= currentLocation.getLongitude();
+                                double latitudine=currentLocation.getLatitude();
+                                Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+                                List<Address> addresses = null;
+
                                 //Preleva nome città
                                 addresses = geocoder.getFromLocation(latitudine, longitudine, 1);
                                 String cityName = addresses.get(0).getLocality();
@@ -545,21 +547,18 @@ public class FragmentUtente extends Fragment {
                                 città.setText(city_view);
                                 //Posizioniamo il luogo scelto in firebase
                                 FirebaseFirestore.getInstance().collection("suggeriti").document(""+FirebaseAuth.getInstance().getUid()).update("città_eventi", cityName);
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                            } catch (Exception e) {
+                                Toast.makeText(getActivity(), "Impossibile accedere alla posizione. Accendi il GPS.", Toast.LENGTH_SHORT).show();
                             }
-
-                            //mMap.addMarker(new MarkerOptions().position(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude())).title("Tu sei qui")).showInfoWindow();
-
-                            //moveCamera(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude()),DEFAULT_ZOOM);
                         }else{
-                            Toast.makeText(getActivity(), "impossibile accedere alla posizione", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Impossibile accedere alla posizione. Accendi il GPS.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
             }
 
-        }catch (SecurityException e){
+        }catch (Exception e){
+            Toast.makeText(getActivity(), "Impossibile accedere alla tua posizione, riprova più tardi.", Toast.LENGTH_SHORT).show();
         }
     }
 

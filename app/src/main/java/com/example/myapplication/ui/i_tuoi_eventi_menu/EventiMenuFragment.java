@@ -19,7 +19,6 @@ import com.example.myapplication.ui.fragment_evento.Lista_Fragment_Evento;
 public class EventiMenuFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
         View root = inflater.inflate(R.layout.fragment_evento, container, false);
         Lista_Fragment_Evento fragment = new Lista_Fragment_Evento();
         fragment.eventi_utente();

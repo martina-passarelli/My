@@ -215,13 +215,21 @@ public class FragmentNuovoEvento extends Fragment {
         int ora = oraPicker.getHour();
         int min = oraPicker.getMinute();
 
-        String orario= ora+":"+min;
+        String orario="";
+        if(ora<10 && min<10) orario="0"+ora+":"+"0"+min;
+        else if(ora<10) orario="0"+ora+":"+min;
+        else if(min<10)orario=ora+":"+"0"+min;
+        else orario=ora+":"+min;
 
         int giorno = dataPicker.getDayOfMonth();
         int mese = dataPicker.getMonth()+1;
         int anno = dataPicker.getYear();
 
-        String data = giorno+"/"+mese+"/"+anno;
+        String data="";
+        if(mese<10 && giorno<10) data="0"+giorno+"/"+"0"+mese+"/"+anno;
+        else if(mese<10) data=giorno+"/"+"0"+mese+"/"+anno;
+        else if(giorno<10)data="0"+giorno+"/"+mese+"/"+anno;
+        else data=giorno+"/"+mese+"/"+anno;
 
         String luogo;
         if(spinnerLuoghi.getSelectedItem()!=null)
@@ -241,6 +249,8 @@ public class FragmentNuovoEvento extends Fragment {
         }
 
         CollectionReference riferimento = mDatabase.collection("Luoghi");
+        String finalOrario = orario;
+        String finalData = data;
         riferimento.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -263,7 +273,7 @@ public class FragmentNuovoEvento extends Fragment {
                                             Evento evento = d.toObject(Evento.class);
                                             if( evento!=null &&evento.getLuogo().equals(luogoF.getNome() )&&
                                                     //evento.getCittà().equals(citta) &&
-                                                    evento.getData().equals(data)  ) {
+                                                    evento.getData().equals(finalData)  ) {
                                                 //mostro un avviso
                                                 showDialog();
                                                 aggiungi=false;
@@ -271,9 +281,12 @@ public class FragmentNuovoEvento extends Fragment {
                                             }
                                         }
                                         if(aggiungi)
-                                            aggiungiEventoFirebase(nome, partecipanti, descrizione, orario, data,
+                                            aggiungiEventoFirebase(nome, partecipanti, descrizione, finalOrario, finalData,
                                                     luogoF.getNome(), latitudine, longitudine, citta);
 
+                                    }else{
+                                        aggiungiEventoFirebase(nome, partecipanti, descrizione, finalOrario, finalData,
+                                                luogoF.getNome(), latitudine, longitudine, citta);
                                     }
                                 }
                             });

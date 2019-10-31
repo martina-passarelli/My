@@ -129,8 +129,6 @@ public class FragmentCuoco extends Fragment {
         //**********modifica profilo*****************
         modificaFoto = view.findViewById(R.id.modificaFotoCuoco);
         modificaFoto.setVisibility(View.GONE);
-
-
         nuovaPassword.setVisibility(View.GONE);
         vecchiaPassword=view.findViewById(R.id.vecchiaPass);
         vecchiaPassword.setVisibility(View.GONE);

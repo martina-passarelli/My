@@ -51,7 +51,6 @@ public class ListaCommenti_Fragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         tutorAdapter = new MyItemAdapterCommento(lista_commenti);
     }
 
@@ -106,7 +105,6 @@ public class ListaCommenti_Fragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         //QUESTA PARTE SI OCCUPA DELLA CONDIVISIONE DEL COMMENTO!
         TextInputLayout text_input=(TextInputLayout)view.findViewById(R.id.input_commento);
-
         Button condividi= (Button)view.findViewById(R.id.button_commenta);
         condividi.setOnClickListener(new View.OnClickListener()
         {

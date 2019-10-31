@@ -70,37 +70,41 @@ public class Fragment_ListaPartecipanti extends Fragment {
     private View myView;
     private FirebaseFirestore ff= FirebaseFirestore.getInstance();
     private Adapter_Partecipanti tutorAdapter;
-
     private TextView label_part;
     private Button iscriviti;
     private String id_evento;
     private String utente_corrente=FirebaseAuth.getInstance().getUid();
 
+    //----------------------------------PER ACCESSO A GOOGLE----------------------------------------
     private GoogleSignInClient mGoogleSignInClient;
+    private GoogleSignInAccount account;
     private Account mAccount;
-
     private String KEY_ACCOUNT="861844783919-jasqne4771rcfkau3hrbh0r9jrelbpra.apps.googleusercontent.com";
     private static final String CALENDAR_SCOPE ="https://www.googleapis.com/auth/calendar.events";
+
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tutorAdapter = new Adapter_Partecipanti(list);
+    }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(KEY_ACCOUNT, mAccount);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-
         myView = inflater.inflate(R.layout.fragment_lista_partecipanti, container, false);
         recyclerView = myView.findViewById(R.id.lista_partecipanti);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this.getContext(), DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(itemDecoration);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.startLayoutAnimation();
         recyclerView.setItemAnimator(new SlideInUpAnimator());
         recyclerView.startLayoutAnimation();
         recyclerView.setAdapter(tutorAdapter);
@@ -111,11 +115,13 @@ public class Fragment_ListaPartecipanti extends Fragment {
         if(savedInstanceState!=null) {
             mAccount = savedInstanceState.getParcelable(KEY_ACCOUNT);
         }
+
         Bundle bundle=this.getArguments();
         id_evento=bundle.getString("id");
-        label_part=(TextView) view.findViewById(R.id.text_part);
-        iscriviti=(Button) view.findViewById(R.id.button_iscrizione);
 
+        label_part=(TextView) view.findViewById(R.id.text_part);
+
+        iscriviti=(Button) view.findViewById(R.id.button_iscrizione);
         iscriviti.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,12 +136,15 @@ public class Fragment_ListaPartecipanti extends Fragment {
                 .requestScopes(new Scope(CALENDAR_SCOPE))
                 .requestEmail()
                 .build();
-
         mGoogleSignInClient = GoogleSignIn.getClient(this.getActivity(), gso);
 
     }
 
 
+    /*
+    IL METODO SI OCCUPA DI SETTARE IL BOTTONO "ISCRIVITI" ED IN CASO DI CLICK, ELIMINARE O INSERIRE
+    NELLA LISTA PARTECIPANTI, L'UTENTE.
+     */
     public void set_button(){
         ff.collection("eventi").document(""+id_evento).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -143,24 +152,47 @@ public class Fragment_ListaPartecipanti extends Fragment {
                 Evento e= documentSnapshot.toObject(Evento.class);
                 int num=e.getMax_partecipanti();
                 ArrayList<String> lista_p=new ArrayList<>();
-
-                if(e.getLista_part()!=null) lista_p=(ArrayList<String>) e.getLista_part();
-
-                if(!lista_p.contains(utente_corrente) && lista_p.size()<num) {
-                    add_partecipante(lista_p,num);
-                    iscriviti.setText("Esci");
-               }
-                else {
+                if(e.getLista_part()!=null){
+                    lista_p=(ArrayList<String>) e.getLista_part();
+                    if(!lista_p.contains(utente_corrente) && lista_p.size()<num) {
+                        add_partecipante(lista_p,num);
+                        iscriviti.setText("Esci");
+                    }
+                    else {
                     remove_partecipante(lista_p,num);
                     iscriviti.setText("Iscriviti");
+                    }
                 }
             }
         });
   }
 
+
+    public void add_partecipante(ArrayList<String> list_p, int num){
+        //SI OCCUPA DELLA VISTA
+        list.add(list.size(),utente_corrente);
+        tutorAdapter.notifyItemInserted(list.size()-1);
+        recyclerView.scrollToPosition(tutorAdapter.getItemCount()-1);
+        label_part.setText(list.size()+"/"+num);
+
+        account = GoogleSignIn.getLastSignedInAccount(this.getActivity());
+        //AGGIORNAMENTO DEI DATI E RICHIESTA DI INSERIMENTO NEL CALENDARIO
+        ff.collection("eventi").document(""+id_evento).update("lista_part", FieldValue.arrayUnion(utente_corrente)).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                if (!GoogleSignIn.hasPermissions(account, new Scope(CALENDAR_SCOPE)))
+                    signIn();
+                showDialogCalendar(id_evento);
+            }
+        });
+
+        //I DATI DEVONO ESSERE MODIFICATI ANCHE NELL'UTENTE CHE COMINCIA A PARTECIPARE ALL'EVENTO
+        modifica_inUtente(true);
+    }
+
+
   @RequiresApi(api = Build.VERSION_CODES.O)
   public void inserisci_inCalendar(Evento evento){
-      GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this.getActivity());
       Date formatter = null;
       try {
           formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(evento.getData() + " " + evento.getOra());
@@ -180,17 +212,12 @@ public class Fragment_ListaPartecipanti extends Fragment {
           }
       }else{
           Toast.makeText(getActivity(), "Ops! Permesso negato!", Toast.LENGTH_SHORT).show();
-
       }
   }
 
 
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(KEY_ACCOUNT, mAccount);
-    }
+
 
     private static final int RC_SIGN_IN = 9001;
 
@@ -201,15 +228,17 @@ public class Fragment_ListaPartecipanti extends Fragment {
 
 
 
+
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
+                account = task.getResult(ApiException.class);
                 // Store the account from the result
                 mAccount = account.getAccount();
+
             } catch (ApiException e) {
                 // Clear the local account
                 mAccount = null;
@@ -271,36 +300,7 @@ public class Fragment_ListaPartecipanti extends Fragment {
 
 
 
-    public void add_partecipante(ArrayList<String> list_p, int num){
-        list.clear();
-        list.addAll(list_p);
-        list.add(list.size(),utente_corrente);
-        tutorAdapter.notifyItemInserted(list.size()-1);
-        recyclerView.scrollToPosition(tutorAdapter.getItemCount()-1);
-        label_part.setText(list.size()+"/"+num);
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this.getActivity());
-        ff.collection("eventi").document(""+id_evento).update("lista_part", list).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                ff.collection("eventi").document(""+id_evento).get().addOnSuccessListener(
-                        (new OnSuccessListener<DocumentSnapshot>() {
-                            @RequiresApi(api = Build.VERSION_CODES.O)
-                            @SuppressLint("ResourceAsColor")
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                if (documentSnapshot != null){
-                                    if (!GoogleSignIn.hasPermissions(account, new Scope(CALENDAR_SCOPE)))
-                                        signIn();
-                                    showDialogCalendar(documentSnapshot.toObject(Evento.class));
-                                    }
-                            }}
-                            ));
 
-            }
-        });
-        modifica_inUtente(true);
-
-    }
 
 
     public void modifica_inUtente(boolean aggiungi){
@@ -355,10 +355,6 @@ public class Fragment_ListaPartecipanti extends Fragment {
         String[] recurrence = new String[] {"RRULE:FREQ=DAILY;COUNT=1"};
         event.setRecurrence(Arrays.asList());
         event.setAttendees(Arrays.asList());
-    /*  EventReminder[] reminderOverrides = new EventReminder[] {
-            new EventReminder().setMethod("email").setMinutes(24 * 60),
-            new EventReminder().setMethod("popup").setMinutes(10),
-    };*/
     Event.Reminders reminders = new Event.Reminders()
             .setUseDefault(false)
             .setOverrides(Arrays.asList());
@@ -367,19 +363,31 @@ public class Fragment_ListaPartecipanti extends Fragment {
 
     }
 
-    private void showDialogCalendar(Evento evento) {
+    private void showDialogCalendar(String id_evento) {
         AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
         alertDialog.setTitle("");
         alertDialog.setMessage("Vuoi inserire l'evento nel tuo calendario?");
+
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "SI", new DialogInterface.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                inserisci_inCalendar(evento);
-                Toast.makeText(getActivity(), "Evento inserito con successo", Toast.LENGTH_SHORT).show();
+                ff.collection("eventi").document(""+id_evento).get().addOnSuccessListener(
+                        (new OnSuccessListener<DocumentSnapshot>() {
+                            @RequiresApi(api = Build.VERSION_CODES.O)
+                            @SuppressLint("ResourceAsColor")
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                if (documentSnapshot != null){
+                                   Evento evento=documentSnapshot.toObject(Evento.class);
+                                    inserisci_inCalendar(evento);
+                                }
+                            }}
+                        ));
 
             }
         });
+
         alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "NO",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -403,6 +411,7 @@ public class Fragment_ListaPartecipanti extends Fragment {
             String calendarId = "primary";
             try {
                 service.events().insert(calendarId, event).setSendNotifications(true).execute();
+                //Toast.makeText(getActivity(), "Evento inserito con successo", Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 e.printStackTrace();
             }

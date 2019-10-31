@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/frag"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#D7FFFFFF"
-    android:orientation="vertical">
+    android:background="#D7FFFFFF">
 
         <TextView
             android:id="@+id/etichetta_ingredienti"
@@ -16,8 +15,9 @@
             android:textColor="#131313"
             android:textSize="16sp"
             android:textStyle="bold"
-            tools:layout_conversion_absoluteHeight="21dp"
-            tools:layout_conversion_absoluteWidth="82dp" />
+            app:layout_constraintBottom_toBottomOf="@id/floating_pref"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tIngredienti"
@@ -26,43 +26,47 @@
             android:text="TextView"
             android:textColor="@color/common_google_signin_btn_text_dark_focused"
             android:textSize="16sp"
-            tools:ignore="MissingConstraints"
-            tools:layout_conversion_absoluteHeight="21dp"
-            tools:layout_conversion_absoluteWidth="371dp" />
+            app:layout_constraintStart_toStartOf="@+id/etichetta_ingredienti"
+            app:layout_constraintTop_toBottomOf="@+id/etichetta_ingredienti"
+            tools:ignore="MissingConstraints" />
 
         <TextView
             android:id="@+id/etichetta_ricetta"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
             android:text="Ricetta:"
             android:textColor="#222222"
             android:textSize="16sp"
             android:textStyle="bold"
-            tools:layout_conversion_absoluteHeight="21dp"
-            tools:layout_conversion_absoluteWidth="56dp" />
+            app:layout_constraintStart_toStartOf="@+id/tIngredienti"
+            app:layout_constraintTop_toBottomOf="@+id/tIngredienti" />
 
         <TextView
             android:id="@+id/tRicetta"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
             android:text="TextView"
             android:textColor="@color/common_google_signin_btn_text_dark_focused"
             android:textSize="16sp"
-            tools:ignore="MissingConstraints"
-            tools:layout_conversion_absoluteHeight="21dp"
-            tools:layout_conversion_absoluteWidth="355dp" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etichetta_ricetta"
+            tools:ignore="MissingConstraints" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/floating_pref"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
             android:clickable="true"
             app:backgroundTint="#EBC0BDBD"
-            app:elevation="8dp" />
+            app:elevation="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 
 

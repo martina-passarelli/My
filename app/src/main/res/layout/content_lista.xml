@@ -5,14 +5,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/sfondo_grigio">
+    android:background="@drawable/sfondo_grigio"
+    android:orientation="vertical">
 
+
+    <TextView
+        android:id="@+id/etichetta_vista"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:fontFamily="cursive"
+        android:gravity="center"
+        android:textColor="#FC030303"
+        android:textSize="26sp" />
 
     <FrameLayout
         android:id="@+id/fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"
         android:animateLayoutChanges="true"></FrameLayout>
 
 

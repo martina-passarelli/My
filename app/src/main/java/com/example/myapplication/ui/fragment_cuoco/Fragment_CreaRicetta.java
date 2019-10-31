@@ -68,6 +68,7 @@ public class Fragment_CreaRicetta extends Fragment {
     private Uri imageUri;
 
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
     }
 
@@ -130,35 +131,55 @@ public class Fragment_CreaRicetta extends Fragment {
                 String descr=edit_descr.getText().toString();
                 String ingr=edit_ingr.getText().toString();
                 String nome=edit_nome.getText().toString();
-                if(ricetta!=null && descr!=null && ingr!=null && nome!=null) {
+                if(!ricetta.equals("") && !descr.equals("") && !ingr.equals("") && !nome.equals("")) {
                     Ricetta r=new Ricetta(nome,ingr,id_cuoco,descr,nome+id_cuoco+".jpg",ricetta,categoria);
                     r.setRot(rotazioneImg);
                     ottieni_nomeCuoco(r,id_cuoco);
                     aggiungi_immagine_storage(nome, id_cuoco);
 
                 }
+                //SE LA RICETTA HA TUTTI I CAMPI VUOTI, PREMENDO OK SI RITORNA AL FRAMMENTO PRECEDENTE
+                // UNA SORTA DI 'CLOSE'.
+                else if(ricetta.equals("") && descr.equals("") && ingr.equals("") && nome.equals("")){
+                    ricaricaFrammento();
+                }
                 else{
-                    Toast.makeText(v.getContext(), "Inserisci tutti i campi!", Toast.LENGTH_LONG).show();
+                    //Se anche solo un campo è vuoto non viene inserita la ricetta
+                    Toast.makeText(v.getContext(), "Inserisci tutti i campi oppure svuota tutti i campi!", Toast.LENGTH_LONG).show();
                 }
             }
         });
     }
+
+
+    /*
+    IL METODO ottieni_nomeCuoco(Ricetta r,String id_cuoco) VIENE UTILIZZATO PER SETTARE IL NOME DEL
+    CUOCO ALL'INTERNO DELLA RICETTA. SOLO DOPO AVER SETTATO ANCHE QUESTO CAMPO, LA RICETTA VIENE
+    AGGIUNTA NEL FIRESTORE.
+     */
 
     public void ottieni_nomeCuoco(Ricetta r,String id_cuoco){
         FirebaseFirestore.getInstance().collection("utenti2").document(""+id_cuoco).get().
                 addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                      @Override
                      public void onSuccess(DocumentSnapshot documentSnapshot) {
-                         if(documentSnapshot.toObject(Utente.class)!=null)
-                            r.setNome_cuoco(documentSnapshot.getString("nome"));
+                         if(documentSnapshot.toObject(Utente.class)!=null) {
+                             r.setNome_cuoco(documentSnapshot.getString("nome"));
+                             //E' POSSIBILE INSERIRE LA RICETTA NEL DATABASE.
+                             aggiungi_inFirestore(r);
+                         }
                      }
                 });
-        aggiungi_inFirestore(r);
     }
+
+    /*
+    L'IMMAGINE DELLA RICETTA VA INSERITA ALL'INTERNO DELLO STORAGE. DI QUESTO SE NE OCCUPA IL METODO
+    SOTTOSTANTE.
+     */
 
     private void aggiungi_immagine_storage(String nome, String id_cuoco) {
         try {
-            //se ha scelto un'immagine
+            //IMMAGINE SCELTA
             if (imageUri != null) {
                 //riferimento allo storage
                 StorageReference sRef = storage.child(nome+id_cuoco + "." + "jpg");
@@ -179,8 +200,8 @@ public class Fragment_CreaRicetta extends Fragment {
      */
     public void ricaricaFrammento(){
         FragmentCuoco frag=(FragmentCuoco)getParentFragment();
-        //BISOGNA SETTARE LA VISIBILITA' DI UN TASTO PRESENTE NEL FRAMMENTO PADRE.
-        frag.changeVisibility();
+        frag.changeVisibility(); //BISOGNA SETTARE LA VISIBILITA' DI UN TASTO PRESENTE NEL FRAMMENTO PADRE.
+
         Bundle bundle= new Bundle();
         bundle.putString("id",id_cuoco);
         ListaRicette_Fragment ricette_fragment=new ListaRicette_Fragment();
@@ -198,23 +219,17 @@ public class Fragment_CreaRicetta extends Fragment {
     }
 
 
-    //---------------------------------------METODI PER CATTURARE L'IMMAGINE------------------------------------------------------
-
-
+    //---------------------------------------METODI PER CATTURARE L'IMMAGINE------------------------
     private static int RESULT_LOAD_IMAGE = 1;
+
     //metodo per scegliere l'immagine dalla galleria
     private void chooseImage() {
         if (checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            // ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
-            //       Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-
         }
-        // ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
         else {
-            Intent i = new Intent(
-                    Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(i, RESULT_LOAD_IMAGE);
         }
     }

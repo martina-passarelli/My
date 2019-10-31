@@ -5,7 +5,7 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/quantum_grey500</item>
         <item name="colorPrimaryDark">@color/quantum_grey400</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/quantum_black_hint_text</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -14,7 +14,6 @@
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

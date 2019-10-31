@@ -59,9 +59,14 @@ public class ListSeguiti extends Fragment {
 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         Bundle bundle=this.getArguments();
+        String id=bundle.getString("id");
         //PRELEVO LA LISTA DI CUOCHI PREFERITI DELL'UTENTE ED AVVISO L'ADAPTER
+        doSomething(id);
 
-        ff.collection("utenti2").document(""+ FirebaseAuth.getInstance().getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+    }
+
+    public void doSomething(String id){
+        ff.collection("utenti2").document(""+ id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @SuppressLint("ResourceAsColor")
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -73,5 +78,6 @@ public class ListSeguiti extends Fragment {
 
 
             }});
+
     }
 }

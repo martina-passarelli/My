@@ -87,7 +87,7 @@
             android:name=".ActivityMappa"
             android:label="Eventi intorno a te" />
         <activity
-            android:name=".ui.fragment_utente.Fragment_IMieiEventi"
+            android:name=".ui.fragment_utente.Activity_IMieiEventi"
             android:label="Home"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">

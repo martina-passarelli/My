@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -244,8 +245,11 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "SI", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-               FirebaseAuth.getInstance().signOut();
-               firestore.collection("utenti2").document("" +mAuth.getCurrentUser()).update("token_id","");
+
+                FirebaseFirestore.getInstance().collection("utenti2").document("" +mAuth.getUid()).update("token_id"," ");
+
+                FirebaseAuth.getInstance().signOut();
+
               try{
                   Intent intent= new Intent(MainActivity.this, ActivityHomePage.class);
                   startActivity(intent);

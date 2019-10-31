@@ -132,8 +132,8 @@ public class Fragment_Evento extends Fragment {
             }
         });
 
-        //**********visualizzazione mappa con bandierina
- //SBALLA LA VISTA----PERCHE'?
+        //-----------------------------INIZIALIZZAZIONE MAPPA---------------------------------------
+
         mappa=(MapView)view.findViewById(R.id.mapView);
         mappa.onCreate(savedInstanceState);
         mappa.getMapAsync(new OnMapReadyCallback() {
@@ -144,27 +144,33 @@ public class Fragment_Evento extends Fragment {
         });
     }
 
+
+    //--------------------------------METODI MAPPA--------------------------------------------------
     private void inserisciBandierina(GoogleMap googleMap) {
         gmap = googleMap;
         gmap.addMarker(new MarkerOptions().position(new LatLng(latitudine, longitudine))).showInfoWindow();
         gmap.getUiSettings().setMapToolbarEnabled(false);
         gmap.getUiSettings().setScrollGesturesEnabled(false);
         moveCamera(new LatLng(latitudine,longitudine),17f);
-
     }
     private void moveCamera(LatLng latLng, float zoom){
         gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
     }
+    //----------------------------------------------------------------------------------------------
+
+    /*
+    E' POSSIBILE CLICCARE SUL NOME DEL CUOCO PER APRIRE IL SUO PROFILO. IL METODO SOTTOSTANTE SI
+    OCCUPA DI CIO'.
+     */
 
     private void apri_profilo(){
         Intent myIntent = new Intent(getActivity().getBaseContext(), ProfiloActivity.class);
-        myIntent.putExtra("tipo", "commento");//Optional parameters
+        myIntent.putExtra("tipo", "commento");
         myIntent.putExtra("utente", id_cuoco);
         myIntent.putExtra("tipo_utente","cuoco");
         myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         getActivity().getBaseContext().startActivity(myIntent);
     }
-
 
     private void set_cuoco(String id_cuoco) {
         FirebaseFirestore ff= FirebaseFirestore.getInstance();
@@ -173,16 +179,16 @@ public class Fragment_Evento extends Fragment {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if(documentSnapshot.toObject(Object.class)!=null) {
-                    Cuoco prof_cuoco = documentSnapshot.toObject(Cuoco.class);
-                    cuoco.setText(prof_cuoco.getNome());
+                    cuoco.setText(documentSnapshot.getString("nome"));
                 }
             }
         });
     }
 
-
-
-
+    /*
+    IL METODO preleva_evento(String id_evento) SI OCCUPA DI SETTARE I CAMPI DELL'EVENTO CORRENTE:
+    PRELEVA I DATI DAL DATABASE.
+     */
     private void preleva_evento(String id_evento) {
         FirebaseFirestore ff= FirebaseFirestore.getInstance();
         DocumentReference doc=ff.collection("eventi").document("" + id_evento);
@@ -198,6 +204,9 @@ public class Fragment_Evento extends Fragment {
     }
 
 
+    /*
+    IL METODO set_profilo(Evento e) ASSEGNA I VALORI CORRETTI ALLA VISTA.
+     */
     public void set_profilo(Evento e){
         nome_evento.setText(e.getNome());
         ora.setText(e.getOra());

@@ -1,38 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:background="#FAF1F0F0"
+    android:orientation="vertical">
 
     <AutoCompleteTextView
         android:id="@+id/username"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="108dp"
+        android:layout_margin="24dp"
 
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="460dp"
+        android:backgroundTint="#6D6D6D"
         android:hint="@string/prompt_email"
         android:inputType="textEmailAddress"
         android:selectAllOnFocus="true"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-         />
+        android:textColor="#000000"
+        android:textColorHighlight="#F70C0B0B"
+        android:textColorHint="#FD777575"
+        android:textColorLink="#000000"
+        android:textCursorDrawable="@color/browser_actions_text_color" />
 
     <EditText
         android:id="@+id/password"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
 
-        android:layout_marginBottom="332dp"
+        android:layout_margin="24dp"
+        android:backgroundTint="#6D6D6D"
         android:autofillHints=""
         android:hint="@string/prompt_password"
         android:imeActionLabel="@string/action_sign_in_short"
@@ -40,30 +39,18 @@
         android:inputType="textPassword"
         android:selectAllOnFocus="true"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.218"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/username"
-        app:layout_constraintVertical_bias="0.0" />
+        android:textColor="#000000"
+        android:textColorHighlight="#F70C0B0B"
+        android:textColorHint="#FD777575"
+        android:textColorLink="#000000"
+        android:textCursorDrawable="@color/browser_actions_text_color" />
 
     <Button
         android:id="@+id/login"
-        style="@style/Widget.AppCompat.Button.Small"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="48dp"
-        android:layout_marginBottom="64dp"
-        android:text="@string/accedi_o_registrati"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.468"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password"
-        app:layout_constraintVertical_bias="0.556" />
+        android:layout_gravity="center|center_vertical"
+        android:text="@string/accedi_o_registrati" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

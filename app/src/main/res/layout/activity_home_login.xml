@@ -2,55 +2,50 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/sfondo_bianco">
+    android:background="#FAF1F0F0"
+    android:orientation="vertical">
 
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+
+        android:adjustViewBounds="false"
+        android:contentDescription="@string/accept"
+        android:cropToPadding="false"
+        android:src="@drawable/logo"
+        android:visibility="visible"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/logo" />
+
+    <TextView
+        android:id="@+id/benvenuto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/alegreya"
+        android:gravity="center"
+        android:text="@string/benvenuto"
+        android:textColor="#FA353535"
+        android:textSize="36sp"
+        app:layout_constraintTop_toBottomOf="@id/logo" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fragment_homePage"
+        app:srcCompat="@drawable/cit3" />
 
     <FrameLayout
         android:id="@+id/fragment_homePage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/contenitoreHome">
+        app:layout_constraintTop_toBottomOf="@id/benvenuto">
 
     </FrameLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/contenitoreHome"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/logo"
-            android:layout_width="match_parent"
-            android:layout_height="184dp"
-            android:layout_marginTop="16dp"
-
-            android:adjustViewBounds="false"
-            android:contentDescription="@string/accept"
-            android:cropToPadding="false"
-            android:src="@drawable/logo"
-            android:visibility="visible"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.655"
-            app:srcCompat="@drawable/logo" />
-
-        <TextView
-            android:id="@+id/benvenuto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Benvenuto! "
-            android:textSize="30sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/logo" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

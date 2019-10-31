@@ -3,68 +3,73 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:background="#FAF1F0F0">
+
 
     <TextView
         android:id="@+id/link"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:layout_marginStart="24dp"
 
-        android:layout_marginTop="60dp"
+        android:layout_margin="25dp"
         android:clickable="true"
         android:contextClickable="false"
         android:focusable="true"
+        android:fontFamily="@font/alegreya"
         android:text="@string/link"
+        android:textColor="#FD000000"
         android:textColorLink="#E91E63"
-        android:textSize="14sp"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/codice"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        style="@style/Widget.AppCompat.Light.AutoCompleteTextView"
+        android:layout_width="match_parent"
 
+        android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="24dp"
         android:autofillHints=""
+        android:backgroundTint="#F7636363"
+        android:drawableTint="#090808"
         android:hint="Codice"
         android:inputType="text"
         android:selectAllOnFocus="true"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#090808"
+        android:textColorHighlight="#F2090808"
+        android:textColorLink="#000000"
+        android:textCursorDrawable="@color/browser_actions_text_color"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/link"
-        tools:ignore="UnknownId"
         tools:targetApi="o" />
 
     <TextView
         android:id="@+id/linkUtente"
-        android:layout_width="285dp"
-        android:layout_height="34dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="48dp"
 
+        android:layout_margin="25dp"
         android:clickable="true"
         android:contextClickable="false"
         android:focusable="true"
+        android:fontFamily="@font/alegreya"
         android:text="@string/linkUtente"
-        android:textColorLink="@color/common_google_signin_btn_text_dark_focused"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="#050505"
+        android:textColorLink="#E91E63"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@id/link"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/codice"
-        app:layout_constraintVertical_bias="0.120000005" />
+        app:layout_constraintTop_toBottomOf="@id/verifica" />
 
     <Button
         android:id="@+id/verifica"

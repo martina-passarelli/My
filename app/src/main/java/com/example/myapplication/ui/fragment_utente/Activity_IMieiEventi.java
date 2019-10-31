@@ -27,7 +27,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
-public class Fragment_IMieiEventi extends AppCompatActivity {
+/*
+LA SEGUENTE ACTIVITY GESTISCE LA VIEW DI "I miei eventi' NELLA NAVIGATION BAR.
+VIENE MANDATO UN ID NULL, IN QUANTO NON DEVE ESSERE ATTIVATO L'ELIMINAZIONE DEGLI EVENTI CON SCORRIMENTO.
+ */
+public class Activity_IMieiEventi extends AppCompatActivity {
 
     public Bundle bundle;
 
@@ -39,7 +43,6 @@ public class Fragment_IMieiEventi extends AppCompatActivity {
 
         bundle=new Bundle();
         bundle.putString("id","null");
-        bundle.putBoolean("do",false);
         Lista_Fragment_Evento fragment_evento= new Lista_Fragment_Evento();
         fragment_evento.setArguments(bundle);
         fragment_evento.eventi_utente();

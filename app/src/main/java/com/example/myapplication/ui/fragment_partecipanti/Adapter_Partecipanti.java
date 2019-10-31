@@ -71,11 +71,8 @@ public class Adapter_Partecipanti extends RecyclerView.Adapter <Adapter_Partecip
                             storage.child(utente.getEmail() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
-
                                     activity = (AppCompatActivity) holder.mView.getContext();
-                                    Picasso.with(activity).load(uri).
-                                            networkPolicy(NetworkPolicy.OFFLINE).
-                                            rotate(utente.getRot()).fit().centerCrop()
+                                    Picasso.with(activity).load(uri).networkPolicy(NetworkPolicy.OFFLINE).rotate(utente.getRot()).fit().centerCrop()
                                             .into(holder.foto_utente,new Callback() {
                                                 @Override
                                                 public void onSuccess() {
@@ -84,9 +81,7 @@ public class Adapter_Partecipanti extends RecyclerView.Adapter <Adapter_Partecip
                                                 @Override
                                                 public void onError() {
                                                     System.out.println("on error");
-                                                    Picasso.with(activity).load(uri)
-                                                            .rotate(utente.getRot())
-                                                            .fit().centerCrop().into(holder.foto_utente);
+                                                    Picasso.with(activity).load(uri).rotate(utente.getRot()).fit().centerCrop().into(holder.foto_utente);
                                                 }
                                             });
                                 }

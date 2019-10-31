@@ -19,6 +19,7 @@
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:fontFamily="sans-serif-smallcaps"
         android:text="Vai al profilo"
         android:textColor="#E65100"
@@ -35,8 +36,8 @@
         android:layout_height="95dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="5dp"
-        android:clickable="false"
-        android:src="@drawable/cuoca"
+        android:clickable="true"
+        android:src="@drawable/chef"
         android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

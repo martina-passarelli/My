@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,6 +51,7 @@ public class ListaRicette_Fragment extends Fragment{
     private FirebaseFirestore ff= FirebaseFirestore.getInstance();
     private ArrayList<Ricetta> ricettaList=new ArrayList<>();
     private String id_profilo="";
+    private TextView text_etichettaView;
 
 
     @Override
@@ -65,6 +67,7 @@ public class ListaRicette_Fragment extends Fragment{
 
         myView = inflater.inflate(R.layout.fragment_item_list, container, false);
         recyclerView = myView.findViewById(R.id.list_ricetta);
+        text_etichettaView=getActivity().findViewById(R.id.etichetta_vista);
         Bundle bundle=getArguments();
         if(bundle!=null && bundle.getString("id").equals(FirebaseAuth.getInstance().getUid())){
             enableSwipeToDeleteAndUndo();
@@ -148,7 +151,6 @@ public class ListaRicette_Fragment extends Fragment{
                     }
                 }
             });
-
         }
     }
 
@@ -157,14 +159,20 @@ public class ListaRicette_Fragment extends Fragment{
         colPref.document(""+utente).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
+                ArrayList<String> lista_preferiti;
                 if(documentSnapshot!=null) {
-
-                    ArrayList<String> lista_preferiti = (ArrayList<String>) documentSnapshot.get("lista_preferiti");
-                    if(lista_preferiti==null)lista_preferiti=new ArrayList<>();
+                    lista_preferiti = (ArrayList<String>) documentSnapshot.get("lista_preferiti");
+                    if(lista_preferiti==null){
+                        lista_preferiti=new ArrayList<>();
+                    }
                     else{
                         ricettaList.clear();
                         for(String s: lista_preferiti) aggiungi(s);
                     }
+                    if(lista_preferiti.size()!=0)
+                        text_etichettaView.setText("I tuoi preferiti!");
+                    else
+                        text_etichettaView.setText("Non hai ancora preferiti!");
                 }
             }
         });

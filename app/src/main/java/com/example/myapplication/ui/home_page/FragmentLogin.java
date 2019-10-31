@@ -37,6 +37,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -180,8 +181,12 @@ public class FragmentLogin extends Fragment {
                                                     public void onComplete(@NonNull Task<Void> task) {
                                                         CollectionReference utenti = firestore.collection("utenti2");
                                                         //se è un cuoco
+                                                        ArrayList<String> lista_vuota=new ArrayList<>();
+
                                                         if (tipoUtente.equals("cuoco")){
                                                             Cuoco nuovoCuoco = new Cuoco(user.getEmail(),password);
+                                                            nuovoCuoco.setSeguaci(lista_vuota);
+                                                            nuovoCuoco.setFollower(0);
                                                             nuovoCuoco.setEmail(user.getEmail());
                                                             //non conoscendo all'inizio il nome dell'utente, lo si setta
                                                             //come la prima parte della sua mail
@@ -192,7 +197,7 @@ public class FragmentLogin extends Fragment {
                                                             //la key dell'utente è quella del suo identificativo
                                                             //negli utenti loggati
                                                             String token= FirebaseInstanceId.getInstance().getToken();
-                                                            nuovoCuoco.setToken(token);
+                                                            nuovoCuoco.setToken_id(token);
                                                             utenti.document(""+mAuth.getUid()).set(nuovoCuoco);
                                                             //vai al profilo del cuoco
                                                             // vaiProfilo("cuoco");
@@ -211,7 +216,7 @@ public class FragmentLogin extends Fragment {
                                                             nuovoUtente.setImageProf(user.getEmail() + ".jpg");
                                                             nuovoUtente.setBio("");
                                                             String token= FirebaseInstanceId.getInstance().getToken();
-                                                            nuovoUtente.setToken(token);
+                                                            nuovoUtente.setToken_id(token);
                                                             utenti.document("" + mAuth.getUid()).set(nuovoUtente);
                                                             //vai a profilo utente
                                                             // vaiProfilo("utente");
