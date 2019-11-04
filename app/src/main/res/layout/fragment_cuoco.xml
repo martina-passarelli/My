@@ -108,13 +108,13 @@
                 android:layout_marginEnd="16dp"
                 android:clickable="true"
 
+                android:focusable="true"
                 android:foregroundGravity="right"
                 app:backgroundTint="@color/common_google_signin_btn_text_light_focused"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintRight_toRightOf="@id/nome_cuoco"
-                app:srcCompat="@android:drawable/ic_menu_manage"
-                android:focusable="true" />
+                app:srcCompat="@android:drawable/ic_menu_manage" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/modificaFotoCuoco"
@@ -216,12 +216,23 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:clickable="true"
+            android:focusable="true"
             app:backgroundTint="@color/common_google_signin_btn_text_light_focused"
             app:layout_constraintEnd_toEndOf="@id/frame_cuoco"
             app:layout_constraintTop_toTopOf="@id/frame_cuoco"
             app:maxImageSize="30dp"
-            app:srcCompat="@android:drawable/ic_menu_add"
-            android:focusable="true" />
+            app:srcCompat="@android:drawable/ic_menu_add" />
+
+        <Button
+            android:id="@+id/info"
+            android:layout_width="29dp"
+            android:layout_height="27dp"
+            android:layout_margin="10dp"
+            android:background="@android:drawable/ic_menu_info_details"
+            android:backgroundTint="#262730"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/id_contenitore_dati" />
+
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

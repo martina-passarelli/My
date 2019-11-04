@@ -3,24 +3,31 @@ package com.example.myapplication.ui.fragment_cuoco;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.provider.MediaStore;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +64,7 @@ import java.util.HashMap;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 import static androidx.core.content.ContextCompat.checkSelfPermission;
 
 
@@ -86,6 +94,10 @@ public class FragmentCuoco extends Fragment {
     private StorageReference storage=FirebaseStorage.getInstance().getReference();
     private boolean sezione_eventi=false;
     private Bundle bundle= new Bundle();
+
+    //bottone che mostra le informazioni sul come poter eliminare una ricetta o un evento
+    //viene reso invisibile se l'utente corrente non è il possessore del profilo
+    private Button showInfo;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -125,6 +137,7 @@ public class FragmentCuoco extends Fragment {
         eventi=(Button)view.findViewById(R.id.button_eventi);
         add=(FloatingActionButton)view.findViewById(R.id.add_cuoco);
         segui=(Button)view.findViewById(R.id.button_segui);
+        showInfo= (Button) view.findViewById(R.id.info);
 
         //**********modifica profilo*****************
         modificaFoto = view.findViewById(R.id.modificaFotoCuoco);
@@ -146,6 +159,8 @@ public class FragmentCuoco extends Fragment {
             //DISABILITA I TASTI DI MODIFICA PROFILO.
             add.setVisibility(View.INVISIBLE);
             add.setClickable(false);
+            //disabilita lo showInfo
+            showInfo.setVisibility(View.GONE);
             /*
             VERIFICA SE L'UTENTE SEGUE IL CUOCO NEL CASO IN CUI NON E' IL CUOCO STESSO AD ENTRARE
             NEL PROFILO.
@@ -256,7 +271,35 @@ public class FragmentCuoco extends Fragment {
 
             }
         });
+
+        showInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                alertDialog.setTitle("Informazioni sull'eliminazione");
+                alertDialog.setMessage("Per eliminare una ricetta o un evento che hai creato, ti basta" +
+                        "fare swipe left!");
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ho capito!", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface dialogInterface) {
+                        alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(Color.BLACK);
+                    }
+                });
+                alertDialog.show();
+
+            }
+        });
     }
+
+
+
+
 
 
     @SuppressLint("RestrictedApi")
