@@ -150,7 +150,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                     @Override
                     public void onSuccess(Void aVoid) {
                         removeAt(position);
-                        rimuoviImgDaStorage(foto);
+                        //rimuoviImgDaStorage(foto);
                         Log.d(TAG, "Evento rimosso!");
                     }
                 })

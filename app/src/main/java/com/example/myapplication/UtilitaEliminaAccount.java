@@ -171,7 +171,7 @@ public class UtilitaEliminaAccount {
         });
     }
     /*
-        metodo che mostra un dialog nel quale si chiede se si vuole realmente eliminare l account
+        metodo che mostra un dialog nel quale si chiede se si vuole realmente eliminare l'account
      */
     public static void showDialog(Context context, String idUtente, int tipo) {
         AlertDialog alertDialog = new AlertDialog.Builder(context).create();
