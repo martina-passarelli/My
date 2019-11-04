@@ -37,13 +37,17 @@ import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
 /*
-    IL SEGUENTE FRAMMENTO DI OCCUPA DELLA LISTA DEI COMMENTI PRESENTI IN UNA RICETTA.
+    Questa classe rappresenta il frammento che si occupa della lista dei commenti
+    presenti sotto ad una ricetta
 
  */
 public class ListaCommenti_Fragment extends Fragment {
+    //adapter che si occupa di gestire i commenti
     private MyItemAdapterCommento tutorAdapter;
+    //recyclerView della vista dei commenti
     private RecyclerView recyclerView;
     private View myView;
+    //lista dei commenti sotto ad una ricetta
     private List<Commento> lista_commenti = new ArrayList<Commento>();
     private String id_ricetta;
 
@@ -71,11 +75,11 @@ public class ListaCommenti_Fragment extends Fragment {
 
 
     /*
-        IL PARAMETRO PASSATO CORRISPONDE ALL'ID DELLA RICETTA DI RIFERIMENTO.
-        doSomething(String parms) SI OCCUPA DI CARICARE TUTTI I COMMENTI DELLA RICETTA PER CUI SI
-        INTENDE VISUALIZZARE LA SEZIONE DEI COMMENTI.
-        LA QUERY SI PREOCCUPA DI RIORDINARE I COMMENTI SECONDO IL PARAMETRO date CONTENENTE SIA LA
-        DATA CHE L'ORA DEL COMMENTO.
+        doSomething(String parms) si occupa di caricare i commenti della ricetta per cui si
+        intende visualizzare la sezione dei commenti.
+        params corrisponde all'id della ricetta.
+        La query si preoccupa di riordinare i commenti secondo il parametro "date" che contiene sia
+        la data che l'ora del commento.
      */
 
     public void doSomething(String parms){
@@ -103,9 +107,9 @@ public class ListaCommenti_Fragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        //QUESTA PARTE SI OCCUPA DELLA CONDIVISIONE DEL COMMENTO!
         TextInputLayout text_input=(TextInputLayout)view.findViewById(R.id.input_commento);
         Button condividi= (Button)view.findViewById(R.id.button_commenta);
+        //cliccando sul bottone condividi, il commento viene pubblicato
         condividi.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -124,6 +128,9 @@ public class ListaCommenti_Fragment extends Fragment {
 
     }
 
+    /*
+        Questo metodo si occupa di condividere il commento e salvarlo sul firestore
+     */
     public void condividi_commento(String testo){
 
             //AGGIUNGERE A COMMENTI CON ID DELLA RICETTA CORRENTE
@@ -131,15 +138,16 @@ public class ListaCommenti_Fragment extends Fragment {
             FirebaseFirestore ff= FirebaseFirestore.getInstance();
 
 
-            //DATI DEL COMMENTO
+            //dati del commento
             String utente=FirebaseAuth.getInstance().getUid();
+            //creazione del commento
             Commento comm=new Commento(id_ricetta,firebaseAuth.getUid(),testo);
 
             CollectionReference colR=ff.collection("commenti");
+            //aggiunta del commento alla collection "commenti"
             colR.document().set(comm);
 
-            //QUESTA QUERY E' DOVUTO AL FATTO CHE DEVO OTTENTERE L'ID RANDOM DEL COMMENTO E SETTARLO
-            //NEL COMMENTO.
+            //viene effettuata una query per ottenere l'id del commento e settarlo nel commento stesso
             colR.whereEqualTo("id_commento",id_ricetta).whereEqualTo("id_utente",utente).
                     whereEqualTo("testo_commento",testo).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override

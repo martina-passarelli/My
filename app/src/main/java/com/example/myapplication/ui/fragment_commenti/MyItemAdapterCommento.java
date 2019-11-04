@@ -73,20 +73,19 @@ public class MyItemAdapterCommento extends RecyclerView.Adapter<MyItemAdapterCom
                         ottieni_dati(holder,documentSnapshot);
                         //IL TIPO SERVE PER APRIRE IL CORRETTO TIPO DI PROFILO
                         if (ob==0) {
-                            // SE UTENTE
+                            //se è un utente
                             holder.tipo="utente";
                         } else {
-                            // SE CUOCO
+                            //se è un cuoco
                             holder.icon.setVisibility(View.VISIBLE);
                             holder.tipo="cuoco";
                         }
                         //--------------------------------------------------------------------------
                         //---------------CLICK SU PROFILO UTENTE------------------------------------
                         /*
-                        E' POSSIBILE CLICCARE SUL PROFILO DELL'UTENTE SOLO SE ESSO E' PRESENTE NEL DB.
-                        QUESTA OPZIONE E' DOVUTA ALLA SCELTA, NEL CASO IN CUI UN UTENTE DECIDA DI
-                        ELIMINARE IL PROPRIO PROFILO, DI NON RIMUOVERE I SUOI COMMENTI. NEL CASO
-                        APPENA SPECIFICATO, IL NOME DELL'UTENTE SARA' SETTATO COME "ACCOUNT ELIMINATO".
+                        E' possibile cliccare sul profilo dell'utente solo se esso è nel db.
+                        Questo perché se l'utente ha eliminato il suo profilo, esso non è presente
+                        nel db e perciò il nome dell'utente sarà settato con "account eliminato".
                          */
                         //--------------------------------------------------------------------------
                         holder.profilo.setOnClickListener(new View.OnClickListener() {
@@ -105,8 +104,9 @@ public class MyItemAdapterCommento extends RecyclerView.Adapter<MyItemAdapterCom
             //--------------------------------------------------------------------------------------
             //-----------------------RIMOZIONE COMMENTO---------------------------------------------
             /*
-            SOLO L'UTENTE CHE HA SCRITTO IL COMMENTO PUO' DECIDERE DI ELIMINARLO. FACCIAMO COMPARIRE
-            UNO SHOW DIALOG PER ULTERIORE CONFERMA.
+            Solo l'utente che ha scritto il commento può decidere di eliminarlo.
+            Per un ulteriore conferma viene mostrato uno show dialog
+
             DA INSERIRE QUANDO MARTY TRADUCE CODICE?????????????????????????????????????????
              */
             if(holder.id_utente.equals( FirebaseAuth.getInstance().getUid())){
@@ -122,7 +122,8 @@ public class MyItemAdapterCommento extends RecyclerView.Adapter<MyItemAdapterCom
     }
 
     /*
-    IL METODO vai_profilo(ViewHolder holder, Context context) APRE IL PROFILO DELL'UTENTE/CUOCO CORRETTO.
+     vai_profilo(ViewHolder holder, Context context)
+     apre il profilo dell'utente/cuoco corretto
      */
     public void vai_profilo(ViewHolder holder, Context context){
         Intent myIntent = new Intent(context, ProfiloActivity.class);
@@ -134,14 +135,15 @@ public class MyItemAdapterCommento extends RecyclerView.Adapter<MyItemAdapterCom
 
 
     /*
-    IL METODO ottieni_dati(ViewHolder holder, DocumentSnapshot documentSnapshot) SERVE AD OTTENERE
-    I DATI DELL'UTENTE, DI MODO DA POTER SETTARE SIA L'IMMAGINE DEL PROFILO, SIA IL SUO NOME NELLA
-    VISTA DEL COMMENTO.
+    ottieni_dati(ViewHolder holder, DocumentSnapshot documentSnapshot) serve ad ottenere
+    i dati dell'utente in modo da poter settare sia l'immagine del profilo,
+     sia il suo nome nella vista del commento.
      */
 
     public void ottieni_dati(ViewHolder holder, DocumentSnapshot documentSnapshot){
-        //A PARTIRE DAL DOCUMENT SNAPSHOT RICAVIAMO I DATI:
-        // I CAMPI CHE SI VOGLIONO OTTENERE SONO COMUNI SIA AL CUOCO CHE ALL'UTENTE.
+        //a partire dal document snapshot ricaviamo i dati. I campi che vogliamo
+        //ottenere sono comuni sia al cuoco che all'utente
+
         holder.email =documentSnapshot.getString("email");
         if (documentSnapshot.getString("imageProf")!= null) {
             try {
@@ -176,6 +178,9 @@ public class MyItemAdapterCommento extends RecyclerView.Adapter<MyItemAdapterCom
         holder.utente.setText(holder.nome_utente);
     }
 
+    /*
+        Questo metodo rimuove il commento dal db
+     */
 
     public void rimuovi_commento(ViewHolder holder, Commento commento){
         colR.document(""+commento.getId())

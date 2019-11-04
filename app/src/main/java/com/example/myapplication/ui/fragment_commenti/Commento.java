@@ -1,14 +1,14 @@
 package com.example.myapplication.ui.fragment_commenti;
 
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.ServerTimestamp;
 
-
 import java.io.Serializable;
-
 import java.util.Date;
-import java.util.Locale;
 
+/*
+    Questa classe rappresenta il commento che viene creato dall'utente
+    sotto ad una ricetta
+ */
 public class Commento implements Serializable {
 
     public String id,id_commento, id_utente, testo_commento;
