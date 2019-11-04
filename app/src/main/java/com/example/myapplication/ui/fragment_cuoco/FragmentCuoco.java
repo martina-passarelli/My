@@ -277,8 +277,8 @@ public class FragmentCuoco extends Fragment {
             public void onClick(View view) {
                 AlertDialog alertDialog = new AlertDialog.Builder(context).create();
                 alertDialog.setTitle("Informazioni sull'eliminazione");
-                alertDialog.setMessage("Per eliminare una ricetta o un evento che hai creato, ti basta" +
-                        "fare swipe left!");
+                alertDialog.setMessage("Per eliminare una ricetta o un evento che hai creato ti basta" +
+                        " fare swipe left!");
                 alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ho capito!", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
