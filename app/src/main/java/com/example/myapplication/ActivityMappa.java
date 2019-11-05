@@ -1,10 +1,8 @@
 package com.example.myapplication;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -14,11 +12,9 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.myapplication.ui.fragment_evento.Evento;
@@ -27,7 +23,6 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -51,17 +46,22 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+/*
+    Quesat classe rappresenta l'activity che contiene la mappa "intorno a te"
+    Sono state usate le API di googleMaps. Per accedere alla posizione corrente si chiede il permesso
+    all'utente per poter prelevare i dati dal suo GPS
+ */
 public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallback {
     SupportMapFragment mapFragment ;
     private GoogleMap mMap;
     private boolean mLocationPermissionsGranted=false;
+    //zoom della mappa
     private static final float DEFAULT_ZOOM = 15f;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
 
     private static final String COURSE_LOCATION= Manifest.permission.ACCESS_COARSE_LOCATION;
     private static  final int LOCATION_PERMISSION_REQUEST_CODE=1234;
-    //*************************************************************************************
     //riferimento ad database
     private FirebaseFirestore mDatabase;
     //***per ricaricare la mappa
@@ -82,8 +82,7 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
             }
         });
 
-
-
+        //Per le API
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), String.valueOf(R.string.google_maps_API_key));
         }
@@ -105,22 +104,27 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
     }
 
 
-
+    /*
+        Questo metodo chiede il permesso di accedere alla posizione se non è stato ancora concesso
+        oppure accede direttamente ai dati del GPS se quest'ultimo è acceso.
+    */
     private void getLocationPermission(){
-        //****************
         //se il gps è acceso
         LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
+        //enabled è true se il GPS è acceso, false altrimenti
         boolean enabled = service
                 .isProviderEnabled(LocationManager.GPS_PROVIDER);
+        //se il GPS è acceso
         if(enabled) {
             String[] permission = {Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION};
+            //controlla che il permesso sia stato dato
             if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                     FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                         COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     mLocationPermissionsGranted = true;
-                    //init
+                    //init mappa
                     getDeviceLocation();
                     mapFragment.getMapAsync(ActivityMappa.this);
                 } else {
@@ -130,7 +134,10 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
             } else {
                 ActivityCompat.requestPermissions(this, permission, LOCATION_PERMISSION_REQUEST_CODE);
             }
-        } else {
+        }
+        //se il GPS è spento si rende visibile il tasto di reload. Dopo che l'utente ha acceso il GPS può infatti
+        //cliccare il tasto per ricaricare la sua posizione
+        else {
             reloadMap.setEnabled(true);
             reloadMap.setVisibility(View.VISIBLE);
 
@@ -139,10 +146,14 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
+    /*
+        Metodo invocato col caricamento della mappa
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         //Toast.makeText(this,"La mappa Ã¨ pronta",Toast.LENGTH_SHORT).show();
         mMap=googleMap;
+        //se il permesso è stato dato
         if(mLocationPermissionsGranted){
             getDeviceLocation();
             if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -153,8 +164,7 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMapToolbarEnabled(false);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
-
-            //***************
+            //popolamento della mappa
             aggiungiEventiMappa();
             aggiungiListener();
 
@@ -162,8 +172,10 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
+    /*
+        Tramite questo metodo si ottiene la posizione dell'utente
+     */
     private void getDeviceLocation(){
-        //Log.d(TAG,"getDeviceLocation: prende la posizione del dispositivo");
         mFusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(this);
         try {
             if(mLocationPermissionsGranted){
@@ -173,18 +185,16 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
                     public void onComplete(@NonNull Task task) {
                         if(task.isSuccessful()){
                             try {
-                                System.out.println("TRY");
                                 Location currentLocation= (Location) task.getResult();
+                                //aggiunta di un marker con una label per indicare la posizione dell'utente
                                 mMap.addMarker(new MarkerOptions().position(new LatLng(currentLocation.getLatitude(),
                                         currentLocation.getLongitude())).title("Tu sei qui")).showInfoWindow();
 
                                 moveCamera(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude()),DEFAULT_ZOOM);
                             }catch (Exception e){
-                                System.out.println("CATCH");
                                 Location currentLocation= (Location) task.getResult();
                                 mMap.addMarker(new MarkerOptions().position(new LatLng(currentLocation.getLatitude(),
                                         currentLocation.getLongitude())).title("Tu sei qui")).showInfoWindow();
-
                                 moveCamera(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude()),DEFAULT_ZOOM);
                             }
 
@@ -200,6 +210,9 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
     }
 
 
+    /*
+        Questo metodo muove la visuale sul punto selezionato
+     */
     private void moveCamera(LatLng latLng, float zoom){
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
     }
@@ -212,7 +225,10 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    //**aggiunge gli eventi alla mappa
+    /*
+        Questo metodo aggiunge gli eventi del db alla mappa prestando attenzione a quelli scaduti che
+        non vengono caricati
+     */
     private void aggiungiEventiMappa(){
 
         CollectionReference eventi = mDatabase.collection("eventi");
@@ -223,14 +239,13 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
                     List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                     for (DocumentSnapshot d : list) {
                         Evento e= d.toObject(Evento.class);
-                        //******se Ã¨ scaduto non inseriamo il marker!
+                        //se l'evento è scaduto non inseriamo il marker
                         if(nonScaduto(e.getData(), e.getOra())) {
                             IconGenerator iconGen = new IconGenerator(ActivityMappa.this);
                             Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(e.getLatitudine(),
                                     e.getLongitudine())).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
                                     .icon(BitmapDescriptorFactory.fromBitmap(iconGen.makeIcon(e.getNome()))).
                                             anchor(iconGen.getAnchorU(), iconGen.getAnchorV()).title(e.getNome()));
-                            //m.showInfoWindow();
                             m.setTag(e);
                         }
                     }
@@ -238,6 +253,7 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
             }
         });
     }
+
 
 
 
@@ -254,7 +270,7 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
         String [] oraEvento= ora.split(":",5);
         int oraE = Integer.parseInt(oraEvento[0]);
         int minE = Integer.parseInt(oraEvento[1]);
-        //***per l'ora corrente
+        //per l'ora corrente
         Calendar cal = Calendar.getInstance();
         Date date=cal.getTime();
         DateFormat dateFormat = new SimpleDateFormat("HH:mm");
@@ -262,7 +278,7 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
         String [] oraCorrente= formattedDate.split(":",5);
         int oraCorr = Integer.parseInt(oraCorrente[0]);
         int minCorr = Integer.parseInt(oraCorrente[1]);
-        //***se le date sono uguali allora controllo l'ora
+        //se le date sono uguali allora controllo l'ora
         if(mese==meseEvento && anno==annoEvento && giorno == giornoEvento){
             if(oraE>oraCorr) return true;
             else if (oraE<oraCorr) return false;
@@ -283,6 +299,11 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
             }
         }
     }
+
+    /*
+        Questo metodo aggiunge ai marker i listener in modo che cliccando su una bandierina si possa
+        andare sulla descrizione dell'evento
+     */
 
     private void aggiungiListener() {
         System.out.println("mappa="+mMap);
@@ -320,6 +341,10 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
         Intent i = new Intent(this,MainActivity.class);
         startActivity(i);
     }
+    /*
+        Questo metodo viene richiamato dopo che l'utente ha deciso se consentire o meno
+        l'accesso al GPS
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -334,7 +359,7 @@ public class ActivityMappa extends AppCompatActivity implements OnMapReadyCallba
                         }
                     }
                     mLocationPermissionsGranted = true;
-                    //initialize our map
+                    //inizializza la mappa
                     getDeviceLocation();
                     mapFragment.getMapAsync( ActivityMappa.this);
                 }

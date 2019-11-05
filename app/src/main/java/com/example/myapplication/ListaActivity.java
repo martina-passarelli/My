@@ -1,24 +1,18 @@
 package com.example.myapplication;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.example.myapplication.ui.fragment_ricetta.ListaRicette_Fragment;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.FirebaseAuth;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.transition.Slide;
 
-import android.transition.Transition;
-import android.transition.TransitionInflater;
-import android.view.View;
+import com.example.myapplication.ui.fragment_ricetta.ListaRicette_Fragment;
+import com.google.firebase.auth.FirebaseAuth;
 
+/*
+    Questa classe è l'activity che conterrà la lista dei preferiti
+ */
 public class ListaActivity extends AppCompatActivity {
 
     @Override

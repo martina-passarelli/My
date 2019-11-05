@@ -54,8 +54,8 @@ import static androidx.constraintlayout.widget.Constraints.TAG;
 import static androidx.core.content.ContextCompat.checkSelfPermission;
 
 /*
-    UN CUOCO PUO' PROVVEDERE ALLA CREAZIONE DI UNA RICETTA: NEL SEGUENTE CASO SI APRE UN NUOVO FRAMMENTO
-    IL QUALE PROVVEDE AL SET DI TUTTI I CAMPI RIGUARDANTI LA RICETTA.
+    Questa classe rappresenta il framento che consente di creare una ricetta.
+    Una ricetta può essere creata solo da un cuoco e non da un utente "normale".
  */
 public class Fragment_CreaRicetta extends Fragment {
     private String id_cuoco,categoria;
@@ -94,10 +94,9 @@ public class Fragment_CreaRicetta extends Fragment {
             chooseImage();
         });
 
-        /*
-        LISTA DELLE POSSIBILI CATEGORIE DELLA RICETTA: E' PRESENTE UNO SPINNER CHE SI OCCUPERA' DI
-        QUESTA SCELTA.
-         */
+        //tramite uno spinner, sono mostrate tutte le possibili categorie dolciarie.
+        //ad un dolce creato corrisponde una sola categoria
+
         List<String> lista=new ArrayList<>();
         lista.add("Torte");
         lista.add("Ciambelloni");
@@ -122,9 +121,9 @@ public class Fragment_CreaRicetta extends Fragment {
             }
         });
 
-        // TERMINA LA CREAZIONE DELLA RICETTA, SI PROVVEDE AL CARICAMENTO DEL FRAMMENTO PRECEDENTE.
-        fatto.setOnClickListener(new View.OnClickListener()
-        {
+        //terminata la creazione della ricetta, si provvede a caricare il frammento precedente della
+        //lista delle ricette.
+        fatto.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 String ricetta=edit_ricetta.getText().toString();
@@ -132,13 +131,16 @@ public class Fragment_CreaRicetta extends Fragment {
                 String ingr=edit_ingr.getText().toString();
                 String nome=edit_nome.getText().toString();
                 if(!ricetta.equals("") && !descr.equals("") && !ingr.equals("") && !nome.equals("")) {
+                    //si è scelto di salvare la foto della ricetta nello storage con nome_ricetta+id_cuoco
                     Ricetta r=new Ricetta(nome,ingr,id_cuoco,descr,nome+id_cuoco+".jpg",ricetta,categoria);
+                    //rotazioneImg è ottenuto all'atto del caricamento della foto tramite
+                    //il tag orientation dell'immagine caricata
                     r.setRot(rotazioneImg);
                     ottieni_nomeCuoco(r,id_cuoco);
                     aggiungi_immagine_storage(nome, id_cuoco);
 
                 }
-                //SE LA RICETTA HA TUTTI I CAMPI VUOTI, PREMENDO OK SI RITORNA AL FRAMMENTO PRECEDENTE
+                //se la ricetta ha tutti i campi vuoti, premendo ok si ritorna al frammento precedente
                 // UNA SORTA DI 'CLOSE'.
                 else if(ricetta.equals("") && descr.equals("") && ingr.equals("") && nome.equals("")){
                     ricaricaFrammento();
@@ -153,9 +155,9 @@ public class Fragment_CreaRicetta extends Fragment {
 
 
     /*
-    IL METODO ottieni_nomeCuoco(Ricetta r,String id_cuoco) VIENE UTILIZZATO PER SETTARE IL NOME DEL
-    CUOCO ALL'INTERNO DELLA RICETTA. SOLO DOPO AVER SETTATO ANCHE QUESTO CAMPO, LA RICETTA VIENE
-    AGGIUNTA NEL FIRESTORE.
+     IL METODO ottieni_nomeCuoco(Ricetta r,String id_cuoco) è impiegato per settare il nome del cuoco
+     all'interno della ricetta. Solo dopo aver settato questo campo la ricetta viene inserita nel
+     firestore.
      */
 
     public void ottieni_nomeCuoco(Ricetta r,String id_cuoco){
@@ -173,8 +175,7 @@ public class Fragment_CreaRicetta extends Fragment {
     }
 
     /*
-    L'IMMAGINE DELLA RICETTA VA INSERITA ALL'INTERNO DELLO STORAGE. DI QUESTO SE NE OCCUPA IL METODO
-    SOTTOSTANTE.
+    Questo metodo si occupa di inserire la foto della ricetta nello storage.
      */
 
     private void aggiungi_immagine_storage(String nome, String id_cuoco) {
@@ -196,8 +197,8 @@ public class Fragment_CreaRicetta extends Fragment {
     }
 
     /*
-    ricaricaFrammento() PROVVEDE A RICARICARE LA VISTA DEL FRAMMENTO GENITORE CON LA NUOVA.
-     */
+    ricaricaFrammento() ricarica la vista del frammento genitore con la nuova
+         */
     public void ricaricaFrammento(){
         FragmentCuoco frag=(FragmentCuoco)getParentFragment();
         frag.changeVisibility(); //BISOGNA SETTARE LA VISIBILITA' DI UN TASTO PRESENTE NEL FRAMMENTO PADRE.
@@ -212,7 +213,7 @@ public class Fragment_CreaRicetta extends Fragment {
 
 
     /*
-    LA RICETTA VIENE CARICATA ALL'INTERNO DEL FIRESTORE.
+    questo metodo aggiunge la ricetta al firestore nella collection ricette
      */
     public void aggiungi_inFirestore(Ricetta r){
         FirebaseFirestore.getInstance().collection("ricette").document().set(r);
@@ -224,22 +225,27 @@ public class Fragment_CreaRicetta extends Fragment {
 
     //metodo per scegliere l'immagine dalla galleria
     private void chooseImage() {
+        //controlla che sia stato già dato il permesso per accedere alla galleria dell'utente
         if (checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
+        //se il permesso è stato dato, viene fatta scegliere la galleria da dove prendere l'immagine
         else {
             Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(i, RESULT_LOAD_IMAGE);
         }
     }
 
+    /*
+        Questo metodo viene invocato dopo che l'utente ha dato o meno il consenso di accedere
+        alla sua galleria
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode,permissions,grantResults);
-        System.out.println("entro");
+        //se il permesso è stato dato, viene fatta scegliere la galleria da dove prendere l'immagine
         if (checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            System.out.println("entro2");
             Intent i = new Intent(
                     Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(i, RESULT_LOAD_IMAGE);
@@ -247,17 +253,20 @@ public class Fragment_CreaRicetta extends Fragment {
     }
 
 
+    /*
+    Questo metodo viene invocato dopo che l'utente ha scelto l'immagine dalla galleria
+     */
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        //se ha scelto un'immagine e non è vuota, si ottiene il suo URI
         if(requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK
                 && data != null && data.getData() != null )
-
-        imageUri = data.getData();
-
+            imageUri = data.getData();
+        //se l'URI ottenuto non è null
         if (imageUri != null) {
+            //si ottine il suo path
             try {
                 String imagePath;
                 if (data.toString().contains("content:")) {
@@ -269,10 +278,11 @@ public class Fragment_CreaRicetta extends Fragment {
                 }
 
                 ExifInterface exifInterface = new ExifInterface(imagePath);
+                //l'immagine potrebbe avere il tag orientation != 0 , in questo caso bisogna girare l'immagine
                 int rotation = Integer.parseInt(exifInterface.getAttribute(ExifInterface.TAG_ORIENTATION));
                 int rotationInDegrees = UtilityImage.exifToDegrees(rotation);
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
-                //se l'immagine ha un'orientamento la giro
+                //se l'immagine ha un'orientazione la giro
                 rotazioneImg= rotationInDegrees;
                 bitmap = UtilityImage.rotate(bitmap, rotationInDegrees);
                 image_foto.setImageBitmap(bitmap);

@@ -1,12 +1,12 @@
 package com.example.myapplication.ui.fragment_partecipanti;
+
 import android.accounts.Account;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,11 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,7 +45,6 @@ import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -54,16 +54,16 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
-import android.os.AsyncTask;
-import android.widget.Toast;
 
+/*
+    Questa classe rappresenta il frammento della lista dei partecipanti
+ */
 public class Fragment_ListaPartecipanti extends Fragment {
     private ArrayList<String> list=new ArrayList<>();
     private RecyclerView recyclerView;
@@ -140,8 +140,8 @@ public class Fragment_ListaPartecipanti extends Fragment {
 
 
 
-        // Configure sign-in to request the user's ID, email address, basic profile,
-        // and readonly access to contacts.
+        //configura l'accesso per richiedere l'user id, l'e mail e per leggere i contatti
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestScopes(new Scope(CALENDAR_SCOPE))
                 .requestEmail()

@@ -1,6 +1,5 @@
 package com.example.myapplication.ui.fragment_ricetta;
 
-import android.accounts.Account;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,10 +30,6 @@ import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.model.SharePhotoContent;
 import com.facebook.share.widget.ShareDialog;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -44,6 +38,9 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+/*
+    Questa classe rappresenta il frammento della ricetta
+ */
 public class FragmentRicetta extends Fragment {
     private String id,nome,ricetta,descr,foto,info,id_cuoco;
     private boolean isPref=false;
@@ -51,14 +48,19 @@ public class FragmentRicetta extends Fragment {
     private int rot;
     private boolean sezione_commenti=false;
 
-    //PER FACEBOOK
+    //per condividere la ricetta su facebook
     private Uri uriCondiv;
     private CallbackManager callbackManager;
     private Button share;
     private ShareDialog shareDialog;
+    //questo oggetto carica l'immagine della ricetta che verrà prelevata dal firestore
     Target target = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            //una volta caricata l'immagine come bitmap, viene creato il link.
+            //Poiché Facebook non consente agli sviluppatori di creare link a nome dell'utente,
+            //viene creata invece una "quote"
+            //l'utente deciderà se pubblicare o no il post
             if (ShareDialog.canShow(SharePhotoContent.class)) {
                 ShareLinkContent linkContent = new ShareLinkContent.Builder().setContentUrl(uriCondiv)
                         .setContentDescription(descr).setQuote(descr)
@@ -68,14 +70,10 @@ public class FragmentRicetta extends Fragment {
         }
 
         @Override
-        public void onBitmapFailed(Drawable errorDrawable) {
-
-        }
+        public void onBitmapFailed(Drawable errorDrawable) {}
 
         @Override
-        public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-        }
+        public void onPrepareLoad(Drawable placeHolderDrawable) {}
     };
 
     //-----------------------------------------------
@@ -172,9 +170,7 @@ public class FragmentRicetta extends Fragment {
                 if(sezione_commenti==true) {
                     commenti.setBackgroundTintList(no_click);
                     descrizione_button.setBackgroundTintList(click);
-
                     getChildFragmentManager().popBackStack("DESCRIZIONE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-
                     sezione_commenti = false;
                 }
             }
@@ -183,9 +179,8 @@ public class FragmentRicetta extends Fragment {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                //creare call back
-
+                //creare callback
+                //shareDialog rappresenta il dialog per condividere il post
                 shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
                     @Override
                     public void onSuccess(Sharer.Result result) {
@@ -240,9 +235,7 @@ public class FragmentRicetta extends Fragment {
                         Picasso.with(getActivity()).load(uri).networkPolicy(NetworkPolicy.OFFLINE).
                                 rotate(rot).fit().centerCrop().into(img, new Callback() {
                             @Override
-                            public void onSuccess() {
-
-                            }
+                            public void onSuccess() {}
 
                             @Override
                             public void onError() {
@@ -250,6 +243,7 @@ public class FragmentRicetta extends Fragment {
                                         rotate(rot).fit().centerCrop().into(img);
                             }
                         });
+                        //salvo l'URI per aggiungere la foto alla QUOTE
                         uriCondiv=uri;
 
 

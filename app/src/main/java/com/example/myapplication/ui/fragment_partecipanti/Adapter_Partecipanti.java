@@ -27,6 +27,9 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+/*
+    Questa classe rappresenta l'adapter della lista partecipanti ad un evento
+ */
 public class Adapter_Partecipanti extends RecyclerView.Adapter <Adapter_Partecipanti.ViewHolder> {
     private List<String> partList;
     private FirebaseFirestore ff=FirebaseFirestore.getInstance();
@@ -53,6 +56,9 @@ public class Adapter_Partecipanti extends RecyclerView.Adapter <Adapter_Partecip
         }
     }
 
+    /*
+        Questo metodo crea l'item partecipanti
+     */
     public void crea_item(ViewHolder holder, String id_utente){
         FirebaseFirestore db= FirebaseFirestore.getInstance();
         StorageReference storage = FirebaseStorage.getInstance().getReference();
@@ -64,7 +70,6 @@ public class Adapter_Partecipanti extends RecyclerView.Adapter <Adapter_Partecip
                 //SETTA NOME UTENTE
                 if(utente!=null) {
                     holder.nome_utente.setText(utente.getNome());
-
                     // SETTA IMMAGINE DELL'UTENTE
                     if (utente.getImageProf() != null) {
                         try {
@@ -75,12 +80,9 @@ public class Adapter_Partecipanti extends RecyclerView.Adapter <Adapter_Partecip
                                     Picasso.with(activity).load(uri).networkPolicy(NetworkPolicy.OFFLINE).rotate(utente.getRot()).fit().centerCrop()
                                             .into(holder.foto_utente,new Callback() {
                                                 @Override
-                                                public void onSuccess() {
-
-                                                }
+                                                public void onSuccess() {}
                                                 @Override
                                                 public void onError() {
-                                                    System.out.println("on error");
                                                     Picasso.with(activity).load(uri).rotate(utente.getRot()).fit().centerCrop().into(holder.foto_utente);
                                                 }
                                             });

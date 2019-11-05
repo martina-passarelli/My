@@ -5,9 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -18,15 +15,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
-import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
-
+/*
+    Questa classe rappresenta il frammento della lista degli utenti seguiti
+ */
 public class ListSeguiti extends Fragment {
     private ArrayList<String> list=new ArrayList<>();
     private Adapter_Seguiti tutorAdapter;
@@ -75,8 +72,6 @@ public class ListSeguiti extends Fragment {
                     list.addAll(lista_provv);
                     tutorAdapter.notifyDataSetChanged();
                 }
-
-
             }});
 
     }

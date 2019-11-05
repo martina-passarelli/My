@@ -1,6 +1,11 @@
 package com.example.myapplication.ui.fragment_evento;
 
 import java.util.List;
+/*
+    Questa classe rappresenta l'evento.
+    In particolare esso possiede, oltre ai campi standard, latitudine e longitudine che sono indispensabili
+    per mostrare poi dove si trova l'evento nella mappa che mostra la sua descrizione.
+ */
 public class Evento {
     private String nome,id_cuoco,descrizione,data,ora,luogo,id,città;
     private double latitudine,longitudine;

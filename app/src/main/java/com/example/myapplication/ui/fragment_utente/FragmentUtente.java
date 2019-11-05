@@ -5,16 +5,13 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.media.ExifInterface;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -33,17 +30,14 @@ import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.example.myapplication.ActivityMappa;
 import com.example.myapplication.R;
 import com.example.myapplication.UtilitaEliminaAccount;
 import com.example.myapplication.UtilityImage;
 import com.example.myapplication.ui.fragment_seguiti.ListSeguiti;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -70,6 +64,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static android.app.Activity.RESULT_OK;
 import static androidx.core.content.ContextCompat.checkSelfPermission;
 
+/*
+    Questa classe rappresenta il frammento del profilo utente
+ */
 public class FragmentUtente extends Fragment {
     private String currentId;
     private static final int SELECT_PICTURE = 100;
@@ -83,11 +80,12 @@ public class FragmentUtente extends Fragment {
     private EditText telefono;
 
     private Context context;
+    //bottoni per vedere la lista dei seguiti e per eliminare il profilo
     private Button seguiti, eliminaProfilo;
     private ImageButton loc;
     //immagine del profilo
     private CircleImageView img;
-    //bottoni
+    //bottoni per modificare la foto e il profilo
     private FloatingActionButton modificaFoto;
     private  FloatingActionButton modificaProfilo;
     //id user correntemente loggato
@@ -109,13 +107,11 @@ public class FragmentUtente extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
     }
 
 
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        // Defines the xml file for the fragment
         context=inflater.getContext();
         return inflater.inflate(R.layout.fragment_utente, parent, false);
 
@@ -438,20 +434,25 @@ public class FragmentUtente extends Fragment {
     private static int RESULT_LOAD_IMAGE = 1;
     //metodo per scegliere l'immagine dalla galleria
     private void chooseImage() {
+        //controlla che sia stato già dato il permesso per accedere alla galleria dell'utente
         if (checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
+        //se il permesso è stato dato, viene fatta scegliere la galleria da dove prendere l'immagine
         else {
             Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(i, RESULT_LOAD_IMAGE);
         }
     }
-
+    /*
+          Questo metodo viene invocato dopo che l'utente ha dato o meno il consenso di accedere
+          alla sua galleria
+       */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode,permissions,grantResults);
-
+        //se il permesso è stato dato, viene fatta scegliere la galleria da dove prendere l'immagine
         if (checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(i, RESULT_LOAD_IMAGE);
@@ -461,12 +462,15 @@ public class FragmentUtente extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        //se ha scelto un'immagine e non è vuota, si ottiene il suo URI
         if(requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK
                 && data != null && data.getData() != null )
             imageUri = data.getData();
+        //se l'URI ottenuto non è null
         utente.setImageProf(currentUsermail+".jpg");
         System.out.println("PRINTA IMG " + imageUri);
         if (imageUri != null) {
+            //si ottine il suo path
             try {
                 String imagePath;
                 if (data.toString().contains("content:")) {
@@ -478,6 +482,7 @@ public class FragmentUtente extends Fragment {
                 }
 
                 ExifInterface exifInterface = new ExifInterface(imagePath);
+                //l'immagine potrebbe avere il tag orientation != 0 , in questo caso bisogna girare l'immagine
                 int rotation = Integer.parseInt(exifInterface.getAttribute(ExifInterface.TAG_ORIENTATION));
                 int rotationInDegrees = UtilityImage.exifToDegrees(rotation);
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
@@ -532,7 +537,6 @@ public class FragmentUtente extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task task) {
                         if(task.isSuccessful()){
-                            //Log.d(TAG, "onComplete: posizione trovata");
                             try {
                                 Location currentLocation= (Location) task.getResult();
                                 double longitudine= currentLocation.getLongitude();

@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -23,7 +22,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/*
+    Questa classe rappresenta il frammento della lista delle notifiche
+ */
 public class Lista_Notifiche extends Fragment {
     private ArrayList<Notifica> lista_notifiche=new ArrayList<>();
     private Adapter_Notifica tutorAdapter;
@@ -49,14 +50,16 @@ public class Lista_Notifiche extends Fragment {
         recyclerView.addItemDecoration(itemDecoration);
         recyclerView.setAdapter(tutorAdapter);
         ottieni_notifiche();
-      etichetta_vista= getActivity().findViewById(R.id.etichetta_vista);
+        etichetta_vista= getActivity().findViewById(R.id.etichetta_vista);
         return myView;
     }
 
+    /*
+        Tramite questo metodo si ottengono tutte le notifiche relative all'utente
+     */
     public void ottieni_notifiche(){
 
         String currentID= FirebaseAuth.getInstance().getUid();
-
         FirebaseFirestore.getInstance().collection("utenti2").document(""+currentID).collection("Notifications").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {

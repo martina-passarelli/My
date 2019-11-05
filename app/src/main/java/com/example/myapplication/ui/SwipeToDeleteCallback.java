@@ -8,17 +8,19 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
 
 import static androidx.core.content.ContextCompat.getDrawable;
+/*
+    Questa classe è di utilità per la modalità swipeLeft che consente di eliminare ricette/eventi
+    scorrendo verso sinistra
+ */
 
 abstract public class SwipeToDeleteCallback extends ItemTouchHelper.Callback {
 

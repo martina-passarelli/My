@@ -30,10 +30,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 /*
-
-LA CLASSE SI OCCUPA DELLA VISTA DEL PROFILO DI UN EVENTO. SONO PRESENTI DUE SEZIONI, QUELLA RIFERITA
-ALLA DESCRIZIONE E QUELLA MOSTRANTE LA LISTA DEI PARTECIPANTI.
-
+Questa classe si occupa della vista del profilo di un evento.
+Sono presenti due sezioni: una che contiene la descrizione dell'evento e una contiene la
+lista dei partecipanti
  */
 public class Fragment_Evento extends Fragment {
     private Bundle bundle;
@@ -99,7 +98,7 @@ public class Fragment_Evento extends Fragment {
             public void onClick(View v) {
                 /*
                 RIPRENDIAMO LA SEZIONE DESCRIZIONE: SE SI E' ANDATI IN PARTECIPANTI, SIAMO SICURI
-                CHE ESSA CI SIA, IN QUANTO E' IL PRIMO FRAMMENTO FIGLIO A CREARSI APPENA SI APRE
+                CHE ESSA CI SIA IN QUANTO E' IL PRIMO FRAMMENTO FIGLIO A CREARSI APPENA SI APRE
                 L'EVENTO.
                  */
                getChildFragmentManager().popBackStack("DESCRIZIONE_EVENTO",FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -160,8 +159,7 @@ public class Fragment_Evento extends Fragment {
     //----------------------------------------------------------------------------------------------
 
     /*
-    E' POSSIBILE CLICCARE SUL NOME DEL CUOCO PER APRIRE IL SUO PROFILO. IL METODO SOTTOSTANTE SI
-    OCCUPA DI CIO'.
+    Questo metodo di occupare di caricare il profilo del cuoco una volta cliccato sul suo nome
      */
 
     private void apri_profilo(){

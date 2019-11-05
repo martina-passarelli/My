@@ -11,6 +11,9 @@ import androidx.fragment.app.Fragment;
 
 import com.example.myapplication.R;
 
+/*
+    Questa classe rappresenta il frammento della descrizione dell'evento
+ */
 public class FragmentDescrEvento extends Fragment {
     private Context context;
 

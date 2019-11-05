@@ -27,11 +27,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
-//IL FRAMMENTO GESTISCE LA GRIGLIA  DI CUOCHI NELLA HOME PAGE
+/*
+    Questa classe rappresenta il frammento della griglia dei cuochi nella home page
+ */
+
 public class Griglia_Cuochi extends Fragment {
     private ArrayList<String> list=new ArrayList<>();
     private Adapter_Griglia tutorAdapter;
@@ -77,7 +78,7 @@ public class Griglia_Cuochi extends Fragment {
         });
 
 
-        //DEVO FARE UNA QUERY CHE PRENDE TUTTI I CUOCHI -> TIPO=1
+        // QUERY CHE RESTITUISCE TUTTI I CUOCHI -> TIPO=1
         ff.collection("utenti2").whereEqualTo("tipo",1).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -94,7 +95,10 @@ public class Griglia_Cuochi extends Fragment {
 
     }
 
-    //CERCA I CUOCHI INDICATI.
+    /*
+        Questo metodo ricerca i cuochi tramite la stringa testo
+     */
+
     public void search(String testo){
         Client client = new Client("348522f0fb1c5e16852ff83238805714", "fc1c214d14331aa60c3b706f5f725ee5");
         Index index = client.getIndex("utenti2");

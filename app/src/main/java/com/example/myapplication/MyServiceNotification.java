@@ -23,17 +23,12 @@ public class MyServiceNotification extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
-        /* There are two types of messages data messages and notification messages.
-        Data messages are handled here in onMessageReceived whether the app is in the foreground or background.
-        Data messages are the type traditionally used with GCM. Notification messages are only received here in
-        onMessageReceived when the app is in the foreground. When the app is in the background an automatically generated
-         notification is displayed. */
         String notificationTitle = null, notificationBody = null;
         String dataTitle = null, dataMessage = null;
 
         String click_action=null;
 
-        // Check if message contains a data payload.
+        // Controlla che il messaggio abbia un data payload
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData().get("body"));
             dataTitle = remoteMessage.getData().get("title");
@@ -41,7 +36,7 @@ public class MyServiceNotification extends FirebaseMessagingService {
 
         }
 
-        // Check if message contains a notification payload.
+        // Controlla che il messaggio abbia un notification payload.
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
             notificationTitle = remoteMessage.getNotification().getTitle();
@@ -49,14 +44,10 @@ public class MyServiceNotification extends FirebaseMessagingService {
             click_action=remoteMessage.getNotification().getClickAction();
         }
 
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
         sendNotification(notificationTitle, notificationBody, dataTitle, dataMessage,click_action);
     }
 
-    /**
-     //     * Create and show a simple notification containing the received FCM message.
-     //     */
+
     private void sendNotification(String notificationTitle, String notificationBody, String dataTitle, String dataMessage, String click_action) {
 
         Intent intent = new Intent(click_action);

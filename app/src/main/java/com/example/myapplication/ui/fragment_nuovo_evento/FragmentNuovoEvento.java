@@ -46,6 +46,10 @@ import java.util.List;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
+/*
+    Questa classe rappresenta il frammento che si occupa della creazione
+    di un nuovo evento
+ */
 public class FragmentNuovoEvento extends Fragment {
 
     //widget grafici
@@ -109,6 +113,7 @@ public class FragmentNuovoEvento extends Fragment {
         adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, cittaList);
         adapter2 = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, luoghiList);
 
+        //aggiunge l'evento nel database
         aggiungi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -200,6 +205,10 @@ public class FragmentNuovoEvento extends Fragment {
         });
     }
 
+    /*
+        questo metodo manipola i dati ottenuti dai data e ora picker e dagli spinner
+        crea l'evento e lo aggiunge al db
+     */
     private void aggiungiEvento() {
         String nome=editTextNome.getText().toString();
 
@@ -216,7 +225,8 @@ public class FragmentNuovoEvento extends Fragment {
         int min = oraPicker.getMinute();
 
         String orario="";
-        if(ora<10 && min<10) orario="0"+ora+":"+"0"+min;
+        if (ora<10 && min==0) orario="0"+ora+":"+"00"+min;
+        else if(ora<10 && min<10) orario="0"+ora+":"+"0"+min;
         else if(ora<10) orario="0"+ora+":"+min;
         else if(min<10)orario=ora+":"+"0"+min;
         else orario=ora+":"+min;
@@ -353,6 +363,9 @@ public class FragmentNuovoEvento extends Fragment {
 
     }
 
+    /*
+        Questo metodo aggiunge la notifica all'utente
+     */
     private void inserisci_notifica(ArrayList<String> seguaci, HashMap<String, Object> notificationMessage) {
         for(String s: seguaci) {
             firestore.collection("utenti2/"+s+"/Notifications").add(notificationMessage);
@@ -388,10 +401,14 @@ public class FragmentNuovoEvento extends Fragment {
         bundle.putString("id",currentId);
         Lista_Fragment_Evento list_eventi=new Lista_Fragment_Evento();
         list_eventi.doSomething(currentId);
+        list_eventi.setArguments(bundle);
         getFragmentManager().beginTransaction().replace(R.id.frame_cuoco,list_eventi).commit();
     }
 
 
+    /*
+        Questo metodo inserisce l'evento creato nel firebase
+     */
     private void aggiungiEventoFirebase(String nome, int partecipanti, String descrizione, String orario, String data, String luogo,
                                         double latitudine, double longitudine, String città) {
         String idCuoco = mAuth.getUid();
@@ -431,7 +448,9 @@ public class FragmentNuovoEvento extends Fragment {
             }
         });
     }
-
+    /*
+    Questo metodo popola lo spinner dei luoghi
+    */
     private void aggiungiLuoghi(ArrayList<String> lista) {
         for (int i = 0; i < lista.size(); i++) {
             DocumentReference docRef = mDatabase.collection("Luoghi").document(lista.get(i));

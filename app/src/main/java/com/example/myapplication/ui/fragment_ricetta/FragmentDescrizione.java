@@ -24,9 +24,13 @@ import java.util.ArrayList;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
+/*
+    Questa classe rappresenta il frammento con la descrizione della ricetta
+ */
 public class FragmentDescrizione extends Fragment {
     private String descr,ingred,id_ricetta,id_utente,ricetta;
     private FirebaseFirestore ff=FirebaseFirestore.getInstance();
+    //bottone per aggiungere la ricetta tra i preferiti
     private  FloatingActionButton pref;
     private ArrayList<String> preferiti = new ArrayList<>();
 
@@ -48,7 +52,6 @@ public class FragmentDescrizione extends Fragment {
             descr=bundle.get("descr").toString();
             ingred=bundle.get("info").toString();
             id_ricetta=bundle.get("id_ricetta").toString();
-
         }
 
         id_utente=FirebaseAuth.getInstance().getUid();
@@ -82,6 +85,9 @@ public class FragmentDescrizione extends Fragment {
         });
     }
 
+    /*
+        Questo metodo verifica che non compaia la stessa ricetta due volte nella lista
+     */
     public void verifica(){
         ff.collection("utenti2").document(""+id_utente).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -96,37 +102,44 @@ public class FragmentDescrizione extends Fragment {
                 }
             }
         });
-
     }
 
+    /*
+        Questo metodo rimuove la ricetta dai preferiti
+     */
     public void rimuoviPreferiti(ArrayList<String> lista_preferiti){
         lista_preferiti.remove(id_ricetta);
         aggiorna_utente(lista_preferiti);
         pref.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.add_pref));
     }
 
-
+    /*
+            Questo metodo aggiunge la ricetta tra i preferiti
+         */
     public void aggiungiPreferiti(ArrayList<String> lista_preferiti){
         lista_preferiti.add(id_ricetta);
         aggiorna_utente(lista_preferiti);
         pref.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.favorite));
     }
 
+    /*
+        Questo metodo aggiorna i preferiti dell'utente nel db
+     */
+
     private void aggiorna_utente(ArrayList<String> lista_preferiti) {
 
-        ff.collection("utenti2").document(""+id_utente).update("lista_preferiti",lista_preferiti).addOnSuccessListener(new OnSuccessListener<Void>() {
+        ff.collection("utenti2").document(""+id_utente).update("lista_preferiti",lista_preferiti)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "DocumentSnapshot successfully updated!");
             }
-        })
-                .addOnFailureListener(new OnFailureListener() {
+        }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error updating document", e);
                     }
                 });
-
     }
 
 

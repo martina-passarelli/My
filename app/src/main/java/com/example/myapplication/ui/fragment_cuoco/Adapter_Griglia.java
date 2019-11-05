@@ -28,8 +28,8 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /*
-    IL SEGUENTE ADAPTER, SI OCCUPA DI GESTIRE LA VISTA DEGLI ITEMS DELLA GRIGLIA DEI CUOCHI PRESENTE
-    NELLA HOME PAGE.
+    Questa classe si occupa di gestire la vista degli items della griglia dei cuochi presenti nella
+    home page.
  */
 public class Adapter_Griglia extends RecyclerView.Adapter <Adapter_Griglia.ViewHolder> {
     private ArrayList<String> lista_cuochi;
@@ -64,9 +64,9 @@ public class Adapter_Griglia extends RecyclerView.Adapter <Adapter_Griglia.ViewH
 
 
     /*
-    IL METODO crea_item(ViewHolder holder, String id_utente) PROVVEDE A SETTARE LA VISTA DELLA CARD
-    DELL'ITEM CORRENTE. QUINDI, PRELEVA I DATI DEL CUOCO PER INSERIRE SIA L'IMMAGINE DEL PROFILO CHE
-    IL SUO NOME.
+        il metodo crea_item(ViewHolder holder, String id_utente) provvede a settare la vista della card
+        dell'item corrente.
+        Preleva i dati del cuoco per caricare sia l'immagine del profilo che il suo nome.
      */
     public void crea_item(ViewHolder holder, String id_utente){
 
@@ -85,7 +85,10 @@ public class Adapter_Griglia extends RecyclerView.Adapter <Adapter_Griglia.ViewH
         });
     }
 
-    //-----------SETTA L'IMMAGINE DEL CUOCO---------------------------------------------------------
+    /*
+        Questo metodo carica l'immagine del cuoco dallo storage tramite un meccanismo di caching
+     */
+
     public void setImage(int rot,String email,ViewHolder holder){
         try {
             storage.getReference().child(email+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -97,9 +100,7 @@ public class Adapter_Griglia extends RecyclerView.Adapter <Adapter_Griglia.ViewH
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .rotate(rot).fit().centerCrop().into(holder.image,new Callback() {
                         @Override
-                        public void onSuccess() {
-
-                        }
+                        public void onSuccess() {}
                         @Override
                         public void onError() {
                             System.out.println("on error");
@@ -117,7 +118,10 @@ public class Adapter_Griglia extends RecyclerView.Adapter <Adapter_Griglia.ViewH
 
     }
 
-    //------ VA AL PROFILO DEL CUOCO-------------------------------------------------------------
+    /*
+        Questo metodo consente di passare al profilo del cuoco selezionato.
+     */
+
     public void vai_profilo(String id_utente, Context context){
         Intent myIntent = new Intent(context, ProfiloActivity.class);
         myIntent.putExtra("tipo", "commento");//Optional parameters

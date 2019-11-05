@@ -37,7 +37,7 @@ import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
 /*
-    Questa classe rappresenta il frammento che si occupa della lista dei commenti
+    Questa classe rappresenta il frammento che contiene la lista dei commenti
     presenti sotto ad una ricetta
 
  */

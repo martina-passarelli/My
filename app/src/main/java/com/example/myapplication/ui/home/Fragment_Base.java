@@ -1,6 +1,5 @@
 package com.example.myapplication.ui.home;
 
-import android.accounts.AccountManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,7 +12,6 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.myapplication.PagerAdapter;
 import com.example.myapplication.R;
-import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 
 public class Fragment_Base extends Fragment {

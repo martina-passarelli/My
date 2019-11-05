@@ -25,7 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
-
+/*
+    Classe che rappresenta il gestore dell'evento
+ */
 public class Adapter_Evento extends RecyclerView.Adapter <Adapter_Evento.ViewHolder>{
 
     private ArrayList<Evento> eventoList;

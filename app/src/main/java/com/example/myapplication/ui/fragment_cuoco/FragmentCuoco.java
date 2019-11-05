@@ -67,9 +67,11 @@ import static android.app.Activity.RESULT_OK;
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 import static androidx.core.content.ContextCompat.checkSelfPermission;
 
-
+/*
+    Questa classe rappresenta il frammento del profilo del cuoco
+ */
 public class FragmentCuoco extends Fragment {
-    //*****eliminaProfilo
+
     private Button eliminaProfilo;
     private FirebaseAuth mAuth;
     private Context context;
@@ -81,7 +83,7 @@ public class FragmentCuoco extends Fragment {
     private FloatingActionButton add;
     private String utente_corrente=FirebaseAuth.getInstance().getUid();
 
-    //****per la modifica del profilo
+    //per la modifica del profilo
     private FloatingActionButton modificaProfilo, modificaFoto;
     private boolean modificaAbilitata;
     private EditText nuovaPassword, vecchiaPassword;
@@ -152,11 +154,13 @@ public class FragmentCuoco extends Fragment {
             modificaProfilo.setClickable(false);
         }
 
-        //PRELEVIAMO I DATI APPARTENENTI AL CUOCO E SETTIAMO LE LABEL
+        //preleva i dati del cuoco e setta le label del profilo
         ottieni_dati();
 
+        //se l'utente corrente non è lo stesso che entra nel profilo bisogna disabilitare alcune
+        //funzioni
         if(!currentId.equals(FirebaseAuth.getInstance().getUid())){
-            //DISABILITA I TASTI DI MODIFICA PROFILO.
+            //disabilita i tasti di modifica profilo
             add.setVisibility(View.INVISIBLE);
             add.setClickable(false);
             //disabilita lo showInfo
@@ -401,8 +405,8 @@ public class FragmentCuoco extends Fragment {
 
 
     /*
-    IL METODO sei_seguace() POVVEDE A VERIFICARE SE L'UTENTE DI RIFERIMENTO E' UN SEGUACE O NO DI UN
-    CUOCO. IN QUESTO MODO VIENE SETTATO IL TASTO SEGUI.
+    Questo metodo controlla se l'utente che è nel profilo del cuoco è o meno un suo seguace.
+    Se non lo è viene abilitato il tasto segui
      */
     private void sei_seguace() {
         FirebaseFirestore.getInstance().collection("utenti2").document(""+utente_corrente).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -419,7 +423,7 @@ public class FragmentCuoco extends Fragment {
     }
 
     /*
-    crea_lista_eventi(String currentId) APRE LA LISTA DEGLI EVENTI DEL CUOCO CORRENTE.
+    crea_lista_eventi(String currentId) carica la lista degli eventi creati dal cuoco corrente
      */
     private void crea_lista_eventi(String currentId) {
         Bundle bundle= new Bundle();
@@ -432,7 +436,7 @@ public class FragmentCuoco extends Fragment {
     }
 
     /*
-    aggiungi_ricetta() APRE IL FRAMMENTO PER LA CREAZIONE DI UNA NUOVA RICETTA.
+    aggiungi_ricetta() carica il frammento per creare una nuova ricetta
      */
     public void aggiungi_ricetta(){
         Fragment_CreaRicetta fragment_creaRicetta=new Fragment_CreaRicetta();
@@ -484,7 +488,9 @@ public class FragmentCuoco extends Fragment {
     }
 
 
-
+    /*
+    Questo metodo carica il frammento per aggiungere un nuovo evento
+     */
     private void aggiungi_evento(){
         FragmentNuovoEvento fragmentNuovoEvento = new FragmentNuovoEvento();
         getChildFragmentManager().beginTransaction().replace(R.id.frame_cuoco,fragmentNuovoEvento).commit();
@@ -492,12 +498,11 @@ public class FragmentCuoco extends Fragment {
 
 
     /*
-
-    QUANDO INIZI A SEGUIRE/ NON SEGUIRE IL CUOCO, PUO' DARSI CHE QUALCUN ALTRO CONTEMPORANEAMENTE
-    DECIDA DI SEGUIRLO, QUINDI SI HA ACCESSO CONCORRENTE ALLA LISTA DEI SEGUACI NEL CUOCO. QUESTA
-    LISTA SERVE PER L'INVIO DELLE NOTIFICHE AI SEGUACI. PER EVITARE DEI DATI DANNEGGIATI FIREBASE
-    UTILIZZA LA TRANSAZIONE. QUESTA OPERAZIONE VIENE ESEGUITA NEL METODO aggiorna(String id_user)
-
+    Quando si inizia a seguire/non seguire più un cuoco, può darsi che qualcun'altro lo faccia
+    contemporaneamente. Questo implica un accesso concorrente alla lista dei seguaci del cuoco.
+    La lista è di ausilio per inviare notifiche ai seguaci del cuoco.
+    Per risolvere il problema, firebase usa una transazione.
+    L'operazione viene eseguita nel metodo aggiorna.
      */
 
     public void segui_cuoco(){
@@ -534,13 +539,15 @@ public class FragmentCuoco extends Fragment {
 
     }
 
+    /*
+        Questo metodo di occupa di risolvere la concorrenza all'accesso della lista cuochi
+     */
     private void aggiorna(ArrayList<String> lista_cuochi, boolean aggiungi) {
         CollectionReference docRef = FirebaseFirestore.getInstance().collection("utenti2");
         DocumentReference ref=docRef.document(""+currentId);
         docRef.document(""+utente_corrente).update("lista_cuochi", lista_cuochi).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                //DA VERIFICARE SE FUNZIONA
                 FirebaseFirestore.getInstance().runTransaction(new Transaction.Function<Void>() {
                     @Override
                     public Void apply(Transaction transaction) throws FirebaseFirestoreException {
@@ -594,43 +601,49 @@ public class FragmentCuoco extends Fragment {
 
     private static int RESULT_LOAD_IMAGE = 1;
 
-
+    //metodo per scegliere l'immagine dalla galleria
     private void chooseImage() {
+        //controlla che sia stato già dato il permesso per accedere alla galleria dell'utente
         if (checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            // ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
-            //       Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
 
         }
-        // ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
+        //se il permesso è stato dato, viene fatta scegliere la galleria da dove prendere l'immagine
         else {
             Intent i = new Intent(
                     Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(i, RESULT_LOAD_IMAGE);
         }
     }
+    /*
+       Questo metodo viene invocato dopo che l'utente ha dato o meno il consenso di accedere
+       alla sua galleria
+    */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode,permissions,grantResults);
-        System.out.println("entro");
+        //se il permesso è stato dato, viene fatta scegliere la galleria da dove prendere l'immagine
         if (checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            System.out.println("entro2");
             Intent i = new Intent(
                     Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(i, RESULT_LOAD_IMAGE);
         }
     }
 
+    /*
+        Questo metodo viene invocato dopo che l'utente ha scelto l'immagine dalla galleria
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        //se ha scelto un'immagine e non è vuota, si ottiene il suo URI
         if(requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data != null && data.getData() != null )
             imageUri = data.getData();
-
+        //se l'URI ottenuto non è null
         cuoco.setImageProf(cuoco.getEmail()+".jpg");
         if (imageUri != null) {
+            //si ottine il suo path
             try {
                 String imagePath;
                 if (data.toString().contains("content:")) {
@@ -642,6 +655,7 @@ public class FragmentCuoco extends Fragment {
                 }
 
                 ExifInterface exifInterface = new ExifInterface(imagePath);
+                //l'immagine potrebbe avere il tag orientation != 0 , in questo caso bisogna girare l'immagine
                 int rotation = Integer.parseInt(exifInterface.getAttribute(ExifInterface.TAG_ORIENTATION));
                 int rotationInDegrees = UtilityImage.exifToDegrees(rotation);
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);

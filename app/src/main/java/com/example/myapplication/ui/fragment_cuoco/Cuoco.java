@@ -5,6 +5,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+/*
+    Questa classe rappresenta il cuoco.
+ */
+
 public class Cuoco {
 
     private ArrayList<String> seguaci;

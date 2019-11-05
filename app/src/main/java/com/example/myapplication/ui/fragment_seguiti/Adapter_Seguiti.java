@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.ProfiloActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.ui.fragment_cuoco.Cuoco;
-import com.example.myapplication.ui.fragment_utente.Utente;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -31,6 +30,9 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+/*
+    Questa classe rappresenta l'adapter che si occupa di  gestire la lista dei seguiti
+ */
 public class Adapter_Seguiti extends RecyclerView.Adapter <Adapter_Seguiti.ViewHolder> {
     private List<String> seguitiList;
     private FirebaseFirestore ff=FirebaseFirestore.getInstance();
@@ -74,6 +76,9 @@ public class Adapter_Seguiti extends RecyclerView.Adapter <Adapter_Seguiti.ViewH
 
 
 
+    /*
+        questo metodo crea l'item seguace
+     */
     public void crea_item(ViewHolder holder, String id_utente){
         FirebaseFirestore db= FirebaseFirestore.getInstance();
         StorageReference storage = FirebaseStorage.getInstance().getReference();

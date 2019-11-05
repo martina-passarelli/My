@@ -16,6 +16,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.io.ByteArrayOutputStream;
 
+/*
+    Questa è una classe di utilità che contiene metodi utili a manipolare le immagini
+ */
+
 public class UtilityImage {
 
     //da array di byte a String

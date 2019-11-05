@@ -1,10 +1,10 @@
 package com.example.myapplication.ui.fragment_utente;
 
-import android.net.Uri;
-
 import java.util.ArrayList;
 
-
+/*
+    Questa classe rappresenta l'utente
+ */
 public class Utente {
 
     private String nome,nick, bio, tel,password;

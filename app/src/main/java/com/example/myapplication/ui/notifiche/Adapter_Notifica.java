@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,6 +21,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
+/*
+    Questa classe rappresenta l'adpter che gestisce la lista delle notifiche
+ */
 public class Adapter_Notifica extends RecyclerView.Adapter <Adapter_Notifica.ViewHolder> {
     private ArrayList<Notifica> lista_notifiche;
     private FirebaseFirestore ff=FirebaseFirestore.getInstance();
@@ -59,12 +61,15 @@ public class Adapter_Notifica extends RecyclerView.Adapter <Adapter_Notifica.Vie
         }
     }
 
+    /*
+        Questo metodo consente di caricare il profilo dell'utente/cuoco della notifica
+     */
     private void apri_profilo(String id){
         FirebaseFirestore.getInstance().collection("utenti2").document(""+id).get().addOnSuccessListener((documentSnapshot) -> {
             if(documentSnapshot!=null){
                 int tipo= documentSnapshot.getDouble("tipo").intValue();
                 Intent myIntent = new Intent(view.getContext(), ProfiloActivity.class);
-                myIntent.putExtra("tipo", "commento");//Optional parameters
+                myIntent.putExtra("tipo", "commento");
                 myIntent.putExtra("utente", id);
 
                 if(tipo==0) myIntent.putExtra("tipo_utente","utente");
@@ -72,12 +77,14 @@ public class Adapter_Notifica extends RecyclerView.Adapter <Adapter_Notifica.Vie
 
                 myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 view.getContext().startActivity(myIntent);
-
-                    }
+            }
         });
 
     }
 
+    /*
+    Questo metodo carica l'evento della notifica
+     */
     public void apri_evento(String id_evento){
         CollectionReference collEventi =FirebaseFirestore.getInstance().collection("eventi");
         collEventi.document(""+id_evento).get().addOnSuccessListener((documentSnapshot) -> {

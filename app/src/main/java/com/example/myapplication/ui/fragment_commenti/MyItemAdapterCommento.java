@@ -83,9 +83,9 @@ public class MyItemAdapterCommento extends RecyclerView.Adapter<MyItemAdapterCom
                         //--------------------------------------------------------------------------
                         //---------------CLICK SU PROFILO UTENTE------------------------------------
                         /*
-                        E' possibile cliccare sul profilo dell'utente solo se esso è nel db.
-                        Questo perché se l'utente ha eliminato il suo profilo, esso non è presente
-                        nel db e perciò il nome dell'utente sarà settato con "account eliminato".
+                            E' possibile cliccare sul profilo dell'utente solo se esso è nel db.
+                            Questo perché se l'utente ha eliminato il suo profilo, esso non è presente
+                            nel db e perciò il nome dell'utente sarà settato con "account eliminato".
                          */
                         //--------------------------------------------------------------------------
                         holder.profilo.setOnClickListener(new View.OnClickListener() {
@@ -104,10 +104,9 @@ public class MyItemAdapterCommento extends RecyclerView.Adapter<MyItemAdapterCom
             //--------------------------------------------------------------------------------------
             //-----------------------RIMOZIONE COMMENTO---------------------------------------------
             /*
-            Solo l'utente che ha scritto il commento può decidere di eliminarlo.
-            Per un ulteriore conferma viene mostrato uno show dialog
+                Solo l'utente che ha scritto il commento può decidere di eliminarlo.
+                Per un ulteriore conferma viene mostrato uno show dialog
 
-            DA INSERIRE QUANDO MARTY TRADUCE CODICE?????????????????????????????????????????
              */
             if(holder.id_utente.equals( FirebaseAuth.getInstance().getUid())){
                 holder.rimuovi.setOnClickListener(new View.OnClickListener(){
@@ -122,8 +121,8 @@ public class MyItemAdapterCommento extends RecyclerView.Adapter<MyItemAdapterCom
     }
 
     /*
-     vai_profilo(ViewHolder holder, Context context)
-     apre il profilo dell'utente/cuoco corretto
+         vai_profilo(ViewHolder holder, Context context)
+         apre il profilo dell'utente/cuoco corretto
      */
     public void vai_profilo(ViewHolder holder, Context context){
         Intent myIntent = new Intent(context, ProfiloActivity.class);
@@ -135,9 +134,9 @@ public class MyItemAdapterCommento extends RecyclerView.Adapter<MyItemAdapterCom
 
 
     /*
-    ottieni_dati(ViewHolder holder, DocumentSnapshot documentSnapshot) serve ad ottenere
-    i dati dell'utente in modo da poter settare sia l'immagine del profilo,
-     sia il suo nome nella vista del commento.
+        ottieni_dati(ViewHolder holder, DocumentSnapshot documentSnapshot) serve ad ottenere
+        i dati dell'utente in modo da poter settare sia l'immagine del profilo,
+         sia il suo nome nella vista del commento.
      */
 
     public void ottieni_dati(ViewHolder holder, DocumentSnapshot documentSnapshot){
@@ -149,15 +148,12 @@ public class MyItemAdapterCommento extends RecyclerView.Adapter<MyItemAdapterCom
             try {
                 storage.getReference().child(holder.email + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
-                    public void onSuccess(Uri uri) {//DA SISTEMARE ROTAZIONE IMMAGINE
-
+                    public void onSuccess(Uri uri) {
                         Picasso.with(holder.image_utente.getContext())
                                 .load(uri).rotate(documentSnapshot.getDouble("rot")
                                 .intValue()).fit().centerCrop().into(holder.image_utente, new Callback() {
                             @Override
-                            public void onSuccess() {
-
-                            }
+                            public void onSuccess() {}
                             @Override
                             public void onError() {
                                 System.out.println("on error");
@@ -179,7 +175,7 @@ public class MyItemAdapterCommento extends RecyclerView.Adapter<MyItemAdapterCom
     }
 
     /*
-        Questo metodo rimuove il commento dal db
+        Questo metodo rimuove il commento dal db e dalla lista dei commenti
      */
 
     public void rimuovi_commento(ViewHolder holder, Commento commento){
